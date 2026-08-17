@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Truy Xuất Nguồn Gốc - Ông Đức Farm</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><circle cx='100' cy='100' r='95' fill='%23022c22'/><path d='M 130 30 C 70 20, 30 60, 32 110 C 34 148, 65 170, 105 165 C 145 160, 168 135, 165 98 C 163 78, 150 50, 130 30' stroke='white' stroke-width='7' stroke-linecap='round' fill='none'/><path d='M68 60 Q73 54 78 60 Q83 54 88 60' stroke='white' stroke-width='3' fill='none'/><path d='M68 128 L98 102 L128 128 V136 H68 Z' fill='white'/><path d='M125 136 Q135 105 145 78' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/></svg>">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; -webkit-tap-highlight-color: transparent; }
+        
+        .timeline-container { position: relative; padding-left: 24px; }
+        .timeline-container::before {
+            content: ''; position: absolute; left: 0; top: 8px; bottom: 0;
+            width: 2px; background: #a7f3d0; border-radius: 2px;
+        }
+        .timeline-item { position: relative; margin-bottom: 24px; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-dot {
+            position: absolute; left: -29px; top: 4px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #10b981; border: 3px solid #ecfdf5;
+            box-shadow: 0 0 0 4px white;
+        }
+        .timeline-dot.start { background: #3b82f6; }
+        .timeline-dot.harvest { background: #f59e0b; width: 16px; height: 16px; left: -31px; top: 2px; border: 3px solid #fffbeb; box-shadow: 0 0 0 4px white, 0 0 10px rgba(245,158,11,0.5); }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        
+        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-10">
+
+    <header class="bg-gradient-to-b from-emerald-900 to-emerald-800 text-white rounded-b-[2.5rem] shadow-xl relative overflow-hidden pb-10 fade-in-up">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl pointer-events-none">
+            <i class="fa-solid fa-wheat-awn"></i>
+        </div>
+        <div class="px-5 pt-8 pb-4 flex flex-col items-center justify-center relative z-10 text-center">
+            <div class="w-20 h-20 bg-white rounded-3xl p-1 shadow-lg mb-4 flex items-center justify-center">
+                <svg viewBox="0 0 200 200" class="w-full h-full text-emerald-900" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="95" fill="#022c22"/>
+                    <path d="M 130 30 C 70 20, 30 60, 32 110 C 34 148, 65 170, 105 165 C 145 160, 168 135, 165 98 C 163 78, 150 50, 130 30" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+                    <path d="M68 60 Q73 54 78 60 Q83 54 88 60" stroke="white" stroke-width="3" fill="none"/>
+                    <path d="M68 128 L98 102 L128 128 V136 H68 Z" fill="white"/>
+                    <path d="M125 136 Q135 105 145 78" stroke="white" stroke-width="6" stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-black tracking-wider uppercase mb-1 drop-shadow-md">Ông Đức Farm</h1>
+            <p class="text-emerald-200 text-xs font-medium bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-700/50">Nông Trại 3 Đời - Tôi Là Đời Thứ Nhất</p>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 -mt-8 relative z-20 space-y-4">
+        
+        <div id="overviewCard" class="glass-card rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white fade-in-up delay-1">
+            <div class="flex items-start justify-between border-b border-slate-100 pb-4 mb-4">
+                <div>
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider"><i class="fa-solid fa-check-circle mr-1"></i>Đạt Chuẩn An Toàn</span>
+                    </div>
+                    <h2 id="traceProductName" class="text-xl font-black text-slate-800 leading-tight">Đang tải dữ liệu...</h2>
+                    <p class="text-xs text-slate-500 mt-1 font-medium">Mã Đóng Gói: <strong id="tracePackCode" class="text-slate-700">---</strong></p>
+                </div>
+                <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 text-2xl shadow-sm flex-shrink-0">
+                    <i id="traceProductIcon" class="fa-solid fa-leaf"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5"><i class="fa-solid fa-calendar-check mr-1"></i>Ngày Bắt Đầu</p>
+                    <p id="traceStartDate" class="text-sm font-black text-slate-800">--/--/----</p>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>Khu Vực Canh Tác</p>
+                    <p id="traceLocation" class="text-sm font-black text-slate-800 truncate">---</p>
+                </div>
+            </div>
+            
+            <div id="demoNotice" class="hidden mt-3 bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-[11px] font-medium leading-relaxed">
+                <i class="fa-solid fa-circle-info text-amber-500 mr-1"></i>
+                <strong>Thông báo:</strong> Không tìm thấy dữ liệu gốc. Hệ thống đang hiển thị <strong class="text-amber-900">dữ liệu mô phỏng</strong>.
+            </div>
+        </div>
+
+        <div class="glass-card rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white fade-in-up delay-2">
+            <h3 class="font-black text-slate-800 text-sm uppercase tracking-wider mb-5 flex items-center">
+                <i class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2 text-lg"></i>Hành Trình Chăm Sóc
+            </h3>
+            
+            <div id="timelineContainer" class="timeline-container">
+                <div class="text-center text-xs text-slate-400 py-4"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang trích xuất dữ liệu từ Cloud...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // CẤU HÌNH KẾT NỐI SUPABASE
+        const SUPABASE_URL = 'https://ujqkqopzztpmmahhncfv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_66DBjvCveyV28GL7-9bpCA_r-5N2I1K';
+        
+        let supabaseClient = null;
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        function formatDateStandard(dStr) {
+            if(!dStr) return ''; let d = new Date(dStr); if(isNaN(d)) return dStr;
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        }
+
+        async function loadTraceData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const batchId = urlParams.get('batch');
+            const packCode = urlParams.get('pack') || 'Sản phẩm mẫu';
+            
+            let batchData = null;
+            let harvestData = null;
+            let catName = 'Nông sản an toàn';
+            let locName = 'Trang trại Ông Đức';
+            let logsData = [];
+
+            try {
+                if(!batchId) throw "NO_BATCH_ID";
+                if(!supabaseClient) throw new Error("Supabase client not initialized");
+
+                // 1. Kéo dữ liệu Lô (Batch)
+                const { data: batch, error: batchErr } = await supabaseClient.from('batches').select('*').eq('id', batchId).single();
+                if (batchErr) throw batchErr;
+                if (batch) batchData = batch;
+
+                if (batchData) {
+                    // 2. Kéo dữ liệu Giống (Category)
+                    if (batchData.category_id) {
+                        const { data: cat } = await supabaseClient.from('categories').select('name').eq('id', batchData.category_id).single();
+                        if (cat) catName = cat.name;
+                    }
+                    
+                    // 3. Kéo dữ liệu Khu vực (Location)
+                    if (batchData.location_id) {
+                        const { data: loc } = await supabaseClient.from('locations').select('name').eq('id', batchData.location_id).single();
+                        if (loc) locName = loc.name;
+                    }
+
+                    // 4. Kéo dữ liệu Nhật ký (Logs)
+                    const { data: logs } = await supabaseClient.from('logs').select('*').eq('batch_id', batchId).order('log_date', { ascending: true });
+                    if (logs) logsData = logs;
+
+                    // 5. Kéo dữ liệu Thu hoạch (Harvest) nếu có
+                    const { data: harvest } = await supabaseClient.from('harvests').select('*').eq('pack_code', packCode).single();
+                    if (harvest) harvestData = harvest;
+                } else {
+                    throw new Error("Batch not found in Cloud");
+                }
+
+                renderUI(batchData, harvestData, catName, locName, logsData, packCode, false);
+
+            } catch (error) {
+                if (error === "NO_BATCH_ID") {
+                    console.info("Đang ở chế độ xem thử (Preview): Không có mã lô (batch) trên URL. Tự động hiển thị dữ liệu mô phỏng.");
+                } else {
+                    console.error("Lỗi khi kéo dữ liệu Cloud, chuyển sang chế độ Mock Data:", error);
+                }
+                
+                // FALLBACK: KÍCH HOẠT DỮ LIỆU MÔ PHỎNG NẾU KHÔNG LẤY ĐƯỢC TỪ CLOUD
+                renderUI(
+                    { start_date: new Date().toISOString() }, 
+                    { harvest_date: new Date().toISOString() },
+                    'Sầu Riêng Ri6 Thượng Hạng', 
+                    'Thửa Đất Số 1', 
+                    [
+                        { log_date: '2026-03-01T08:00', action_type: 'Khởi Tạo / Gieo Giống', description: 'Đưa vào canh tác giống chuẩn.', created_by: 'Kỹ sư Tuấn' },
+                        { log_date: '2026-05-15T09:30', action_type: 'Bón phân hữu cơ', description: 'Sử dụng phân bón hữu cơ vi sinh, cải tạo đất.', created_by: 'Ông Đức' },
+                        { log_date: '2026-08-10T14:00', action_type: 'Kiểm tra sinh trưởng', description: 'Cây phát triển tốt, không nhiễm bệnh.', created_by: 'Kỹ sư Tuấn' }
+                    ], 
+                    packCode, 
+                    true
+                );
+            }
+        }
+
+        function renderUI(batchData, harvestData, catName, locName, logsData, packCode, isDemo) {
+            document.getElementById('traceProductName').innerText = catName;
+            document.getElementById('tracePackCode').innerText = packCode;
+            document.getElementById('traceStartDate').innerText = formatDateStandard(batchData.start_date);
+            document.getElementById('traceLocation').innerText = locName;
+
+            if (isDemo) {
+                document.getElementById('demoNotice').classList.remove('hidden');
+            }
+
+            const tlContainer = document.getElementById('timelineContainer');
+            let html = '';
+            
+            if(logsData.length === 0) {
+                html = '<div class="text-center text-xs text-slate-400 py-4">Chưa có nhật ký chăm sóc nào được ghi nhận cho lô này.</div>';
+            } else {
+                logsData.forEach((log, index) => {
+                    html += `
+                        <div class="timeline-item bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                            <div class="timeline-dot ${index===0?'start':''}"></div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-1">${log.action_type}</h4>
+                            <div class="text-[10px] text-slate-400 font-medium mb-2">${formatDateStandard(log.log_date)} - Bởi: ${log.created_by || 'Nhân viên'}</div>
+                            <p class="text-xs text-slate-600 leading-relaxed">${log.description}</p>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Dấu mốc thu hoạch nếu có
+            if (harvestData || isDemo) {
+                const harvestDateStr = harvestData ? formatDateStandard(harvestData.harvest_date) : formatDateStandard(new Date().toISOString());
+                html += `
+                    <div class="timeline-item bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-2xl shadow-sm border border-emerald-200 mt-6">
+                        <div class="timeline-dot harvest"></div>
+                        <h4 class="font-black text-emerald-800 text-sm mb-1">KIỂM ĐỊNH & ĐÓNG GÓI</h4>
+                        <div class="text-[10px] text-emerald-600 font-bold mb-2">Ngày: ${harvestDateStr}</div>
+                        <p class="text-xs text-emerald-700 mt-2">Sản phẩm đã đạt chuẩn chất lượng, được đóng gói sẵn sàng phân phối đến tay người tiêu dùng.</p>
+                    </div>
+                `;
+            }
+            tlContainer.innerHTML = html;
+        }
+
+        // Kích hoạt khi tải xong trang
+        window.onload = loadTraceData;
+    </script>
+</body>
+</html>

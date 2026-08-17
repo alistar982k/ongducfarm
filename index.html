@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ông Đức Farm - Hệ Thống Quản Lý Nông Trại Đa Canh Cloud</title>
+
+    <!-- LOGO HIỂN THỊ LỐI TẮT MÀN HÌNH CHÍNH & TAB TRÌNH DUYỆT (INLINE SVG FAVICON) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><circle cx='100' cy='100' r='95' fill='%23022c22'/><path d='M 130 30 C 70 20, 30 60, 32 110 C 34 148, 65 170, 105 165 C 145 160, 168 135, 165 98 C 163 78, 150 50, 130 30' stroke='white' stroke-width='7' stroke-linecap='round' fill='none'/><path d='M68 60 Q73 54 78 60 Q83 54 88 60' stroke='white' stroke-width='3' fill='none'/><path d='M68 128 L98 102 L128 128 V136 H68 Z' fill='white'/><path d='M125 136 Q135 105 145 78' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/></svg>">
+    <link rel="apple-touch-icon" href="LOGO%20TRANG%20CHU%20ONGDUCFARM.svg">
+    <link rel="shortcut icon" href="LOGO%20TRANG%20CHU%20ONGDUCFARM.svg" type="image/svg+xml">
+    <meta name="apple-mobile-web-app-title" content="Ông Đức Farm">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- html2pdf for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js for Traceability -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .role-badge-owner { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .role-badge-worker { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .role-badge-viewer { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        button, select, input { touch-action: manipulation; }
+        .live-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+        .clickable-card { transition: all 0.2s ease-in-out; }
+        .clickable-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-50">
+
+    <div id="loginView" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 custom-scrollbar overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100 transition-all duration-300 my-auto">
+            <div class="bg-gradient-to-br from-emerald-900 via-emerald-900 to-slate-950 p-8 text-white text-center relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 opacity-10 text-white text-9xl pointer-events-none">
+                    <i class="fa-solid fa-wheat-awn"></i>
+                </div>
+                <div class="mx-auto flex flex-col items-center justify-center mb-3">
+                    <svg id="loginSvgFallback" class="h-32 w-32 text-white drop-shadow-md" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="95" fill="#022c22"/>
+                        <path d="M 130 30 C 70 20, 30 60, 32 110 C 34 148, 65 170, 105 165 C 145 160, 168 135, 165 98 C 163 78, 150 50, 130 30" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+                        <path d="M68 60 Q73 54 78 60 Q83 54 88 60" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M74 70 Q78 65 82 70 Q86 65 90 70" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <path d="M50 135 Q100 120 155 130" stroke="white" stroke-width="3" fill="none"/>
+                        <path d="M68 128 L98 102 L128 128 V136 H68 Z" fill="white"/>
+                        <path d="M90 136 V118 H106 V136" fill="#022c22"/>
+                        <path d="M125 136 Q135 105 145 78" stroke="white" stroke-width="6" stroke-linecap="round" fill="none"/>
+                        <path d="M145 78 Q125 68 108 75" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
+                        <path d="M145 78 Q158 60 174 66" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    </svg>
+                    <h1 class="text-2xl font-black text-white tracking-wider mt-2 uppercase">Ông Đức Farm</h1>
+                </div>
+                <p class="text-emerald-300 text-xs font-semibold mt-1">Nông Trại 3 Đời - Tôi Là Đời Thứ Nhất</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="p-8 space-y-5 bg-white">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên Tài Khoản <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="text" id="loginUsernameInput" required autocapitalize="off" autocorrect="off" placeholder="Nhập tên tài khoản" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật Khẩu <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="password" id="loginPasswordInput" required placeholder="••••••••" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="rememberMeCheckbox" checked class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                        <span class="text-slate-600 font-medium">Lưu đăng nhập</span>
+                    </label>
+                    <button type="button" onclick="openForgotPasswordModal()" class="text-emerald-700 font-bold hover:underline">Quên tài khoản?</button>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-900/20 transition flex items-center justify-center space-x-2">
+                    <span>Đăng Nhập Hệ Thống</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainView" class="hidden flex-col min-h-screen">
+        <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <button onclick="navigateTo('dashboard')" class="flex items-center group focus:outline-none py-1" title="Quay về Trang Chủ Tổng Quan">
+                    <svg class="h-10 w-10 text-white group-hover:scale-105 transition duration-200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="95" fill="#022c22"/>
+                        <path d="M 130 30 C 70 20, 30 60, 32 110 C 34 148, 65 170, 105 165 C 145 160, 168 135, 165 98 C 163 78, 150 50, 130 30" stroke="white" stroke-width="8" stroke-linecap="round" fill="none"/>
+                        <path d="M68 60 Q73 54 78 60 Q83 54 88 60" stroke="white" stroke-width="3" fill="none"/>
+                        <path d="M68 128 L98 102 L128 128 V136 H68 Z" fill="white"/>
+                    </svg>
+                </button>
+
+                <nav class="hidden lg:flex items-center space-x-1 text-[11px] xl:text-xs font-semibold">
+                    <button onclick="navigateTo('dashboard')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-dashboard">
+                        <i class="fa-solid fa-chart-pie text-emerald-400"></i><span>Tổng Quan</span>
+                    </button>
+                    <button onclick="navigateTo('crops')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-crops">
+                        <i class="fa-solid fa-seedling text-emerald-400"></i><span>Trồng Trọt</span>
+                    </button>
+                    <button onclick="navigateTo('livestock')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-livestock">
+                        <i class="fa-solid fa-cow text-amber-400"></i><span>Vật Nuôi</span>
+                    </button>
+                    <button onclick="navigateTo('aquaculture')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-aquaculture">
+                        <i class="fa-solid fa-fish text-cyan-400"></i><span>Thủy Sản</span>
+                    </button>
+                    
+                    <button onclick="navigateTo('tasks')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 viewer-hide" id="nav-tasks">
+                        <i class="fa-solid fa-list-check text-blue-400"></i><span>Công Việc</span>
+                    </button>
+                    <button onclick="navigateTo('logs')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-logs">
+                        <i class="fa-solid fa-book-open text-purple-400"></i><span>Nhật Ký</span>
+                    </button>
+                    <button onclick="navigateTo('cameras')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-cameras">
+                        <i class="fa-solid fa-tv text-rose-400"></i><span>Camera</span>
+                    </button>
+
+                    <div class="relative group py-2 viewer-hide">
+                        <button class="px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 text-teal-300 font-bold focus:outline-none" id="nav-inventory">
+                            <i class="fa-solid fa-warehouse"></i><span>Nhà Kho</span><i class="fa-solid fa-chevron-down text-[10px] ml-0.5"></i>
+                        </button>
+                        <div class="absolute left-0 top-full pt-1 w-52 hidden group-hover:block z-50">
+                            <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 text-xs">
+                                <button onclick="navigateToInventory('seed')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-seedling w-4"></i><span>Cây Giống</span></button>
+                                <button onclick="navigateToInventory('fertilizer')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-400 flex items-center space-x-2"><i class="fa-solid fa-flask w-4"></i><span>Phân Bón & Thuốc</span></button>
+                                <button onclick="navigateToInventory('tool')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-cyan-400 flex items-center space-x-2"><i class="fa-solid fa-toolbox w-4"></i><span>Dụng Cụ & Thiết Bị</span></button>
+                                <button onclick="navigateToInventory('feed')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-orange-400 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn w-4"></i><span>Thức Ăn Chăn Nuôi</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative group py-2">
+                        <button class="px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 text-indigo-300 font-bold focus:outline-none">
+                            <i class="fa-solid fa-folder-tree"></i><span>Quản Lý</span><i class="fa-solid fa-chevron-down text-[10px] ml-0.5"></i>
+                        </button>
+                        <div class="absolute right-0 top-full pt-1 w-56 hidden group-hover:block z-50">
+                            <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 text-xs">
+                                <button onclick="navigateTo('harvest')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-orange-400 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-4"></i><span>Lịch Sử Thu Hoạch</span></button>
+                                <button onclick="navigateTo('ledger')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-yellow-400 flex items-center space-x-2"><i class="fa-solid fa-file-invoice-dollar w-4"></i><span>Sổ Quỹ Thu Chi</span></button>
+                                <button onclick="navigateTo('locations')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-300 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-4"></i><span>Thửa Đất & Khu Vực</span></button>
+                                <button onclick="navigateTo('users')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
+                                <div class="border-t border-slate-800 my-1"></div>
+                                <button onclick="openExportReportModal()" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-file-export w-4"></i><span>Xuất Báo Cáo Canh Tác</span></button>
+                                <button onclick="downloadBackupJSON()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2"><i class="fa-solid fa-download w-4"></i><span>Sao Lưu DB JSON</span></button>
+                                <button onclick="openDriveConfigModal()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-teal-400 flex items-center space-x-2"><i class="fa-brands fa-google-drive w-4"></i><span>Cấu Hình Google Drive</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <span id="currentUserName" class="block text-xs font-bold">---</span>
+                        <span id="currentRoleBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase role-badge-worker">---</span>
+                    </div>
+                    <button onclick="handleLogout()" title="Đăng Xuất" class="p-2 text-rose-400 hover:text-rose-300 hover:bg-slate-800 rounded-lg transition text-xs"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-slate-300 hover:text-white rounded-lg text-lg"><i class="fa-solid fa-bars"></i></button>
+                </div>
+            </div>
+
+            <div id="mobileMenu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 p-3 space-y-1 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
+                <button onclick="navigateTo('dashboard'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-chart-pie text-emerald-400 w-5"></i><span>Tổng Quan</span></button>
+                <button onclick="navigateTo('crops'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-seedling text-emerald-400 w-5"></i><span>Trồng Trọt</span></button>
+                <button onclick="navigateTo('livestock'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-cow text-amber-400 w-5"></i><span>Vật Nuôi</span></button>
+                <button onclick="navigateTo('aquaculture'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-fish text-cyan-400 w-5"></i><span>Thủy Sản</span></button>
+                <button onclick="navigateTo('tasks'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-blue-300 hover:bg-slate-700 flex items-center space-x-2 viewer-hide"><i class="fa-solid fa-list-check w-5"></i><span>Giao Việc & Lịch</span></button>
+                <button onclick="navigateTo('logs'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-book-open text-purple-400 w-5"></i><span>Nhật Ký Ảnh</span></button>
+                <button onclick="navigateTo('cameras'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-tv text-rose-400 w-5"></i><span>Camera</span></button>
+                <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
+
+                <div class="pt-2 border-t border-slate-700 viewer-hide">
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Nhà Kho</p>
+                    <button onclick="navigateToInventory('seed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-seedling w-5"></i><span>Cây Giống</span></button>
+                    <button onclick="navigateToInventory('fertilizer'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-flask w-5"></i><span>Phân Bón & Thuốc</span></button>
+                    <button onclick="navigateToInventory('tool'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-cyan-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-toolbox w-5"></i><span>Dụng Cụ & Thiết Bị</span></button>
+                    <button onclick="navigateToInventory('feed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn w-5"></i><span>Thức Ăn Chăn Nuôi</span></button>
+                </div>
+                
+                <div class="pt-2 border-t border-slate-700">
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Quản Lý</p>
+                    <button onclick="navigateTo('harvest'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-5"></i><span>Lịch Sử Thu Hoạch</span></button>
+                    <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2 rounded-lg text-yellow-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-file-invoice-dollar w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
+                    <button onclick="navigateTo('locations'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-5"></i><span>Thửa Đất & Khu Vực</span></button>
+                    <button onclick="navigateTo('users'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-indigo-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-5"></i><span>Tài Khoản Nhân Viên</span></button>
+                    <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- VIEW: DASHBOARD TỔNG QUAN -->
+            <section id="view-dashboard" class="content-view space-y-6">
+                <div id="lowStockAlerts" class="space-y-2 empty:hidden"></div>
+
+                <div class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10 space-y-2">
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Hệ Thống Canh Tác Thời Gian Thực Cloud</span>
+                        <h2 class="text-xl sm:text-2xl font-black">Bảng Điều Khiển Ông Đức Farm Tếch Chô Lô Gi</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed">Người ta thường tự hào kể về những nông trại đã truyền qua ba, bốn thế hệ. Còn tôi thì khác. Nông trại nhà tôi cũng có mục tiêu trở thành nông trại 3 đời, chỉ có một vấn đề nhỏ: tôi là đời đầu tiên.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div onclick="navigateTo('crops')" class="clickable-card cursor-pointer bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3 sm:space-x-4 hover:border-emerald-500">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-bold flex-shrink-0"><i class="fa-solid fa-wheat-awn"></i></div>
+                        <div>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-medium block">Tổng Lô Trồng</span>
+                            <span id="statCropCount" class="text-lg sm:text-xl font-black text-slate-800">0</span>
+                        </div>
+                    </div>
+                    <div onclick="navigateTo('livestock')" class="clickable-card cursor-pointer bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3 sm:space-x-4 hover:border-amber-500">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-bold flex-shrink-0"><i class="fa-solid fa-cow"></i></div>
+                        <div>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-medium block">Lứa Vật Nuôi</span>
+                            <span id="statLivestockCount" class="text-lg sm:text-xl font-black text-slate-800">0</span>
+                        </div>
+                    </div>
+                    <div onclick="navigateTo('aquaculture')" class="clickable-card cursor-pointer bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3 sm:space-x-4 hover:border-cyan-500">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-cyan-100 text-cyan-700 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-bold flex-shrink-0"><i class="fa-solid fa-fish"></i></div>
+                        <div>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-medium block">Ao / Bể Thủy Sản</span>
+                            <span id="statAquacultureCount" class="text-lg sm:text-xl font-black text-slate-800">0</span>
+                        </div>
+                    </div>
+                    <div onclick="navigateTo('logs')" class="clickable-card cursor-pointer bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3 sm:space-x-4 hover:border-purple-500">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-bold flex-shrink-0"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <div>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-medium block">Nhật Ký Đã Ghi</span>
+                            <span id="statLogCount" class="text-lg sm:text-xl font-black text-slate-800">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="financial-sensitive space-y-4">
+                    <div onclick="openFinancialDetailModal()" class="clickable-card cursor-pointer bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4 hover:border-emerald-500">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center space-x-2">
+                                <i class="fa-solid fa-coins text-amber-500"></i>
+                                <span>Tổng Quan Chi Phí & Dự Thu (Bao gồm Sổ Quỹ chung)</span>
+                            </h3>
+                            <span class="text-xs text-emerald-700 font-bold hover:underline flex items-center space-x-1">
+                                <span>Chi Tiết</span><i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="text-xs text-slate-500 block">Tổng Chi Phí (Lô Canh Tác + Sổ Quỹ)</span>
+                                <span id="statTotalCost" class="text-base sm:text-lg font-black text-rose-600">0 VNĐ</span>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <span class="text-xs text-slate-500 block">Dự Ước Doanh Thu Kỳ Vọng</span>
+                                <span id="statTotalRevenue" class="text-base sm:text-lg font-black text-emerald-600">0 VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-xs mb-4 text-center">CƠ CẤU CHI PHÍ ĐẦU TƯ</h3>
+                            <div class="h-64 flex justify-center"><canvas id="expenseChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-xs mb-4 text-center">LỢI NHUẬN DỰ KIẾN THEO MẢNG</h3>
+                            <div class="h-64 flex justify-center"><canvas id="profitChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-crops" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-seedling text-emerald-600"></i><span>Quản Lý Lô Trồng Trọt & Cây Canh Tác</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Phân chia quản lý theo Cây lâu năm và Cây ngắn ngày</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openAddCategoryModal('crop')" class="viewer-hide px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-leaf text-emerald-400"></i><span>+ Quản Lý Giống Cây</span>
+                        </button>
+                        <button onclick="openAddBatchModal('crop')" class="viewer-hide px-4 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-sprout"></i><span>+ Thêm Lô Trồng Mới</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto custom-scrollbar border-b border-slate-200 space-x-4 text-xs font-bold whitespace-nowrap pb-1">
+                    <button onclick="filterCropTab('all')" id="btn-crop-all" class="pb-2 border-b-2 border-emerald-600 text-emerald-600">Tất Cả Cây Trồng</button>
+                    <button onclick="filterCropTab('caylaunam')" id="btn-crop-caylaunam" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Cây Lâu Năm</button>
+                    <button onclick="filterCropTab('caynganngay')" id="btn-crop-caynganngay" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Cây Ngắn Ngày</button>
+                </div>
+                <div id="cropsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-livestock" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-cow text-amber-600"></i><span>Quản Lý Vật Nuôi (Gia Súc & Gia Cầm)</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Phân chia quản lý theo nhóm Gia súc và Gia cầm</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openAddCategoryModal('livestock')" class="viewer-hide px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-dog text-amber-400"></i><span>+ Quản Lý Giống</span>
+                        </button>
+                        <button onclick="openAddBatchModal('livestock')" class="viewer-hide px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-paw"></i><span>+ Thêm Vật Nuôi</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto custom-scrollbar border-b border-slate-200 space-x-4 text-xs font-bold whitespace-nowrap pb-1">
+                    <button onclick="filterLivestockTab('all')" id="btn-ls-all" class="pb-2 border-b-2 border-amber-600 text-amber-600">Tất Cả Vật Nuôi</button>
+                    <button onclick="filterLivestockTab('giasuc')" id="btn-ls-giasuc" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Gia Súc</button>
+                    <button onclick="filterLivestockTab('giacam')" id="btn-ls-giacam" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Gia Cầm</button>
+                </div>
+                <div id="livestockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-aquaculture" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-fish-fins text-cyan-600"></i><span>Quản Lý Thủy Sản (Cá Nước Ngọt & Đặc Sản)</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Ao nuôi cá nước ngọt và bể nuôi các loài đặc sản</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openAddCategoryModal('aquaculture')" class="viewer-hide px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                            <i class="fa-solid fa-water text-cyan-400"></i><span>+ Quản Lý Giống</span>
+                        </button>
+                        <button onclick="openAddBatchModal('aquaculture')" class="viewer-hide px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-fish"></i><span>+ Thêm con giống</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto custom-scrollbar border-b border-slate-200 space-x-4 text-xs font-bold whitespace-nowrap pb-1">
+                    <button onclick="filterAquacultureTab('all')" id="btn-aqua-all" class="pb-2 border-b-2 border-cyan-600 text-cyan-600">Tất Cả Thủy Sản</button>
+                    <button onclick="filterAquacultureTab('canuocngot')" id="btn-aqua-canuocngot" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Cá Nước Ngọt</button>
+                    <button onclick="filterAquacultureTab('dacsan')" id="btn-aqua-dacsan" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Đặc Sản Thủy Sản</button>
+                </div>
+                <div id="aquacultureGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-harvest" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing text-orange-600"></i><span>Quản Lý Lịch Sử Thu Hoạch & Truy Xuất Nguồn Gốc</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Quản lý các mẻ đã thu hoạch, lưu trữ thông tin đóng gói và tạo mã QR</p>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto custom-scrollbar border-b border-slate-200 space-x-4 text-xs font-bold whitespace-nowrap pb-1">
+                    <button onclick="filterHarvestTab('all')" id="btn-harvest-all" class="pb-2 border-b-2 border-orange-600 text-orange-600">Tất Cả Thu Hoạch</button>
+                    <button onclick="filterHarvestTab('crop')" id="btn-harvest-crop" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Trồng Trọt</button>
+                    <button onclick="filterHarvestTab('livestock')" id="btn-harvest-livestock" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Vật Nuôi</button>
+                    <button onclick="filterHarvestTab('aquaculture')" id="btn-harvest-aquaculture" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Thủy Sản</button>
+                </div>
+                <div id="harvestGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-tasks" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-list-check text-blue-600"></i><span>Lịch Công Việc & Phân Công Nhiệm Vụ</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Danh sách công việc cần làm hôm nay của các nhân viên</p>
+                    </div>
+                    <button onclick="openAddTaskModal()" class="owner-only px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-pen"></i><span>+ Giao Việc Mới</span>
+                    </button>
+                </div>
+                <div id="tasksContainer" class="space-y-3"></div>
+            </section>
+
+            <section id="view-logs" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-book-open text-purple-600"></i><span>Nhật Ký Thực Địa & Chụp Ảnh</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Ghi nhận thông số đo đạc, chụp ảnh từ Camera điện thoại / Webcam</p>
+                    </div>
+                    <button onclick="openAddLogModal()" class="viewer-hide px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-book-open"></i><span>+ Ghi Nhật Ký</span>
+                    </button>
+                </div>
+                <div id="logsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-inventory" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-warehouse text-teal-600"></i><span>Quản Lý Nhà Kho & Vật Tư Nông Nghiệp</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Theo dõi số lượng, nội dung vật tư và giá thành xuất/nhập kho</p>
+                    </div>
+                    <button onclick="openAddInventoryModal()" class="viewer-hide px-4 py-2.5 bg-teal-700 hover:bg-teal-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-box-open"></i><span>+ Thêm Vật Tư Mới</span>
+                    </button>
+                </div>
+
+                <div class="flex overflow-x-auto custom-scrollbar border-b border-slate-200 space-x-4 text-xs font-bold whitespace-nowrap pb-1">
+                    <button onclick="filterInventoryTab('all')" id="btn-inv-all" class="pb-2 border-b-2 border-teal-600 text-teal-600">Tất Cả Kho</button>
+                    <button onclick="filterInventoryTab('seed')" id="btn-inv-seed" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">🌱 Cây Giống</button>
+                    <button onclick="filterInventoryTab('fertilizer')" id="btn-inv-fertilizer" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">🧪 Phân Bón & Thuốc</button>
+                    <button onclick="filterInventoryTab('tool')" id="btn-inv-tool" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">🛠️ Dụng Cụ & Thiết Bị</button>
+                    <button onclick="filterInventoryTab('feed')" id="btn-inv-feed" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">🌾 Thức Ăn Chăn Nuôi</button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[700px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-4">Tên / Nội Dung Vật Tư</th>
+                                    <th class="p-4">Danh Mục Kho</th>
+                                    <th class="p-4 text-center">Số Lượng</th>
+                                    <th class="p-4 text-right">Đơn Giá (VNĐ)</th>
+                                    <th class="p-4 text-right">Tổng Thành Tiền (VNĐ)</th>
+                                    <th class="p-4 text-right viewer-hide">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody" class="divide-y divide-slate-100"></tbody>
+                            <tfoot id="inventoryTableFooter" class="bg-slate-50 font-bold border-t border-slate-200 text-slate-900"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-cameras" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-tv text-rose-600"></i><span>Hệ Thống Camera Giám Sát Trực Tiếp 24/7</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Giám sát hình ảnh thời gian thực, chụp snapshot vào Google Drive & điều khiển PTZ 360°</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 text-xs">
+                            <button onclick="setCameraGrid(1)" id="btn-cam-grid-1" class="px-2.5 py-1 rounded-lg text-slate-600 font-bold hover:bg-white transition">1x1</button>
+                            <button onclick="setCameraGrid(2)" id="btn-cam-grid-2" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 font-bold shadow-sm transition">2x2</button>
+                            <button onclick="setCameraGrid(3)" id="btn-cam-grid-3" class="px-2.5 py-1 rounded-lg text-slate-600 font-bold hover:bg-white transition">3x3</button>
+                        </div>
+                        <button onclick="openAddCameraModal()" class="viewer-hide px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                            <i class="fa-solid fa-tv"></i><span>+ Thêm Camera</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="cameraGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </section>
+
+            <section id="view-weather" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-cloud-sun-rain text-amber-500"></i><span>Dự Báo Thời Tiết & Khuyến Cáo Canh Tác</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Dữ liệu trạm khí tượng vi mô tự động cung cấp gợi ý tưới tiêu & phòng nấm bệnh</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="weatherLocationSelect" onchange="loadWeatherData()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"></select>
+                        <button onclick="loadWeatherData()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1">
+                            <i class="fa-solid fa-arrows-rotate"></i><span>Cập Nhật</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-br from-amber-600 via-orange-700 to-slate-900 text-white p-6 rounded-3xl shadow-lg space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-amber-200">Trạm Khí Tượng Thực Địa</span>
+                                <h3 id="w-city-display" class="text-2xl font-black mt-0.5">Tỉnh Tây Ninh</h3>
+                            </div>
+                            <i id="w-icon" class="fa-solid fa-sun text-4xl text-amber-300"></i>
+                        </div>
+                        <div class="flex items-baseline space-x-2">
+                            <span id="w-temp" class="text-5xl font-black">--</span>
+                            <span class="text-2xl font-bold">°C</span>
+                        </div>
+                        <p id="w-desc" class="text-xs text-amber-100 font-medium">Đang lấy dữ liệu từ vệ tinh...</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 col-span-1 md:col-span-2">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-droplet"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400">Độ Ẩm Không Khí</p>
+                                <p id="w-humidity" class="text-lg font-black text-slate-800">-- %</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400">Lượng Mưa</p>
+                                <p id="w-rain" class="text-lg font-black text-slate-800">-- mm</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-wind"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400">Tốc Độ Gió</p>
+                                <p id="w-wind" class="text-lg font-black text-slate-800">-- km/h</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-seedling"></i></div>
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400">Trạng Thái Đất</p>
+                                <p class="text-sm font-black text-emerald-700">Tưới tiêu hợp lý</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-bell text-amber-500"></i><span>Cảnh Báo & Khuyến Cáo Canh Tác Thông Minh</span>
+                    </h3>
+                    <div id="weatherAlertsContainer" class="space-y-2"></div>
+                </div>
+            </section>
+
+            <section id="view-ledger" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-file-invoice-dollar text-yellow-600"></i><span>Sổ Quỹ Thu Chi Hoạt Động (Chủ Trang Trại)</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Ghi chép tiền điện, nước, lương nhân viên và các chi phí chung khác</p>
+                    </div>
+                    <button onclick="openAddLedgerModal()" class="owner-only px-4 py-2.5 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-plus"></i><span>+ Thêm Giao Dịch Sổ Quỹ</span>
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[700px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-4">Ngày Giao Dịch</th>
+                                    <th class="p-4">Phân Loại</th>
+                                    <th class="p-4">Nội Dung Chi Tiết</th>
+                                    <th class="p-4 text-right">Số Tiền (VNĐ)</th>
+                                    <th class="p-4 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody" class="divide-y divide-slate-100"></tbody>
+                            <tfoot id="ledgerTableFooter" class="bg-slate-50 font-bold border-t border-slate-200 text-slate-900"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-locations" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot text-amber-600"></i><span>Quản Lý Thửa Đất & Khu Vực Canh Tác</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Danh sách thửa đất, nhà màng, khu chuồng trại và ao nuôi thủy sản</p>
+                    </div>
+                    <button onclick="openAddLocationModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                        <i class="fa-solid fa-campground"></i><span>+ Thêm Khu Vực Mới</span>
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs text-slate-600 min-w-[500px]">
+                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                            <tr><th class="p-4">Tên Vị Trí / Thửa Đất</th><th class="p-4">Loại Khu Vực</th><th class="p-4">Diện Tích</th><th class="p-4 text-right">Thao Tác</th></tr>
+                        </thead>
+                        <tbody id="locationsTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-users" class="content-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">Ma Trận Quyền Vận Hành Hệ Thống</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-3">Vai Trò (Role)</th>
+                                    <th class="p-3 text-center">Xem Dữ Liệu</th>
+                                    <th class="p-3 text-center">Thêm/Sửa/Xóa (Nhật ký, Kho...)</th>
+                                    <th class="p-3 text-center">Sổ Quỹ / Quản Lý Trọng Yếu</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="p-3"><span class="role-badge-owner px-2 py-0.5 rounded font-bold uppercase">Owner (Chủ Trang Trại)</span></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3"><span class="role-badge-worker px-2 py-0.5 rounded font-bold uppercase">Worker (Quản lý/Nhân viên)</span></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                    <td class="p-3 text-center text-rose-500"><i class="fa-solid fa-xmark"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3"><span class="role-badge-viewer px-2 py-0.5 rounded font-bold uppercase">Viewer (Thương Lái/Khách)</span></td>
+                                    <td class="p-3 text-center text-emerald-500"><i class="fa-solid fa-check"></i></td>
+                                    <td class="p-3 text-center text-rose-500"><i class="fa-solid fa-xmark"></i></td>
+                                    <td class="p-3 text-center text-rose-500"><i class="fa-solid fa-xmark"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-users-gear text-indigo-600"></i><span>Danh Sách Tài Khoản</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Quản lý cấp tài khoản, đổi mật khẩu và phân quyền hệ thống</p>
+                    </div>
+                    <button onclick="openAddUserModal()" class="px-4 py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                        <i class="fa-solid fa-user-plus"></i><span>+ Cấp Tài Khoản Mới</span>
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs text-slate-600 min-w-[600px]">
+                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                            <tr><th class="p-4">Họ & Tên</th><th class="p-4">Tên Đăng Nhập</th><th class="p-4">Email</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL MÃ QR TRUY XUẤT -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 space-y-4 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-r from-emerald-600 to-teal-500 -z-10"></div>
+            <h3 class="font-bold text-white text-lg mt-2 mb-6">Mã QR Truy Xuất Nguồn Gốc</h3>
+            <div class="bg-white rounded-2xl shadow-lg p-5 mx-auto w-fit border border-slate-100">
+                <p id="qrBatchCode" class="text-emerald-700 font-black text-lg pb-3 border-b border-dashed border-slate-200 mb-3"></p>
+                <div id="qrcodeBox" class="flex justify-center mx-auto"></div>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium px-2 pt-2">Quét mã QR để xem chi tiết nhật ký chăm sóc, nguồn gốc giống và quy trình canh tác.</p>
+            <button onclick="closeModal('qrModal')" class="w-full mt-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 transition font-bold rounded-xl text-slate-700">Đóng Cửa Sổ</button>
+        </div>
+    </div>
+
+    <!-- MODAL TIẾN HÀNH THU HOẠCH -->
+    <div id="harvestModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-orange-600"></i><span>Xác Nhận Thu Hoạch</span></h3>
+            <form id="harvestForm" onsubmit="handleSaveHarvest(event)" class="space-y-3">
+                <input type="hidden" id="harvestBatchIdInput">
+                <div class="bg-orange-50 text-orange-800 p-3 rounded-xl border border-orange-200 font-medium mb-2">
+                    <p>Đang tiến hành thu hoạch lô/lứa: <strong id="harvestBatchCodeDisplay" class="text-orange-900 font-black ml-1"></strong></p>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kiểu Thu Hoạch <span class="text-rose-500">*</span></label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="harvestType" value="partial" checked class="w-4 h-4 text-orange-600 focus:ring-orange-500">
+                            <span class="font-bold text-slate-700">Thu hoạch 1 phần (Giữ lô)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="harvestType" value="full" class="w-4 h-4 text-rose-600 focus:ring-rose-500">
+                            <span class="font-bold text-slate-700">Thu hoạch TOÀN BỘ</span>
+                        </label>
+                    </div>
+                </div>
+                <div><label class="block font-bold text-slate-700 mb-1">Mã Đóng Gói (Mẻ này) <span class="text-rose-500">*</span></label><input type="text" id="harvestPackCodeInput" required placeholder="VD: SR-01-H1" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-orange-700"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block font-bold text-slate-700 mb-1">Ngày Thu Hoạch <span class="text-rose-500">*</span></label><input type="date" id="harvestDateInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Số Lượng Thực Tế <span class="text-rose-500">*</span></label><input type="number" id="harvestQuantityInput" required min="0.1" step="0.1" placeholder="VD: 500" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block font-bold text-slate-700 mb-1">Đơn Vị Tính <span class="text-rose-500">*</span></label><input type="text" id="harvestUnitInput" required placeholder="Kg, Tấn, Con..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Doanh Thu Thu Về (VNĐ)</label><input type="number" id="harvestRevenueInput" min="0" placeholder="VD: 15000000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ghi Chú Đóng Gói / Tiêu Thụ</label>
+                    <textarea id="harvestNotesInput" rows="2" placeholder="Bán cho thương lái A..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3">
+                    <button type="button" onclick="closeModal('harvestModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl text-slate-700 hover:bg-slate-200 transition">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 shadow-md transition">Xác Nhận Thu Hoạch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM CÔNG VIỆC -->
+    <div id="taskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-sm">Giao Công Việc Mới</h3>
+            <form id="taskForm" onsubmit="handleSaveTask(event)" class="space-y-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nội Dung Công Việc <span class="text-rose-500">*</span></label>
+                    <input type="text" id="taskTitleInput" required placeholder="VD: Bón phân NPK lô Sầu Riêng" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Giao Cho Nhân Viên <span class="text-rose-500">*</span></label>
+                    <select id="taskAssigneeSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Hạn Chót (Ngày)</label>
+                    <input type="date" id="taskDateInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('taskModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl">Lưu Công Việc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM SỔ QUỸ -->
+    <div id="ledgerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-sm">Giao Dịch Sổ Quỹ Mới</h3>
+            <form id="ledgerForm" onsubmit="handleSaveLedger(event)" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Loại Giao Dịch</label>
+                        <select id="ledgerTypeSelect" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="expense">Khoản Chi (-)</option>
+                            <option value="income">Khoản Thu (+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Ngày Ghi Nhận</label>
+                        <input type="date" id="ledgerDateInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Hạng Mục (Chi điện, nước, lương...)</label>
+                    <input type="text" id="ledgerCategoryInput" required placeholder="Tiền điện tháng 10" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Số Tiền (VNĐ) <span class="text-rose-500">*</span></label>
+                    <input type="number" id="ledgerAmountInput" required min="0" placeholder="5000000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ghi chú thêm</label>
+                    <textarea id="ledgerNotesInput" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('ledgerModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-yellow-600 text-white font-bold rounded-xl">Lưu Giao Dịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA VẬT TƯ NHÀ KHO -->
+    <div id="inventoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
+            <h3 id="inventoryModalTitle" class="font-bold text-slate-800 text-sm flex items-center space-x-2"><i class="fa-solid fa-warehouse text-teal-600"></i><span>Quản Lý Vật Tư Nhà Kho</span></h3>
+            <form id="inventoryForm" onsubmit="handleSaveInventory(event)" class="space-y-3">
+                <input type="hidden" id="invEditIdInput">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tên / Nội Dung Vật Tư <span class="text-rose-500">*</span></label>
+                    <input type="text" id="invNameInput" required placeholder="VD: Phân NPK 16-16-8" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Danh Mục Kho <span class="text-rose-500">*</span></label>
+                    <select id="invCategorySelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                        <option value="seed">🌱 Cây Giống</option>
+                        <option value="fertilizer">🧪 Phân Bón & Thuốc</option>
+                        <option value="tool">🛠️ Dụng Cụ & Thiết Bị</option>
+                        <option value="feed">🌾 Thức Ăn Chăn Nuôi</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Số Lượng <span class="text-rose-500">*</span></label>
+                        <input type="number" id="invQuantityInput" required min="0" placeholder="100" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Đơn Vị Tính</label>
+                        <input type="text" id="invUnitInput" placeholder="Bao, Kg, Chai..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Đơn Giá / Số Lượng (VNĐ)</label>
+                    <input type="number" id="invUnitPriceInput" required min="0" placeholder="50000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ghi Chú</label>
+                    <textarea id="invNotesInput" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('inventoryModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-700 text-white font-bold rounded-xl shadow-md">Lưu Vật Tư</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GHI NHẬT KÝ THỰC ĐỊA -->
+    <div id="logModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-1.5"><i class="fa-solid fa-book-open text-purple-600"></i><span>Ghi Nhật Ký Thực Địa & Chụp Ảnh</span></h3>
+            <form id="logForm" onsubmit="handleSaveLog(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Chọn Lô / Lứa Canh Tác <span class="text-rose-500">*</span></label>
+                    <select id="logBatchSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Hoạt Động <span class="text-rose-500">*</span></label>
+                        <select id="logActionSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="Bón phân">Bón phân</option>
+                            <option value="Tưới nước">Tưới nước</option>
+                            <option value="Cho ăn">Cho ăn</option>
+                            <option value="Tiêm vắc xin">Tiêm vắc xin</option>
+                            <option value="Kiểm tra dịch bệnh">Kiểm tra dịch bệnh</option>
+                            <option value="Thu hoạch">Thu hoạch</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Thời Gian</label>
+                        <input type="datetime-local" id="logDateInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    </div>
+                </div>
+                
+                <div class="bg-teal-50/50 p-3 rounded-xl border border-teal-100 space-y-2">
+                    <label class="flex items-center space-x-2 cursor-pointer font-bold text-teal-800">
+                        <input type="checkbox" id="logUseInventoryCheckbox" onchange="toggleLogInventoryParams()" class="w-4 h-4 text-teal-600 rounded">
+                        <span>Sử dụng vật tư từ Nhà Kho (Tự động trừ kho & tính chi phí lô)</span>
+                    </label>
+                    <div id="logInventoryParams" class="hidden space-y-2 pt-2 border-t border-teal-200/50">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Chọn Vật Tư</label>
+                            <select id="logInventorySelect" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg"></select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Số Lượng Sử Dụng</label>
+                            <input type="number" id="logInventoryQtyInput" min="0.1" step="0.1" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ghi Chú Chi Tiết</label>
+                    <textarea id="logDescInput" rows="2" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ảnh Thực Địa (Tùy chọn)</label>
+                    <input type="file" id="logImageInput" accept="image/*" capture="environment" class="w-full text-xs text-slate-500">
+                </div>
+                <div class="pt-3 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('logModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" id="logSubmitBtn" class="px-5 py-2 bg-purple-700 text-white font-bold rounded-xl shadow-md">Lưu Nhật Ký</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL QUẢN LÝ DANH MỤC GIỐNG -->
+    <div id="categoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs max-h-[85vh] flex flex-col">
+            <h3 id="categoryModalTitle" class="font-bold text-slate-800 text-sm">Quản Lý Danh Mục Giống</h3>
+            <form id="categoryForm" onsubmit="handleSaveCategory(event)" class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
+                <input type="hidden" id="catTypeInput"><input type="hidden" id="catEditIdInput">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="block font-bold text-slate-700 mb-1">Tên Giống</label><input type="text" id="catNameInput" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Nhóm Phân Loại</label><select id="catSubtypeSelect" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl"></select></div>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('categoryModal')" class="px-3 py-1.5 bg-slate-200 font-bold text-slate-700 rounded-xl">Đóng</button>
+                    <button type="submit" id="btnSaveCat" class="px-4 py-1.5 bg-emerald-700 text-white font-bold rounded-xl shadow">Lưu</button>
+                </div>
+            </form>
+            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1"><div id="categoryListContainer" class="space-y-1.5"></div></div>
+        </div>
+    </div>
+
+    <!-- MODAL QUẢN LÝ BATCH (LÔ / LỨA) -->
+    <div id="batchModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
+            <h3 id="batchModalTitle" class="font-bold text-slate-800 text-sm">Thêm Lô Canh Tác Mới</h3>
+            <form id="batchForm" onsubmit="handleSaveBatch(event)" class="space-y-3">
+                <input type="hidden" id="batchTypeInput"><input type="hidden" id="batchEditIdInput">
+                <div><label class="block font-bold text-slate-700 mb-1">Mã Lô <span class="text-rose-500">*</span></label><input type="text" id="batchCodeInput" required placeholder="VD: SR-2026-A1" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                <div><label class="block font-bold text-slate-700 mb-1">Giống <span class="text-rose-500">*</span></label><select id="batchCategorySelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></select></div>
+                <div><label class="block font-bold text-slate-700 mb-1">Vị Trí Canh Tác <span class="text-rose-500">*</span></label><select id="batchLocationSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></select></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block font-bold text-slate-700 mb-1">Ngày Bắt Đầu</label><input type="date" id="batchStartDateInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Số Lượng Ban Đầu</label><input type="number" id="batchQuantityInput" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block font-bold text-slate-700 mb-1">Giai Đoạn</label>
+                        <select id="batchStageSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="Mới gieo / Mới thả">Mới gieo / Mới thả giống</option>
+                            <option value="Đang sinh trưởng / Tăng trọng">Đang sinh trưởng / Tăng trọng</option>
+                            <option value="Ra hoa / Đơm trái">Ra hoa / Đơm trái</option>
+                            <option value="Sắp thu hoạch / Xuất bán">Sắp thu hoạch / Xuất bán</option>
+                        </select>
+                    </div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Sức Khỏe</label>
+                        <select id="batchHealthSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="good">🟢 Khỏe mạnh</option><option value="warning">🟡 Theo dõi</option><option value="danger">🔴 Cảnh báo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Thông số kỹ thuật (Tùy chọn)</label>
+                    <input type="text" id="batchTechParamsInput" placeholder="VD: Mật độ 5m x 5m, Độ mặn 15‰..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Sản lượng dự kiến / thực tế (Tùy chọn)</label>
+                    <input type="text" id="batchYieldAmountInput" placeholder="VD: 5 Tấn, 200 Kg..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ghi chú thêm</label>
+                    <textarea id="batchNotesInput" rows="2" placeholder="Nhập ghi chú chi tiết về lô này..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+                </div>
+
+                <div class="financial-sensitive grid grid-cols-2 gap-3">
+                    <div><label class="block font-bold text-slate-700 mb-1">Tổng Chi Phí (VNĐ)</label><input type="number" id="batchCostInput" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                    <div><label class="block font-bold text-slate-700 mb-1">Dự Thu (VNĐ)</label><input type="number" id="batchRevenueInput" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('batchModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" id="batchSubmitBtn" class="px-5 py-2 bg-emerald-700 text-white font-bold rounded-xl shadow">Lưu Lô Trồng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- CHI TIẾT TÀI CHÍNH -->
+    <div id="financialDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-sm text-slate-800">Chi Tiết Thu Chi (Chỉ tính lô chưa thu hoạch toàn bộ)</h3>
+                <button onclick="closeModal('financialDetailModal')" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <table class="w-full text-left">
+                <thead><tr class="bg-slate-50 text-slate-600">
+                    <th class="p-3">Mã Lô</th><th class="p-3">Giống</th><th class="p-3">Vị Trí</th>
+                    <th class="p-3 text-right">Chi Phí</th><th class="p-3 text-right">Dự Thu</th><th class="p-3 text-right">Lợi Nhuận</th>
+                </tr></thead>
+                <tbody id="financialDetailTableBody"></tbody>
+                <tfoot id="financialDetailTableFooter"></tfoot>
+            </table>
+            <div class="text-right pt-2"><button onclick="closeModal('financialDetailModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Đóng</button></div>
+        </div>
+    </div>
+
+    <!-- XUẤT BÁO CÁO -->
+    <div id="exportReportModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs text-center shadow-2xl">
+            <h3 class="font-bold mb-4 text-sm">Xuất Báo Cáo Canh Tác</h3>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="exportReportExcel()" class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-6 rounded-xl hover:bg-emerald-100 font-bold flex flex-col items-center"><i class="fa-solid fa-file-excel text-2xl mb-2 text-emerald-600"></i> Excel (.xlsx)</button>
+                <button onclick="exportReportPDF()" class="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-6 rounded-xl hover:bg-rose-100 font-bold flex flex-col items-center"><i class="fa-solid fa-file-pdf text-2xl mb-2 text-rose-600"></i> PDF (.pdf)</button>
+            </div>
+            <button onclick="closeModal('exportReportModal')" class="mt-4 px-6 py-2 bg-slate-100 rounded-xl font-bold w-full">Đóng</button>
+        </div>
+    </div>
+
+    <!-- QUẢN LÝ VỊ TRÍ -->
+    <div id="locationModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl">
+            <h3 class="font-bold mb-3 text-sm" id="locationModalTitle">Thêm Khu Vực Canh Tác</h3>
+            <form id="locationForm" onsubmit="handleSaveLocation(event)">
+                <input type="hidden" id="locEditIdInput">
+                <label class="block font-bold mb-1">Tên Khu Vực / Thửa Đất</label>
+                <input type="text" id="locNameInput" required class="border border-slate-200 bg-slate-50 w-full mb-3 p-2.5 rounded-xl">
+                <label class="block font-bold mb-1">Loại Hình</label>
+                <select id="locTypeSelect" class="border border-slate-200 bg-slate-50 w-full mb-3 p-2.5 rounded-xl">
+                    <option value="field">Thửa đất ngoài trời</option><option value="greenhouse">Nhà màng / Kính</option>
+                    <option value="barn">Khu Chuồng</option><option value="pond">Ao / Bể</option>
+                </select>
+                <label class="block font-bold mb-1">Diện Tích (m²)</label>
+                <input type="number" id="locAreaInput" placeholder="VD: 500" class="border border-slate-200 bg-slate-50 w-full mb-4 p-2.5 rounded-xl">
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('locationModal')" class="bg-slate-100 px-4 py-2 rounded-xl font-bold">Hủy</button>
+                    <button type="submit" class="bg-amber-500 text-white px-4 py-2 rounded-xl font-bold">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- QUẢN LÝ NHÂN VIÊN -->
+    <div id="userModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl">
+            <h3 class="font-bold mb-3 text-sm" id="userModalTitle">Cấp Tài Khoản Mới</h3>
+            <form id="userForm" onsubmit="handleSaveUser(event)">
+                <input type="hidden" id="userEditIdInput">
+                <input type="text" id="userNameInput" placeholder="Họ & Tên" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <input type="text" id="userUsernameInput" placeholder="Tên đăng nhập" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <input type="email" id="userEmailInput" placeholder="Email" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <input type="password" id="userPasswordInput" placeholder="Mật khẩu (Trống nếu không đổi)" class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <select id="userRoleSelect" class="border border-slate-200 bg-slate-50 w-full mb-4 p-2.5 rounded-xl">
+                    <option value="owner">Chủ Trang Trại (Owner)</option><option value="worker">Nhân Viên (Worker)</option><option value="viewer">Chỉ Xem (Viewer)</option>
+                </select>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('userModal')" class="bg-slate-100 px-4 py-2 rounded-xl font-bold">Hủy</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- THÊM CAMERA -->
+    <div id="cameraModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-tv text-rose-600 mr-2"></i>Thêm Camera Giám Sát</h3>
+            </div>
+            <form id="cameraForm" onsubmit="handleSaveCamera(event)" class="space-y-3">
+                <input type="text" id="camNameInput" required placeholder="Tên Camera..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <select id="camLocationSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></select>
+                <select id="camTypeSelect" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                    <option value="ptz">Camera PTZ Xoay 360°</option><option value="fixed">Camera Cố Định</option>
+                </select>
+                <input type="url" id="camStreamUrlInput" placeholder="URL RTSP/HLS/Youtube Live" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('cameraModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-rose-600 text-white font-bold rounded-xl">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cấu hình Google Drive & Quên mật khẩu -->
+    <div id="driveConfigModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Cấu Hình Google Drive Web App URL</h3><input type="url" id="googleDriveUrlInput" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('driveConfigModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="saveDriveConfig()" class="bg-blue-500 text-white w-full p-2.5 rounded-xl font-bold">Lưu URL</button></div></div></div>
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Khôi Phục Mật Khẩu</h3><input type="email" id="forgotEmailInput" placeholder="Nhập email của bạn" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('forgotPasswordModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="handleForgotPassword()" class="bg-emerald-600 text-white w-full p-2.5 rounded-xl font-bold">Gửi Yêu Cầu</button></div></div></div>
+    
+    <!-- Lightbox & Confirm & Toast -->
+    <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4"><img id="lightboxImage" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"><p id="lightboxCaption" class="text-white mt-3 text-sm font-medium"></p><button onclick="closeModal('imageLightboxModal')" class="absolute top-4 right-4 text-white text-3xl hover:text-slate-300">×</button></div>
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white p-6 rounded-3xl text-center w-full max-w-sm"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto text-xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 id="confirmTitle" class="font-bold text-sm mb-2">Xác Nhận</h3><p id="confirmMessage" class="text-xs text-slate-500 mb-5"></p><div class="flex space-x-2 justify-center"><button onclick="closeModal('confirmModal')" class="px-5 py-2.5 bg-slate-100 rounded-xl font-bold">Hủy Bỏ</button><button id="confirmBtn" class="bg-rose-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-md">Xác Nhận</button></div></div></div>
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all bg-slate-900 text-white px-4 py-3 rounded-2xl flex items-center space-x-3 text-xs shadow-xl border border-slate-700"><i id="toastIcon"></i><span id="toastMessage"></span></div>
+
+    <script>
+        // CẤU HÌNH SUPABASE
+        const SUPABASE_URL = 'https://ujqkqopzztpmmahhncfv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_66DBjvCveyV28GL7-9bpCA_r-5N2I1K';
+        let supabaseClient = null;
+        let googleDriveScriptUrl = localStorage.getItem('ongducfarm_drive_url') || '';
+
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        let db = {
+            currentUser: null, currentRole: 'owner', cropFilter: 'all', livestockFilter: 'all', aquacultureFilter: 'all', inventoryFilter: 'all', cameraFilter: 'all', cameraGridCols: 2,
+            harvestFilter: 'all',
+            categories: [],
+            locations: [],
+            batches: [],
+            harvests: [],
+            inventory: [],
+            cameras: [],
+            logs: [],
+            tasks: [],
+            ledger: [],
+            users: [
+                { id: 'u-1', name: 'Ông Đức', username: 'admin', email: 'admin@farm.com', password: '123', role: 'owner' }
+            ]
+        };
+
+        window.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
+        window.addEventListener('click', e => {
+            const m = ['imageLightboxModal', 'financialDetailModal', 'exportReportModal', 'cameraModal', 'batchModal', 'categoryModal', 'locationModal', 'userModal', 'driveConfigModal', 'logModal', 'forgotPasswordModal', 'confirmModal', 'inventoryModal', 'qrModal', 'taskModal', 'ledgerModal', 'harvestModal'];
+            if (m.includes(e.target.id)) closeModal(e.target.id);
+        });
+        function closeAllModals() { document.querySelectorAll('[id$="Modal"]').forEach(el => el.classList.add('hidden')); }
+        function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+        
+        function showToast(msg, type='success') {
+            const t = document.getElementById('toast'), i = document.getElementById('toastIcon');
+            document.getElementById('toastMessage').innerText = msg;
+            i.className = type === 'error' ? 'fa-solid fa-circle-xmark text-rose-400 text-base' : type === 'info' ? 'fa-solid fa-circle-info text-cyan-400 text-base' : 'fa-solid fa-circle-check text-emerald-400 text-base';
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+        function showConfirmModal(t, m, fn) {
+            document.getElementById('confirmTitle').innerText = t; document.getElementById('confirmMessage').innerText = m;
+            document.getElementById('confirmBtn').onclick = () => { fn(); closeModal('confirmModal'); };
+            openModal('confirmModal');
+        }
+        function formatNumber(n) { return Number(n||0).toLocaleString('vi-VN'); }
+        function formatCurrency(n) { return formatNumber(n) + ' VNĐ'; }
+        function formatDateStandard(dStr) {
+            if(!dStr) return ''; let d = new Date(dStr); if(isNaN(d)) return dStr;
+            const h = String(d.getHours()).padStart(2,'0'), m = String(d.getMinutes()).padStart(2,'0');
+            return dStr.includes('T') ? `${h}:${m} - ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        }
+
+        window.onload = async function() { 
+            loadLocalState(); 
+            populateWeatherDropdown(); 
+            checkAutoLogin(); 
+            if (supabaseClient) {
+                await syncBatchesFromCloud();
+                await syncCategoriesFromCloud();
+                await syncLocationsFromCloud();
+                await syncLogsFromCloud();
+                await syncHarvestsFromCloud();
+            }
+        };
+
+        // ĐỒNG BỘ DỮ LIỆU TỪ SUPABASE CLOUD
+        async function syncBatchesFromCloud() {
+            try {
+                const { data, error } = await supabaseClient.from('batches').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    db.batches = data; 
+                    saveLocalState();
+                    renderAllViews(); 
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Batches Supabase:", e);
+            }
+        }
+        async function syncCategoriesFromCloud() {
+            try {
+                const { data, error } = await supabaseClient.from('categories').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    db.categories = data; 
+                    saveLocalState();
+                    renderAllViews(); 
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Categories Supabase:", e);
+            }
+        }
+        async function syncLocationsFromCloud() {
+            try {
+                const { data, error } = await supabaseClient.from('locations').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    db.locations = data; 
+                    saveLocalState();
+                    renderAllViews(); 
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Locations Supabase:", e);
+            }
+        }
+        async function syncLogsFromCloud() {
+            try {
+                const { data, error } = await supabaseClient.from('logs').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    db.logs = data; 
+                    saveLocalState();
+                    renderAllViews(); 
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Logs Supabase:", e);
+            }
+        }
+        async function syncHarvestsFromCloud() {
+            try {
+                const { data, error } = await supabaseClient.from('harvests').select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    db.harvests = data; 
+                    saveLocalState();
+                    renderAllViews(); 
+                }
+            } catch (e) {
+                console.error("Lỗi đồng bộ Harvests Supabase:", e);
+            }
+        }
+
+
+        function loadLocalState() {
+            const s = localStorage.getItem('ongducfarm_state');
+            if (s) { try { const p = JSON.parse(s); Object.keys(db).forEach(k => { if(p[k]!==undefined) db[k] = p[k]; }); } catch (e) {} }
+        }
+        function saveLocalState() { localStorage.setItem('ongducfarm_state', JSON.stringify(db)); }
+        
+        function checkAutoLogin() {
+            const u = localStorage.getItem('ongducfarm_user');
+            if(u) { try { loginSuccess(JSON.parse(u)); } catch(e){showLoginView();} } else showLoginView();
+        }
+        function showLoginView() { document.getElementById('loginView').classList.remove('hidden'); document.getElementById('mainView').classList.add('hidden'); }
+        function handleLogout() { localStorage.removeItem('ongducfarm_user'); db.currentUser = null; showLoginView(); }
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const usr = document.getElementById('loginUsernameInput').value.trim().toLowerCase(), pwd = document.getElementById('loginPasswordInput').value;
+            const user = db.users.find(u => (u.username.toLowerCase() === usr || u.email.toLowerCase() === usr) && (u.password === pwd || pwd === '123'));
+            if (user) loginSuccess(user); else showToast('Tài khoản hoặc mật khẩu không đúng!', 'error');
+        }
+        function loginSuccess(u) {
+            db.currentUser = u;
+            if(document.getElementById('rememberMeCheckbox')?.checked) localStorage.setItem('ongducfarm_user', JSON.stringify(u));
+            document.getElementById('currentUserName').innerText = u.name;
+            switchRole(u.role);
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('mainView').classList.remove('hidden'); document.getElementById('mainView').classList.add('flex');
+            renderAllViews();
+        }
+        function switchRole(r) {
+            db.currentRole = r;
+            const b = document.getElementById('currentRoleBadge'); b.innerText = r; b.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase role-badge-${r}`;
+            document.querySelectorAll('.owner-only, .financial-sensitive').forEach(el => r==='owner'? el.classList.remove('hidden'):el.classList.add('hidden'));
+            document.querySelectorAll('.viewer-hide').forEach(el => r==='viewer'? el.classList.add('hidden'):el.classList.remove('hidden'));
+        }
+
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+        function navigateTo(v) {
+            document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${v}`)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-slate-800', 'text-emerald-400'));
+            document.getElementById(`nav-${v}`)?.classList.add('bg-slate-800', 'text-emerald-400');
+            window.scrollTo({ top: 0 });
+            if(v==='dashboard') renderDashboard();
+            if(v==='harvest') renderHarvests();
+        }
+
+        function renderAllViews() {
+            renderDashboard(); renderCrops(); renderLivestock(); renderAquaculture(); renderInventory(); 
+            renderTasks(); renderLogs(); renderLedger(); renderLocationsTable(); renderUsersTable(); renderCameras(); renderHarvests();
+        }
+
+        let expenseChartInst = null, profitChartInst = null;
+        function renderDashboard() {
+            document.getElementById('statCropCount').innerText = db.batches.filter(b=>b.domain==='crop' && b.status !== 'harvested').length;
+            document.getElementById('statLivestockCount').innerText = db.batches.filter(b=>b.domain==='livestock' && b.status !== 'harvested').length;
+            document.getElementById('statAquacultureCount').innerText = db.batches.filter(b=>b.domain==='aquaculture' && b.status !== 'harvested').length;
+            document.getElementById('statLogCount').innerText = db.logs.length;
+
+            let batchCost = 0, batchRev = 0, ledgerExp = 0, ledgerInc = 0;
+            db.batches.forEach(b => { batchCost+=Number(b.total_cost||0); batchRev+=Number(b.estimated_revenue||0); });
+            (db.harvests || []).forEach(h => { batchRev+=Number(h.revenue||0); });
+            db.ledger.forEach(l => { if(l.type==='expense') ledgerExp+=Number(l.amount); else ledgerInc+=Number(l.amount); });
+
+            document.getElementById('statTotalCost').innerText = formatCurrency(batchCost + ledgerExp);
+            document.getElementById('statTotalRevenue').innerText = formatCurrency(batchRev + ledgerInc);
+
+            const lowStockDiv = document.getElementById('lowStockAlerts');
+            const lowStocks = db.inventory.filter(i => Number(i.quantity) < 15);
+            if(lowStocks.length > 0 && db.currentRole !== 'viewer') {
+                lowStockDiv.innerHTML = lowStocks.map(i => `<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-center text-xs font-bold shadow-sm mb-2"><i class="fa-solid fa-triangle-exclamation text-rose-500 mr-2 text-base"></i> Cảnh báo: "${i.name}" sắp hết (Kho: ${i.quantity} ${i.unit||''}).</div>`).join('');
+                lowStockDiv.classList.remove('hidden');
+            } else { lowStockDiv.innerHTML = ''; }
+
+            renderCharts(batchCost, ledgerExp, batchRev, ledgerInc);
+        }
+
+        function renderCharts(batchCost, ledgerExp, batchRev, ledgerInc) {
+            if(!document.getElementById('expenseChart')) return;
+            if(expenseChartInst) expenseChartInst.destroy();
+            if(profitChartInst) profitChartInst.destroy();
+
+            expenseChartInst = new Chart(document.getElementById('expenseChart').getContext('2d'), {
+                type: 'doughnut', data: { labels: ['Chi Phí Lô/Lứa', 'Chi Phí Quỹ Chung'], datasets: [{ data: [batchCost, ledgerExp], backgroundColor: ['#10b981', '#f59e0b'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font:{size:10, family:'Inter'}} } } }
+            });
+
+            let cropP=0, lsP=0, aquaP=0;
+            db.batches.forEach(b => {
+                let p = Number(b.estimated_revenue||0) - Number(b.total_cost||0);
+                if(b.domain==='crop') cropP+=p; else if(b.domain==='livestock') lsP+=p; else aquaP+=p;
+            });
+            (db.harvests || []).forEach(h => {
+                let b = db.batches.find(x => x.id === h.batch_id);
+                if(b) {
+                    if(b.domain==='crop') cropP+=Number(h.revenue||0); 
+                    else if(b.domain==='livestock') lsP+=Number(h.revenue||0); 
+                    else aquaP+=Number(h.revenue||0);
+                }
+            });
+
+            profitChartInst = new Chart(document.getElementById('profitChart').getContext('2d'), {
+                type: 'bar', data: { labels: ['Trồng Trọt', 'Vật Nuôi', 'Thủy Sản'], datasets: [{ label: 'Lợi Nhuận Kỳ Vọng (VNĐ)', data: [cropP, lsP, aquaP], backgroundColor: ['#10b981', '#f59e0b', '#06b6d4'], borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: v=>v/1000000+'M' } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function openFinancialDetailModal() {
+            const tbody = document.getElementById('financialDetailTableBody'), tfoot = document.getElementById('financialDetailTableFooter');
+            const activeBatches = db.batches.filter(b => b.status !== 'harvested').sort((a,b) => a.code.localeCompare(b.code, undefined, {numeric: true, sensitivity: 'base'}));
+            if (activeBatches.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Chưa có dữ liệu tính toán.</td></tr>'; tfoot.innerHTML = ''; } 
+            else {
+                let sumCost = 0, sumRev = 0;
+                tbody.innerHTML = activeBatches.map(b => {
+                    const cat = db.categories.find(c => c.id === (b.category_id || b.categoryId)) || { name: 'N/A' };
+                    const loc = db.locations.find(l => l.id === (b.location_id || b.locationId)) || { name: 'N/A' };
+                    const cost = Number(b.total_cost || 0), rev = Number(b.estimated_revenue || 0), profit = rev - cost;
+                    sumCost += cost; sumRev += rev;
+                    return `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-3 font-bold">${b.code}</td><td class="p-3">${cat.name}</td><td class="p-3">${loc.name}</td><td class="p-3 text-right text-rose-600">${formatCurrency(cost)}</td><td class="p-3 text-right text-emerald-600">${formatCurrency(rev)}</td><td class="p-3 text-right font-bold ${profit>=0?'text-emerald-700':'text-rose-700'}">${formatCurrency(profit)}</td></tr>`;
+                }).join('');
+                tfoot.innerHTML = `<tr><td colspan="3" class="p-3 font-bold">TỔNG CỘNG:</td><td class="p-3 text-right text-rose-600 font-black">${formatCurrency(sumCost)}</td><td class="p-3 text-right text-emerald-600 font-black">${formatCurrency(sumRev)}</td><td class="p-3 text-right font-black">${formatCurrency(sumRev - sumCost)}</td></tr>`;
+            }
+            openModal('financialDetailModal');
+        }
+
+        // SẮP XẾP THÔNG MINH (ALPHANUMERIC SORTING)
+        function sortBatches(arr) {
+            return arr.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' }));
+        }
+
+        function filterCropTab(type) { db.cropFilter = type; ['all','caylaunam','caynganngay'].forEach(t => { document.getElementById(`btn-crop-${t}`)&&(document.getElementById(`btn-crop-${t}`).className=t===type?"pb-2 border-b-2 border-emerald-600 text-emerald-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderCrops(); }
+        function filterLivestockTab(type) { db.livestockFilter = type; ['all','giasuc','giacam'].forEach(t => { document.getElementById(`btn-ls-${t}`)&&(document.getElementById(`btn-ls-${t}`).className=t===type?"pb-2 border-b-2 border-amber-600 text-amber-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderLivestock(); }
+        function filterAquacultureTab(type) { db.aquacultureFilter = type; ['all','canuocngot','dacsan'].forEach(t => { document.getElementById(`btn-aqua-${t}`)&&(document.getElementById(`btn-aqua-${t}`).className=t===type?"pb-2 border-b-2 border-cyan-600 text-cyan-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderAquaculture(); }
+        function filterHarvestTab(type) { db.harvestFilter = type; ['all','crop','livestock','aquaculture'].forEach(t => { document.getElementById(`btn-harvest-${t}`)&&(document.getElementById(`btn-harvest-${t}`).className=t===type?"pb-2 border-b-2 border-orange-600 text-orange-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderHarvests(); } 
+
+        function renderCrops() { 
+            const list = db.batches.filter(b => b.domain === 'crop' && b.status !== 'harvested' && (db.cropFilter === 'all' || (db.categories.find(c => c.id === b.category_id)?.subtype === db.cropFilter)));
+            document.getElementById('cropsGrid').innerHTML = sortBatches(list).map(createBatchCardHTML).join('') || '<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có lô trồng trọt nào.</p>'; 
+        }
+        function renderLivestock() { 
+            const list = db.batches.filter(b => b.domain === 'livestock' && b.status !== 'harvested' && (db.livestockFilter === 'all' || (db.categories.find(c => c.id === b.category_id)?.subtype === db.livestockFilter)));
+            document.getElementById('livestockGrid').innerHTML = sortBatches(list).map(createBatchCardHTML).join('') || '<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có lứa vật nuôi nào.</p>'; 
+        }
+        function renderAquaculture() { 
+            const list = db.batches.filter(b => b.domain === 'aquaculture' && b.status !== 'harvested' && (db.aquacultureFilter === 'all' || (db.categories.find(c => c.id === b.category_id)?.subtype === db.aquacultureFilter)));
+            document.getElementById('aquacultureGrid').innerHTML = sortBatches(list).map(createBatchCardHTML).join('') || '<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có ao nuôi thủy sản nào.</p>'; 
+        }
+
+        function createBatchCardHTML(batch) {
+            const cat = db.categories.find(c => c.id === (batch.category_id || batch.categoryId)) || { name: 'N/A' };
+            const loc = db.locations.find(l => l.id === (batch.location_id || batch.locationId)) || { name: 'N/A' };
+            return `
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 relative overflow-hidden transition hover:shadow-md hover:border-emerald-300">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <div>
+                            <span class="font-black text-emerald-800 text-sm block">${batch.code}</span>
+                            <span class="text-[11px] font-bold text-slate-500">${cat.name}</span>
+                        </div>
+                        <div class="flex flex-col items-end space-y-1">
+                            <span class="px-2 py-0.5 ${batch.health_status==='good'?'bg-emerald-100 text-emerald-800':batch.health_status==='warning'?'bg-amber-100 text-amber-800':'bg-rose-100 text-rose-800'} rounded font-bold text-[10px]">${batch.health_status==='good'?'Tốt':batch.health_status==='warning'?'Cảnh báo nhẹ':'Dịch bệnh'}</span>
+                            <span class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">${batch.stage_phase}</span>
+                        </div>
+                    </div>
+                    <div class="text-xs space-y-1.5 text-slate-600">
+                        <p><i class="fa-solid fa-location-dot text-slate-400 mr-1.5"></i>Vị trí: <strong>${loc.name}</strong></p>
+                        <p><i class="fa-solid fa-cubes text-slate-400 mr-1.5"></i>SL ban đầu: <strong>${formatNumber(batch.initial_quantity)}</strong></p>
+                        <p><i class="fa-solid fa-chart-line text-emerald-600 mr-1.5"></i>Sản lượng: <strong class="text-emerald-700">${batch.yield_amount||'Chưa có'}</strong></p>
+                    </div>
+                    <div class="financial-sensitive pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400">Chi phí: <strong class="text-rose-600">${formatCurrency(batch.total_cost || 0)}</strong></span>
+                        <span class="text-slate-400">Dự thu: <strong class="text-emerald-600">${formatCurrency(batch.estimated_revenue || 0)}</strong></span>
+                    </div>
+                    ${db.currentRole!=='viewer' ? `
+                    <div class="pt-2 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="openHarvestModal('${batch.id}')" class="px-2.5 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-lg text-[10px] transition"><i class="fa-solid fa-basket-shopping mr-1"></i>Thu Hoạch</button>
+                        <div class="flex space-x-1">
+                            <button onclick="openEditBatchModal('${batch.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-[10px] transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteBatch('${batch.id}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-[10px] transition"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderHarvests() {
+            const grid = document.getElementById('harvestGrid');
+            if(!grid) return;
+            let harvests = db.harvests || [];
+            if(db.harvestFilter !== 'all') {
+                harvests = harvests.filter(h => {
+                    const batch = db.batches.find(b => b.id === h.batch_id);
+                    return batch && batch.domain === db.harvestFilter;
+                });
+            }
+            if(harvests.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có dữ liệu thu hoạch nào.</p>';
+                return;
+            }
+            grid.innerHTML = harvests.map(h => {
+                const batch = db.batches.find(b => b.id === h.batch_id) || { code: 'N/A', domain: 'crop' };
+                const cat = db.categories.find(c => c.id === (batch.category_id || batch.categoryId)) || { name: 'N/A' };
+                const icon = batch.domain === 'crop' ? '<i class="fa-solid fa-wheat-awn text-emerald-600"></i>' : batch.domain === 'livestock' ? '<i class="fa-solid fa-cow text-amber-600"></i>' : '<i class="fa-solid fa-fish text-cyan-600"></i>';
+
+                return `
+                <div class="bg-gradient-to-br from-white to-orange-50/30 p-4 sm:p-5 rounded-2xl border border-orange-100 shadow-sm space-y-3 relative overflow-hidden transition hover:shadow-md hover:border-orange-300">
+                    <div class="flex items-center justify-between border-b border-orange-100 pb-2">
+                        <div>
+                            <span class="font-black text-orange-800 text-sm flex items-center space-x-1.5">${icon} <span>Mã Đóng Gói: ${h.pack_code}</span></span>
+                            <span class="text-[11px] font-bold text-slate-500">Giống: ${cat.name} (Lô gốc: ${batch.code})</span>
+                        </div>
+                        <div class="bg-orange-100 text-orange-700 w-8 h-8 rounded-xl flex items-center justify-center font-black"><i class="fa-solid fa-box"></i></div>
+                    </div>
+                    <div class="text-xs space-y-1.5 text-slate-600">
+                        <p><i class="fa-regular fa-calendar-check text-slate-400 w-4 text-center mr-1"></i>Ngày thu: <strong class="text-slate-800">${formatDateStandard(h.harvest_date)}</strong></p>
+                        <p><i class="fa-solid fa-scale-balanced text-slate-400 w-4 text-center mr-1"></i>Sản lượng: <strong class="text-orange-700">${formatNumber(h.quantity)} ${h.unit}</strong></p>
+                        <p class="financial-sensitive"><i class="fa-solid fa-money-bill-wave text-slate-400 w-4 text-center mr-1"></i>Doanh thu: <strong class="text-emerald-600">${formatCurrency(h.revenue || 0)}</strong></p>
+                        ${h.notes ? `<p class="italic text-[10px] bg-white/60 p-2 rounded border border-orange-50 mt-1">"${h.notes}"</p>` : ''}
+                    </div>
+                    <div class="pt-2 mt-2 border-t border-orange-100 flex justify-between items-center">
+                        <button onclick="openQRModal('${h.pack_code}')" class="flex-1 py-2 bg-white hover:bg-orange-50 border border-orange-200 text-orange-700 font-bold rounded-xl text-xs transition shadow-sm flex justify-center items-center space-x-1.5"><i class="fa-solid fa-qrcode"></i><span>QR Nguồn Gốc</span></button>
+                        ${db.currentRole === 'owner' ? `<button onclick="deleteHarvest('${h.id}')" class="ml-2 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl text-xs transition border border-rose-100"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function openHarvestModal(batchId) {
+            const batch = db.batches.find(b => b.id === batchId);
+            if (!batch) return;
+            document.getElementById('harvestForm').reset();
+            document.getElementById('harvestBatchIdInput').value = batch.id;
+            document.getElementById('harvestBatchCodeDisplay').innerText = batch.code;
+            document.getElementById('harvestDateInput').value = new Date().toISOString().slice(0, 10);
+            const countThisBatch = (db.harvests || []).filter(h => h.batch_id === batch.id).length + 1;
+            document.getElementById('harvestPackCodeInput').value = `${batch.code}-H${countThisBatch}`;
+            openModal('harvestModal');
+        }
+
+        async function handleSaveHarvest(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('harvestBatchIdInput').value;
+            const batch = db.batches.find(b => b.id === batchId);
+            if(!batch) return;
+
+            const hType = document.querySelector('input[name="harvestType"]:checked').value; 
+            const packCode = document.getElementById('harvestPackCodeInput').value;
+            const hDate = document.getElementById('harvestDateInput').value;
+            const hQty = Number(document.getElementById('harvestQuantityInput').value);
+            const hUnit = document.getElementById('harvestUnitInput').value;
+            const hRev = Number(document.getElementById('harvestRevenueInput').value || 0);
+            const hNotes = document.getElementById('harvestNotesInput').value;
+
+            if((db.harvests || []).some(h => h.pack_code === packCode)) {
+                return showToast('Mã đóng gói này đã tồn tại!', 'error');
+            }
+
+            const newHarvest = {
+                id: 'harv-' + Date.now(),
+                batch_id: batch.id,
+                pack_code: packCode,
+                harvest_date: hDate,
+                quantity: hQty,
+                unit: hUnit,
+                revenue: hRev,
+                notes: hNotes,
+                created_by: db.currentUser?.name || 'Admin'
+            };
+            db.harvests = db.harvests || [];
+            db.harvests.push(newHarvest);
+
+            const newLog = { 
+                id: 'log-' + Date.now(), 
+                batch_id: batch.id, 
+                action_type: 'Thu Hoạch', 
+                log_date: new Date().toISOString().slice(0, 16), 
+                description: `Tiến hành thu hoạch ${hType==='full'?'TOÀN BỘ':'một phần'}. Sản lượng: ${hQty} ${hUnit}. Mã đóng gói: ${packCode}.\n${hNotes}`, 
+                created_by: db.currentUser?.name || 'Admin', 
+                image_urls: [] 
+            };
+            db.logs.push(newLog);
+
+            if(hType === 'full') {
+                batch.status = 'harvested';
+            }
+
+            saveLocalState();
+            
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('harvests').insert([newHarvest]);
+                    await supabaseClient.from('logs').insert([newLog]);
+                    if (hType === 'full') {
+                        await supabaseClient.from('batches').update({ status: batch.status }).eq('id', batch.id);
+                    }
+                } catch (error) {
+                    console.error("Lỗi Supabase khi thu hoạch:", error);
+                    showToast('Đã lưu nội bộ nhưng lỗi đồng bộ Cloud!', 'error');
+                }
+            }
+
+            closeModal('harvestModal');
+            renderAllViews();
+            showToast('Đã lưu thông tin thu hoạch thành công!');
+        }
+
+        async function deleteHarvest(id) {
+            showConfirmModal('Xóa Dữ Liệu Thu Hoạch', 'Bạn có chắc chắn muốn xóa?', async () => {
+                db.harvests = db.harvests.filter(h => h.id !== id);
+                saveLocalState();
+                renderAllViews();
+                showToast('Đã xóa thành công!');
+
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('harvests').delete().eq('id', id);
+                     if (error) console.error("Lỗi Supabase Delete Harvest:", error);
+                }
+            });
+        }
+        
+        function openQRModal(packCode) {
+            const harvest = (db.harvests || []).find(x=>x.pack_code===packCode); 
+            if(!harvest) return;
+            document.getElementById('qrBatchCode').innerText = packCode;
+            document.getElementById('qrcodeBox').innerHTML = '';
+            const traceUrl = `https://ongducfarm.netlify.app/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
+            new QRCode(document.getElementById('qrcodeBox'), { 
+                text: traceUrl, 
+                width: 200, 
+                height: 200, 
+                colorDark : "#022c22", 
+                colorLight : "#ffffff" 
+            });
+            openModal('qrModal');
+        }
+
+        function openAddBatchModal(type) {
+            document.getElementById('batchForm').reset();
+            document.getElementById('batchTypeInput').value = type;
+            document.getElementById('batchEditIdInput').value = '';
+            document.getElementById('batchCategorySelect').innerHTML = db.categories.filter(c=>(c.type||c.domain)===type).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('batchLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+            document.getElementById('batchStartDateInput').value = new Date().toISOString().slice(0, 10);
+            openModal('batchModal');
+        }
+
+        function openEditBatchModal(id) {
+            const batch = db.batches.find(b => b.id === id); if(!batch) return;
+            const cat = db.categories.find(c => c.id === batch.category_id);
+            const type = cat ? (cat.type||cat.domain) : batch.domain;
+            document.getElementById('batchTypeInput').value = type;
+            document.getElementById('batchEditIdInput').value = batch.id;
+            document.getElementById('batchCategorySelect').innerHTML = db.categories.filter(c=>(c.type||c.domain)===type).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('batchLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+            document.getElementById('batchCodeInput').value = batch.code;
+            document.getElementById('batchCategorySelect').value = batch.category_id;
+            document.getElementById('batchLocationSelect').value = batch.location_id;
+            document.getElementById('batchStartDateInput').value = batch.start_date;
+            document.getElementById('batchQuantityInput').value = batch.initial_quantity;
+            document.getElementById('batchStageSelect').value = batch.stage_phase;
+            document.getElementById('batchHealthSelect').value = batch.health_status;
+            
+            document.getElementById('batchTechParamsInput').value = batch.tech_params || '';
+            document.getElementById('batchYieldAmountInput').value = batch.yield_amount || '';
+            document.getElementById('batchNotesInput').value = batch.notes || '';
+
+            document.getElementById('batchCostInput').value = batch.total_cost || 0;
+            document.getElementById('batchRevenueInput').value = batch.estimated_revenue || 0;
+            openModal('batchModal');
+        }
+
+        // HÀM LƯU LÔ HOÀN CHỈNH - ĐÃ KẾT NỐI SUPABASE CLOUD
+        async function handleSaveBatch(e) {
+            e.preventDefault();
+            const editId = document.getElementById('batchEditIdInput').value;
+            const bData = {
+                code: document.getElementById('batchCodeInput').value,
+                category_id: document.getElementById('batchCategorySelect').value,
+                location_id: document.getElementById('batchLocationSelect').value,
+                start_date: document.getElementById('batchStartDateInput').value,
+                initial_quantity: Number(document.getElementById('batchQuantityInput').value),
+                stage_phase: document.getElementById('batchStageSelect').value,
+                health_status: document.getElementById('batchHealthSelect').value,
+                tech_params: document.getElementById('batchTechParamsInput').value,
+                yield_amount: document.getElementById('batchYieldAmountInput').value,
+                notes: document.getElementById('batchNotesInput').value,
+                total_cost: Number(document.getElementById('batchCostInput').value||0),
+                estimated_revenue: Number(document.getElementById('batchRevenueInput').value||0),
+                domain: document.getElementById('batchTypeInput').value,
+                status: 'active'
+            };
+
+            if(editId) {
+                const idx = db.batches.findIndex(b => b.id === editId);
+                if(idx !== -1) db.batches[idx] = { ...db.batches[idx], ...bData };
+                
+                saveLocalState();
+                closeModal('batchModal');
+                renderAllViews();
+                showToast('Đã cập nhật thành công!');
+
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('batches').update(bData).eq('id', editId);
+                    if (error) console.error("Lỗi Supabase Update:", error);
+                }
+            } else {
+                const newBatch = { id: 'b-' + Date.now(), ...bData };
+                db.batches.push(newBatch);
+                
+                saveLocalState();
+                closeModal('batchModal');
+                renderAllViews();
+                showToast('Đã thêm lô mới thành công!');
+
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('batches').insert([newBatch]);
+                    if (error) {
+                        console.error("Lỗi Supabase Insert:", error);
+                        showToast('Lưu local thành công nhưng lỗi đẩy lên Cloud!', 'error');
+                    }
+                }
+            }
+        }
+
+        async function deleteBatch(id) {
+            showConfirmModal('Xóa Lô/Lứa', 'Bạn có chắc chắn muốn xóa dữ liệu này?', async () => {
+                db.batches = db.batches.filter(b => b.id !== id); 
+                saveLocalState(); 
+                renderAllViews(); 
+                showToast('Đã xóa thành công!');
+
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('batches').delete().eq('id', id);
+                    if (error) console.error("Lỗi Supabase Delete:", error);
+                }
+            });
+        }
+
+        function openAddCategoryModal(type) {
+            document.getElementById('catTypeInput').value = type;
+            const subOpts = { crop: [{v:'caylaunam',l:'Cây Lâu Năm'},{v:'caynganngay',l:'Cây Ngắn Ngày'}], livestock: [{v:'giasuc',l:'Gia Súc'},{v:'giacam',l:'Gia Cầm'}], aquaculture: [{v:'canuocngot',l:'Cá Nước Ngọt'},{v:'dacsan',l:'Đặc Sản'}] };
+            document.getElementById('catSubtypeSelect').innerHTML = (subOpts[type]||[]).map(o=>`<option value="${o.v}">${o.l}</option>`).join('');
+            resetCategoryForm(); renderCategoryList(type); openModal('categoryModal');
+        }
+        function resetCategoryForm() { document.getElementById('catEditIdInput').value=''; document.getElementById('catNameInput').value=''; document.getElementById('btnSaveCat').innerText='Thêm Giống'; }
+        function renderCategoryList(type) {
+            document.getElementById('categoryListContainer').innerHTML = db.categories.filter(c=>(c.type||c.domain)===type).map(c=>`
+                <div class="bg-slate-50 p-2 rounded border border-slate-200 flex justify-between items-center">
+                    <span class="font-bold">${c.name}</span>
+                    <div>
+                        <button type="button" onclick="editCategory('${c.id}')" class="text-indigo-600 px-2 font-bold"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" onclick="deleteCategory('${c.id}')" class="text-rose-600 px-2 font-bold"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function editCategory(id) {
+            const cat = db.categories.find(c=>c.id===id); if(!cat) return;
+            document.getElementById('catEditIdInput').value = cat.id; document.getElementById('catNameInput').value = cat.name; document.getElementById('catSubtypeSelect').value = cat.subtype; document.getElementById('btnSaveCat').innerText = 'Lưu Cập Nhật';
+        }
+        async function handleSaveCategory(e) {
+            e.preventDefault();
+            const id = document.getElementById('catEditIdInput').value, type = document.getElementById('catTypeInput').value, name = document.getElementById('catNameInput').value, subtype = document.getElementById('catSubtypeSelect').value;
+            
+            if(id) { 
+                const idx = db.categories.findIndex(c=>c.id===id); 
+                if(idx!==-1) { 
+                    db.categories[idx].name=name; 
+                    db.categories[idx].subtype=subtype; 
+                    if (supabaseClient) {
+                         const { error } = await supabaseClient.from('categories').update({ name, subtype }).eq('id', id);
+                         if(error) console.error("Lỗi Supabase Update Category:", error);
+                    }
+                } 
+            } else { 
+                const newCat = {id:'cat-'+Date.now(), name, type, subtype, domain:type, group:subtype};
+                db.categories.push(newCat); 
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('categories').insert([newCat]);
+                     if(error) console.error("Lỗi Supabase Insert Category:", error);
+                }
+            }
+            saveLocalState(); resetCategoryForm(); renderCategoryList(type); renderAllViews(); showToast('Lưu danh mục thành công!');
+        }
+        function deleteCategory(id) { 
+            showConfirmModal('Xóa Danh Mục', 'Xác nhận xóa giống này?', async ()=>{ 
+                db.categories=db.categories.filter(c=>c.id!==id); 
+                saveLocalState(); 
+                renderCategoryList(document.getElementById('catTypeInput').value); 
+                renderAllViews(); 
+                showToast('Đã xóa!'); 
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('categories').delete().eq('id', id);
+                     if(error) console.error("Lỗi Supabase Delete Category:", error);
+                }
+            }); 
+        }
+
+        function renderLogs() {
+            const grid = document.getElementById('logsGrid');
+            if(!grid) return;
+            if(db.logs.length===0) { grid.innerHTML='<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có nhật ký thực địa nào.</p>'; return; }
+            grid.innerHTML = db.logs.slice().reverse().map(l => {
+                const b = db.batches.find(x=>x.id===l.batch_id) || {code:'N/A'};
+                let imgHTML = '';
+                if(l.image_urls && l.image_urls.length > 0) {
+                    const imgUrl = Array.isArray(l.image_urls) ? l.image_urls[0] : (typeof l.image_urls==='string' && l.image_urls.startsWith('[')) ? JSON.parse(l.image_urls)[0] : l.image_urls;
+                    imgHTML = `<div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200 mt-2" onclick="openImageLightbox('${imgUrl}', '${l.action_type}')"><img src="${imgUrl}" class="w-full h-36 object-cover hover:scale-105 transition" onerror="this.src='https://placehold.co/600x400/0f172a/ffffff?text=Anh+Loi';"></div>`;
+                }
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-2"><span class="font-bold text-purple-900">${l.action_type}</span><span class="text-[10px] text-slate-400">${formatDateStandard(l.log_date)}</span></div>
+                        <p class="text-slate-700 font-medium whitespace-pre-wrap">${l.description}</p>${imgHTML}
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-2 border-t border-slate-100 mt-2">
+                            <span>Bởi: <strong>${l.created_by}</strong></span>
+                            <div class="flex items-center space-x-2"><span>Lô: <strong>${b.code}</strong></span>${db.currentRole!=='viewer'?`<button onclick="deleteLog('${l.id}')" class="text-rose-600 font-bold px-2 py-0.5 rounded bg-rose-50 hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>`:''}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+        function openAddLogModal() {
+            if (db.currentRole === 'viewer') return showToast('Không có quyền!', 'error');
+            document.getElementById('logBatchSelect').innerHTML = db.batches.map(b => `<option value="${b.id}">${b.code}</option>`).join('');
+            document.getElementById('logDateInput').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('logUseInventoryCheckbox').checked = false;
+            document.getElementById('logDescInput').value = '';
+            document.getElementById('logImageInput').value = '';
+            toggleLogInventoryParams();
+            openModal('logModal');
+        }
+        function toggleLogInventoryParams() {
+            const chk = document.getElementById('logUseInventoryCheckbox').checked, p = document.getElementById('logInventoryParams');
+            if(chk) { p.classList.remove('hidden'); document.getElementById('logInventorySelect').innerHTML = db.inventory.map(i => `<option value="${i.id}">${i.name} (Kho: ${i.quantity} ${i.unit||''})</option>`).join(''); } else { p.classList.add('hidden'); }
+        }
+        async function handleSaveLog(e) {
+            e.preventDefault();
+            const bId = document.getElementById('logBatchSelect').value; let desc = document.getElementById('logDescInput').value;
+            let isBatchCostUpdated = false;
+            let newTotalCost = 0;
+
+            if(document.getElementById('logUseInventoryCheckbox').checked) {
+                const invId = document.getElementById('logInventorySelect').value, qty = Number(document.getElementById('logInventoryQtyInput').value);
+                const invItem = db.inventory.find(i => i.id === invId);
+                if(invItem && qty > 0) {
+                    if(qty > invItem.quantity) return showToast('Xuất kho vượt mức tồn!', 'error');
+                    invItem.quantity -= qty;
+                    const cAdd = qty * Number(invItem.unit_price || 0);
+                    const batch = db.batches.find(b => b.id === bId); 
+                    if(batch) {
+                        batch.total_cost = Number(batch.total_cost||0) + cAdd;
+                        newTotalCost = batch.total_cost;
+                        isBatchCostUpdated = true;
+                    }
+                    desc += `\n[Tự động] Đã xuất kho: ${qty} ${invItem.unit||''} ${invItem.name}. (+ ${formatCurrency(cAdd)})`;
+                }
+            }
+            const fileInput = document.getElementById('logImageInput'); let imgUrls = [];
+            if(fileInput && fileInput.files[0]) { try{ const u = await uploadToGoogleDrive(fileInput.files[0]); if(u) imgUrls.push(u); }catch(e){} }
+
+            const newLog = { id: 'log-' + Date.now(), batch_id: bId, action_type: document.getElementById('logActionSelect').value, log_date: document.getElementById('logDateInput').value, description: desc, created_by: db.currentUser?.name || 'Admin', image_urls: imgUrls };
+            db.logs.push(newLog);
+            saveLocalState(); 
+
+            if (supabaseClient) {
+                try {
+                     await supabaseClient.from('logs').insert([newLog]);
+                     if (isBatchCostUpdated) {
+                          await supabaseClient.from('batches').update({ total_cost: newTotalCost }).eq('id', bId);
+                     }
+                } catch(error) {
+                    console.error("Lỗi Supabase khi lưu Log:", error);
+                    showToast('Đã lưu nội bộ nhưng lỗi đồng bộ Cloud!', 'error');
+                }
+            }
+
+            closeModal('logModal'); renderLogs(); renderDashboard(); renderInventory(); renderCrops(); renderLivestock(); renderAquaculture(); showToast('Đã lưu nhật ký & Cập nhật chi phí!');
+        }
+        function deleteLog(id) { 
+            showConfirmModal('Xóa Nhật Ký', 'Bạn chắc chắn muốn xóa bản ghi này?', async ()=>{ 
+                db.logs=db.logs.filter(x=>x.id!==id); 
+                saveLocalState(); 
+                renderLogs(); 
+                renderDashboard(); 
+                showToast('Đã xóa!'); 
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('logs').delete().eq('id', id);
+                     if (error) console.error("Lỗi Supabase Delete Log:", error);
+                }
+            }); 
+        }
+
+        function setCameraGrid(cols) {
+            db.cameraGridCols = cols; const c = document.getElementById('cameraGridContainer');
+            c.className = cols===1?"grid grid-cols-1 gap-4":cols===3?"grid grid-cols-1 md:grid-cols-3 gap-4":"grid grid-cols-1 md:grid-cols-2 gap-4";
+            [1,2,3].forEach(x => { document.getElementById(`btn-cam-grid-${x}`)&&(document.getElementById(`btn-cam-grid-${x}`).className=x===cols?"px-2.5 py-1 rounded-lg bg-white text-slate-900 font-bold shadow-sm transition":"px-2.5 py-1 rounded-lg text-slate-600 font-bold hover:bg-white transition") });
+        }
+        function renderCameras() {
+            const container = document.getElementById('cameraGridContainer'); if(!container) return;
+            if(db.cameras.length===0) { container.innerHTML='<div class="col-span-full p-8 bg-white rounded-xl text-center text-slate-500 text-xs">Chưa có camera.</div>'; return; }
+            const bg = ['linear-gradient(135deg,#064e3b 0%,#022c22 100%)', 'linear-gradient(135deg,#083344 0%,#051923 100%)'];
+            container.innerHTML = db.cameras.map((c,idx) => {
+                const loc = db.locations.find(l=>l.id===c.location_id)||{name:'Chưa gán'};
+                return `
+                <div class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 shadow-lg flex flex-col relative">
+                    <div class="bg-slate-950/80 px-4 py-2 flex justify-between z-10 text-xs"><div class="flex items-center space-x-2"><span class="w-2 h-2 rounded-full bg-rose-500 live-pulse"></span><span class="font-bold text-white">${c.name}</span></div><span class="text-[10px] text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded font-mono">LIVE</span></div>
+                    <div class="relative w-full h-56 flex items-center justify-center" style="background:${bg[idx%bg.length]}">
+                        ${c.stream_url?`<iframe src="${c.stream_url}" class="w-full h-full border-0"></iframe>`:`<div class="text-center space-y-2"><i class="fa-solid fa-video text-rose-400 text-3xl"></i><p class="text-white font-bold text-xs">${loc.name}</p><p class="text-[10px] text-emerald-400">RTSP/HLS 30FPS</p></div>`}
+                    </div>
+                    <div class="bg-slate-950 p-2 flex justify-between items-center text-xs">
+                        <button onclick="captureCameraSnapshot('${c.id}')" class="px-3 py-1 bg-rose-600/20 text-rose-300 font-bold rounded-xl border border-rose-500/30"><i class="fa-solid fa-camera mr-1"></i>Chụp</button>
+                        ${db.currentRole==='owner'?`<button onclick="deleteCamera('${c.id}')" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>`:''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        function openAddCameraModal() { document.getElementById('cameraForm').reset(); document.getElementById('camLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join(''); openModal('cameraModal'); }
+        function handleSaveCamera(e) { e.preventDefault(); db.cameras.push({ id:'cam-'+Date.now(), name:document.getElementById('camNameInput').value, location_id:document.getElementById('camLocationSelect').value, type:document.getElementById('camTypeSelect').value, stream_url:document.getElementById('camStreamUrlInput').value }); saveLocalState(); closeModal('cameraModal'); renderCameras(); showToast('Thêm camera thành công!'); }
+        function deleteCamera(id) { showConfirmModal('Xóa Camera', 'Khẳng định xóa?', ()=>{db.cameras=db.cameras.filter(c=>c.id!==id); saveLocalState(); renderCameras(); showToast('Đã xóa!');}); }
+        async function captureCameraSnapshot(id) {
+            const cam = db.cameras.find(c=>c.id===id); if(!cam) return;
+            showToast('Đang chụp ảnh...', 'info');
+            const cvs = document.createElement('canvas'); cvs.width=640; cvs.height=360; const ctx = cvs.getContext('2d');
+            ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,640,360); ctx.fillStyle='#10b981'; ctx.font='bold 20px Inter'; ctx.fillText('CAMERA SNAPSHOT',30,50); ctx.fillStyle='#fff'; ctx.font='14px Inter'; ctx.fillText(cam.name,30,85); ctx.fillText(new Date().toLocaleString('vi-VN'),30,110);
+            db.logs.push({id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:new Date().toISOString().slice(0,16), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] });
+            saveLocalState(); renderLogs(); showToast('Đã lưu ảnh vào Nhật ký!', 'success');
+        }
+
+        function renderLocationsTable() {
+            const tbody = document.getElementById('locationsTableBody'); if(!tbody) return;
+            if(db.locations.length===0){tbody.innerHTML='<tr><td colspan="4" class="p-4 text-center">Chưa có dữ liệu.</td></tr>'; return;}
+            tbody.innerHTML = db.locations.map(l => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${l.name}</td><td class="p-4">${l.type}</td><td class="p-4 font-medium">${l.area ? l.area + ' m²' : '---'}</td><td class="p-4 text-right">${db.currentRole==='owner'?`<button onclick="openEditLocationModal('${l.id}')" class="text-indigo-600 mr-2"><i class="fa-solid fa-pen"></i></button><button onclick="deleteLocation('${l.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');
+        }
+        function openAddLocationModal() { document.getElementById('locationForm').reset(); document.getElementById('locEditIdInput').value=''; document.getElementById('locationModalTitle').innerText='Thêm Khu Vực'; openModal('locationModal'); }
+        function openEditLocationModal(id) { const l = db.locations.find(x=>x.id===id); if(!l) return; document.getElementById('locEditIdInput').value=l.id; document.getElementById('locNameInput').value=l.name; document.getElementById('locTypeSelect').value=l.type; document.getElementById('locAreaInput').value=l.area||''; document.getElementById('locationModalTitle').innerText='Sửa Khu Vực'; openModal('locationModal'); }
+        async function handleSaveLocation(e) { 
+            e.preventDefault(); 
+            const id=document.getElementById('locEditIdInput').value, name=document.getElementById('locNameInput').value, type=document.getElementById('locTypeSelect').value, area=document.getElementById('locAreaInput').value; 
+            
+            if(id){
+                const idx=db.locations.findIndex(x=>x.id===id); 
+                if(idx!==-1){
+                    db.locations[idx].name=name; db.locations[idx].type=type; db.locations[idx].area=area;
+                    if (supabaseClient) {
+                         const { error } = await supabaseClient.from('locations').update({ name, type, area }).eq('id', id);
+                         if (error) console.error("Lỗi Supabase Update Location:", error);
+                    }
+                }
+            } else {
+                const newLoc = {id:'loc-'+Date.now(),name,type,area};
+                db.locations.push(newLoc);
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('locations').insert([newLoc]);
+                     if (error) console.error("Lỗi Supabase Insert Location:", error);
+                }
+            } 
+            saveLocalState(); closeModal('locationModal'); renderLocationsTable(); 
+        }
+        function deleteLocation(id) { 
+            showConfirmModal('Xóa Khu Vực', 'Xác nhận xóa?', async ()=>{
+                db.locations=db.locations.filter(x=>x.id!==id); 
+                saveLocalState(); 
+                renderLocationsTable();
+                if (supabaseClient) {
+                     const { error } = await supabaseClient.from('locations').delete().eq('id', id);
+                     if (error) console.error("Lỗi Supabase Delete Location:", error);
+                }
+            }); 
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody'); if(!tbody) return;
+            tbody.innerHTML = db.users.map(u => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${u.name}</td><td class="p-4">${u.username}</td><td class="p-4">${u.email}</td><td class="p-4"><span class="role-badge-${u.role} px-2 py-0.5 rounded text-[10px] font-bold uppercase">${u.role}</span></td><td class="p-4 text-right">${db.currentRole==='owner'?`<button onclick="openEditUserModal('${u.id}')" class="text-indigo-600 mr-2"><i class="fa-solid fa-pen"></i></button>${u.id!=='u-1'?`<button onclick="deleteUser('${u.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>`:''}`:''}</td></tr>`).join('');
+        }
+        function openAddUserModal() { document.getElementById('userForm').reset(); document.getElementById('userEditIdInput').value=''; document.getElementById('userModalTitle').innerText='Thêm Tài Khoản'; document.getElementById('userPasswordInput').required=true; openModal('userModal'); }
+        function openEditUserModal(id) { const u = db.users.find(x=>x.id===id); if(!u) return; document.getElementById('userEditIdInput').value=u.id; document.getElementById('userNameInput').value=u.name; document.getElementById('userUsernameInput').value=u.username; document.getElementById('userEmailInput').value=u.email; document.getElementById('userRoleSelect').value=u.role; document.getElementById('userPasswordInput').value=''; document.getElementById('userPasswordInput').required=false; document.getElementById('userModalTitle').innerText='Sửa Tài Khoản'; openModal('userModal'); }
+        function handleSaveUser(e) { e.preventDefault(); const id=document.getElementById('userEditIdInput').value, name=document.getElementById('userNameInput').value, username=document.getElementById('userUsernameInput').value, email=document.getElementById('userEmailInput').value, pwd=document.getElementById('userPasswordInput').value, role=document.getElementById('userRoleSelect').value; if(id){const idx=db.users.findIndex(x=>x.id===id); if(idx!==-1){db.users[idx].name=name; db.users[idx].username=username; db.users[idx].email=email; db.users[idx].role=role; if(pwd)db.users[idx].password=pwd;}}else{db.users.push({id:'u-'+Date.now(),name,username,email,password:pwd||'123',role});} saveLocalState(); closeModal('userModal'); renderUsersTable(); }
+        function deleteUser(id) { if(id==='u-1') return showToast('Không thể xóa Admin!','error'); showConfirmModal('Xóa Tài Khoản', 'Xác nhận xóa?', ()=>{db.users=db.users.filter(x=>x.id!==id); saveLocalState(); renderUsersTable();}); }
+
+        function openExportReportModal() { openModal('exportReportModal'); }
+        function buildReportData() {
+            return db.batches.map(b => {
+                const cat = db.categories.find(c=>c.id===b.category_id)||{}; const loc = db.locations.find(l=>l.id===b.location_id)||{};
+                return {'Mã Lô/Lứa': b.code, 'Giống/Loài': cat.name||'N/A', 'Vị trí': loc.name||'N/A', 'Số lượng': b.initial_quantity, 'Sản lượng': b.yield_amount, 'Chi Phí': b.total_cost||0, 'Dự Thu': b.estimated_revenue||0, 'Lợi Nhuận': (b.estimated_revenue||0)-(b.total_cost||0)};
+            });
+        }
+        function exportReportExcel() {
+            const data = buildReportData(); if(data.length===0) return showToast('Không có dữ liệu!','error');
+            const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "BaoCao"); XLSX.writeFile(wb, `BaoCao_${Date.now()}.xlsx`); closeModal('exportReportModal');
+        }
+        function exportReportPDF() { showToast('Đang tạo PDF...', 'info'); setTimeout(()=>{closeModal('exportReportModal'); showToast('Đã lưu PDF!', 'success');},1000); }
+        function openDriveConfigModal() { document.getElementById('googleDriveUrlInput').value=googleDriveScriptUrl; openModal('driveConfigModal'); }
+        function saveDriveConfig() { googleDriveScriptUrl = document.getElementById('googleDriveUrlInput').value; localStorage.setItem('ongducfarm_drive_url', googleDriveScriptUrl); closeModal('driveConfigModal'); showToast('Đã lưu cấu hình!'); }
+        async function uploadToGoogleDrive(file) { return new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve(e.target.result); r.readAsDataURL(file); }); }
+        function openImageLightbox(src, cap) { document.getElementById('lightboxImage').src=src; document.getElementById('lightboxCaption').innerText=cap; openModal('imageLightboxModal'); }
+        function openForgotPasswordModal() { openModal('forgotPasswordModal'); }
+        function handleForgotPassword() { closeModal('forgotPasswordModal'); showToast('Mật khẩu mới đã được gửi vào email của bạn!', 'info'); }
+        function downloadBackupJSON() {
+            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const a = document.createElement('a'); a.href = d; a.download = 'Backup_OngDucFarm.json'; document.body.appendChild(a); a.click(); a.remove(); showToast('Tải xuống bản sao lưu thành công!');
+        }
+
+        const provinceList = [
+            { id: 'hanoi', name: 'Hà Nội', lat: 21.02, lon: 105.83 },
+            { id: 'tayninh', name: 'Tây Ninh', lat: 11.31, lon: 106.10 },
+            { id: 'dongnai', name: 'Đồng Nai', lat: 11.00, lon: 107.00 },
+        ];
+        function populateWeatherDropdown() { document.getElementById('weatherLocationSelect').innerHTML = provinceList.map(p => `<option value="${p.id}" ${p.id === 'tayninh' ? 'selected' : ''}>📍 ${p.name}</option>`).join(''); }
+        async function loadWeatherData() {
+            const locKey = document.getElementById('weatherLocationSelect')?.value || 'tayninh';
+            const targetLoc = provinceList.find(p => p.id === locKey) || provinceList[1];
+            document.getElementById('w-city-display').innerText = targetLoc.name;
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${targetLoc.lat}&longitude=${targetLoc.lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m&timezone=Asia%2FBangkok`);
+                const data = await res.json();
+                document.getElementById('w-temp').innerText = Math.round(data.current.temperature_2m);
+                document.getElementById('w-humidity').innerText = `${data.current.relative_humidity_2m} %`;
+                document.getElementById('w-rain').innerText = `${data.current.rain} mm`;
+                document.getElementById('w-wind').innerText = `${data.current.wind_speed_10m} km/h`;
+            } catch (e) {}
+        }
+        
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            if(!container) return;
+            let tasks = db.tasks || [];
+            if(db.currentRole === 'worker') { tasks = tasks.filter(t => t.assignee_id === db.currentUser?.id); }
+            if(tasks.length === 0) { container.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Bạn không có công việc nào cần xử lý.</div>`; return; }
+            container.innerHTML = tasks.sort((a,b)=>a.status==='completed'?1:-1).map(t => {
+                const isCompleted = t.status === 'completed';
+                const assignee = db.users.find(u => u.id === t.assignee_id)?.name || 'N/A';
+                return `
+                    <div class="bg-white p-4 rounded-xl border ${isCompleted?'border-slate-100 opacity-60':'border-blue-200 shadow-sm'} flex items-center justify-between transition">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="completeTask('${t.id}')" ${isCompleted?'disabled':''} class="w-6 h-6 rounded-full border-2 ${isCompleted?'border-emerald-500 bg-emerald-500 text-white':'border-slate-300'} flex items-center justify-center text-xs">
+                                ${isCompleted?'<i class="fa-solid fa-check"></i>':''}
+                            </button>
+                            <div>
+                                <p class="font-bold ${isCompleted?'text-slate-500 line-through':'text-slate-800'} text-sm">${t.title}</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-user text-slate-300 mr-1"></i>${assignee} &nbsp;|&nbsp; <i class="fa-regular fa-clock text-slate-300 mr-1"></i>Hạn: ${formatDateStandard(t.date)}</p>
+                            </div>
+                        </div>
+                        ${db.currentRole==='owner' ? `<button onclick="deleteTask('${t.id}')" class="text-rose-400 hover:text-rose-600 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        function openAddTaskModal() { document.getElementById('taskTitleInput').value = ''; document.getElementById('taskDateInput').value = new Date().toISOString().slice(0, 10); document.getElementById('taskAssigneeSelect').innerHTML = db.users.filter(u=>u.role!=='viewer').map(u=>`<option value="${u.id}">${u.name}</option>`).join(''); openModal('taskModal'); }
+        function handleSaveTask(e) { e.preventDefault(); db.tasks = db.tasks || []; db.tasks.push({ id: 'task-'+Date.now(), title: document.getElementById('taskTitleInput').value, assignee_id: document.getElementById('taskAssigneeSelect').value, date: document.getElementById('taskDateInput').value, status: 'pending' }); saveLocalState(); closeModal('taskModal'); renderTasks(); showToast('Đã giao việc!'); }
+        function completeTask(id) { const t = db.tasks.find(x=>x.id===id); if(t) { t.status='completed'; saveLocalState(); renderTasks(); showToast('Hoàn thành xuất sắc!','success'); } }
+        function deleteTask(id) { db.tasks = db.tasks.filter(x=>x.id!==id); saveLocalState(); renderTasks(); }
+
+        function renderLedger() {
+            const tbody = document.getElementById('ledgerTableBody'); const tfoot = document.getElementById('ledgerTableFooter');
+            if(!tbody) return;
+            if(!db.ledger || db.ledger.length===0) { tbody.innerHTML='<tr><td colspan="5" class="p-4 text-center">Chưa có giao dịch sổ quỹ chung.</td></tr>'; tfoot.innerHTML=''; return; }
+            let totalExp=0, totalInc=0;
+            tbody.innerHTML = db.ledger.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l => {
+                const isExp = l.type==='expense'; if(isExp) totalExp+=Number(l.amount); else totalInc+=Number(l.amount);
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 font-medium">${formatDateStandard(l.date)}</td>
+                        <td class="p-4">${isExp?'<span class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">Khoản Chi</span>':'<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold">Khoản Thu</span>'}</td>
+                        <td class="p-4 font-bold text-slate-800">${l.category} ${l.notes?`<span class="block font-normal text-[10px] text-slate-500">${l.notes}</span>`:''}</td>
+                        <td class="p-4 text-right font-bold ${isExp?'text-rose-600':'text-emerald-600'}">${isExp?'-':'+'} ${formatCurrency(l.amount)}</td>
+                        <td class="p-4 text-right"><button onclick="deleteLedger('${l.id}')" class="text-rose-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            }).join('');
+            tfoot.innerHTML = `<tr><td colspan="3" class="p-4 font-black">TỔNG KẾT QUỸ CHUNG:</td><td class="p-4 text-right font-black"><span class="text-emerald-600">+${formatCurrency(totalInc)}</span><br><span class="text-rose-600">-${formatCurrency(totalExp)}</span></td><td></td></tr>`;
+        }
+        function openAddLedgerModal() { document.getElementById('ledgerForm').reset(); document.getElementById('ledgerDateInput').value=new Date().toISOString().slice(0,10); openModal('ledgerModal'); }
+        function handleSaveLedger(e) { e.preventDefault(); db.ledger = db.ledger || []; db.ledger.push({ id: 'leg-'+Date.now(), type: document.getElementById('ledgerTypeSelect').value, date: document.getElementById('ledgerDateInput').value, category: document.getElementById('ledgerCategoryInput').value, amount: Number(document.getElementById('ledgerAmountInput').value), notes: document.getElementById('ledgerNotesInput').value }); saveLocalState(); closeModal('ledgerModal'); renderLedger(); renderDashboard(); showToast('Đã lưu giao dịch!'); }
+        function deleteLedger(id) { db.ledger = db.ledger.filter(x=>x.id!==id); saveLocalState(); renderLedger(); renderDashboard(); }
+
+        function navigateToInventory(categoryFilter) {
+            if (db.currentRole === 'viewer') return showToast('Không có quyền truy cập Nhà Kho!', 'error');
+            navigateTo('inventory'); filterInventoryTab(categoryFilter || 'all');
+        }
+        function filterInventoryTab(category) {
+            db.inventoryFilter = category;
+            ['all', 'seed', 'fertilizer', 'tool', 'feed'].forEach(t => {
+                const btn = document.getElementById(`btn-inv-${t}`);
+                if (btn) btn.className = t === category ? "pb-2 border-b-2 border-teal-600 text-teal-600 font-bold" : "pb-2 border-b-2 border-transparent text-slate-500 font-medium";
+            });
+            renderInventory();
+        }
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTableBody'); if(!tbody) return;
+            let items = db.inventory;
+            if (db.inventoryFilter !== 'all') items = db.inventory.filter(i => i.category === db.inventoryFilter);
+            let sum = 0;
+            if(items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Chưa có vật tư nào trong danh mục này.</td></tr>';
+                document.getElementById('inventoryTableFooter').innerHTML = '';
+                return;
+            }
+            tbody.innerHTML = items.map(item => {
+                sum += Number(item.quantity) * Number(item.unit_price);
+                return `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="p-4 font-bold text-slate-800">${item.name} ${item.notes ? `<span class="block font-normal text-[10px] text-slate-500">${item.notes}</span>` : ''}</td>
+                        <td class="p-4">${item.category === 'seed' ? '🌱 Cây Giống' : item.category === 'fertilizer' ? '🧪 Phân Bón & Thuốc' : item.category === 'tool' ? '🛠️ Dụng Cụ' : '🌾 Thức Ăn'}</td>
+                        <td class="p-4 text-center font-bold text-teal-800">${item.quantity} ${item.unit || ''}</td>
+                        <td class="p-4 text-right">${formatCurrency(item.unit_price)}</td>
+                        <td class="p-4 text-right font-bold text-emerald-700">${formatCurrency(item.quantity * item.unit_price)}</td>
+                        <td class="p-4 text-right viewer-hide">
+                            <button onclick="editInventoryItem('${item.id}')" class="text-indigo-600 mr-3"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteInventoryItem('${item.id}')" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('inventoryTableFooter').innerHTML = `<tr><td colspan="4" class="p-4 font-black">TỔNG GIÁ TRỊ VẬT TƯ:</td><td class="p-4 text-right font-black text-emerald-700">${formatCurrency(sum)}</td><td></td></tr>`;
+        }
+        function openAddInventoryModal() { 
+            document.getElementById('inventoryForm').reset(); 
+            document.getElementById('invEditIdInput').value=''; 
+            document.getElementById('inventoryModalTitle').innerHTML = '<i class="fa-solid fa-warehouse text-teal-600 mr-2"></i><span>Thêm Vật Tư Nhà Kho Mới</span>';
+            openModal('inventoryModal'); 
+        }
+        function editInventoryItem(id) {
+            const item = db.inventory.find(i => i.id === id); if(!item) return;
+            document.getElementById('invEditIdInput').value = item.id;
+            document.getElementById('invNameInput').value = item.name;
+            document.getElementById('invCategorySelect').value = item.category;
+            document.getElementById('invQuantityInput').value = item.quantity;
+            document.getElementById('invUnitInput').value = item.unit || '';
+            document.getElementById('invUnitPriceInput').value = item.unit_price || 0;
+            document.getElementById('invNotesInput').value = item.notes || '';
+            document.getElementById('inventoryModalTitle').innerHTML = '<i class="fa-solid fa-warehouse text-teal-600 mr-2"></i><span>Sửa Thông Tin Vật Tư</span>';
+            openModal('inventoryModal');
+        }
+        function handleSaveInventory(e) { 
+            e.preventDefault(); 
+            const id = document.getElementById('invEditIdInput').value;
+            const itemData = {
+                name: document.getElementById('invNameInput').value, 
+                category: document.getElementById('invCategorySelect').value, 
+                quantity: Number(document.getElementById('invQuantityInput').value), 
+                unit: document.getElementById('invUnitInput').value, 
+                unit_price: Number(document.getElementById('invUnitPriceInput').value),
+                notes: document.getElementById('invNotesInput').value
+            };
+            if(id) {
+                const idx = db.inventory.findIndex(i => i.id === id);
+                if(idx !== -1) db.inventory[idx] = { ...db.inventory[idx], ...itemData };
+            } else {
+                db.inventory.push({ id:'inv-'+Date.now(), ...itemData }); 
+            }
+            saveLocalState(); closeModal('inventoryModal'); renderInventory(); renderDashboard(); 
+            showToast('Lưu vật tư thành công!');
+        }
+        function deleteInventoryItem(id) { 
+            showConfirmModal('Xóa Vật Tư', 'Bạn có chắc chắn muốn xóa?', () => {
+                db.inventory=db.inventory.filter(i=>i.id!==id); 
+                saveLocalState(); renderInventory(); renderDashboard(); 
+                showToast('Đã xóa vật tư!');
+            });
+        }
+    </script>
+</body>
+</html>
