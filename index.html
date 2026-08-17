@@ -52,7 +52,6 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-50">
 
-    <!-- MÀN HÌNH ĐĂNG NHẬP -->
     <div id="loginView" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 custom-scrollbar overflow-y-auto">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100 transition-all duration-300 my-auto">
             <div class="bg-gradient-to-br from-emerald-900 via-emerald-900 to-slate-950 p-8 text-white text-center relative overflow-hidden">
@@ -106,9 +105,7 @@
         </div>
     </div>
 
-    <!-- MÀN HÌNH CHÍNH DASHBOARD -->
     <div id="mainView" class="hidden flex-col min-h-screen">
-        <!-- Navigation Header -->
         <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <button onclick="navigateTo('dashboard')" class="flex items-center group focus:outline-none py-1" title="Quay về Trang Chủ Tổng Quan">
@@ -120,7 +117,6 @@
                     </svg>
                 </button>
 
-                <!-- Desktop Navigation Links -->
                 <nav class="hidden lg:flex items-center space-x-1 text-[11px] xl:text-xs font-semibold">
                     <button onclick="navigateTo('dashboard')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-dashboard">
                         <i class="fa-solid fa-chart-pie text-emerald-400"></i><span>Tổng Quan</span>
@@ -145,7 +141,6 @@
                         <i class="fa-solid fa-tv text-rose-400"></i><span>Camera</span>
                     </button>
 
-                    <!-- Nhà Kho -->
                     <div class="relative group py-2 viewer-hide">
                         <button class="px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 text-teal-300 font-bold focus:outline-none" id="nav-inventory">
                             <i class="fa-solid fa-warehouse"></i><span>Nhà Kho</span><i class="fa-solid fa-chevron-down text-[10px] ml-0.5"></i>
@@ -160,7 +155,6 @@
                         </div>
                     </div>
 
-                    <!-- Quản Lý & Thu Hoạch -->
                     <div class="relative group py-2">
                         <button class="px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 text-indigo-300 font-bold focus:outline-none">
                             <i class="fa-solid fa-folder-tree"></i><span>Quản Lý</span><i class="fa-solid fa-chevron-down text-[10px] ml-0.5"></i>
@@ -180,7 +174,6 @@
                     </div>
                 </nav>
 
-                <!-- Action Controls & User Info -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <div class="text-right hidden sm:block">
                         <span id="currentUserName" class="block text-xs font-bold">---</span>
@@ -191,7 +184,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Drawer Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 p-3 space-y-1 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
                 <button onclick="navigateTo('dashboard'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-chart-pie text-emerald-400 w-5"></i><span>Tổng Quan</span></button>
                 <button onclick="navigateTo('crops'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-seedling text-emerald-400 w-5"></i><span>Trồng Trọt</span></button>
@@ -221,10 +213,8 @@
             </div>
         </header>
 
-        <!-- Main Content Area -->
         <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-            <!-- VIEW: DASHBOARD TỔNG QUAN -->
             <section id="view-dashboard" class="content-view space-y-6">
                 <div id="lowStockAlerts" class="space-y-2 empty:hidden"></div>
 
@@ -236,7 +226,6 @@
                     </div>
                 </div>
 
-                <!-- Metrics Grid -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div onclick="navigateTo('crops')" class="clickable-card cursor-pointer bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3 sm:space-x-4 hover:border-emerald-500">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-bold flex-shrink-0"><i class="fa-solid fa-wheat-awn"></i></div>
@@ -268,7 +257,6 @@
                     </div>
                 </div>
 
-                <!-- Financial & Analytics Section -->
                 <div class="financial-sensitive space-y-4">
                     <div onclick="openFinancialDetailModal()" class="clickable-card cursor-pointer bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4 hover:border-emerald-500">
                         <div class="flex items-center justify-between">
@@ -305,7 +293,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: PHÂN HỆ TRỒNG TRỌT -->
             <section id="view-crops" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -329,7 +316,6 @@
                 <div id="cropsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIEW: PHÂN HỆ VẬT NUÔI -->
             <section id="view-livestock" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -353,7 +339,6 @@
                 <div id="livestockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIEW: PHÂN HỆ THỦY SẢN -->
             <section id="view-aquaculture" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -377,7 +362,6 @@
                 <div id="aquacultureGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIEW: LỊCH SỬ THU HOẠCH -->
             <section id="view-harvest" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -394,7 +378,6 @@
                 <div id="harvestGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIEW: GIAO VIỆC & LỊCH CÔNG VIỆC -->
             <section id="view-tasks" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -408,7 +391,6 @@
                 <div id="tasksContainer" class="space-y-3"></div>
             </section>
 
-            <!-- VIEW: NHẬT KÝ ĐỒNG BỘ ẢNH THỰC ĐỊA -->
             <section id="view-logs" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -422,7 +404,6 @@
                 <div id="logsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIEW: QUẢN LÝ NHÀ KHO & VẬT TƯ -->
             <section id="view-inventory" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -462,7 +443,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: CAMERA GIÁM SÁT THÔNG MINH SMART FARM 4.0 -->
             <section id="view-cameras" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -483,7 +463,6 @@
                 <div id="cameraGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </section>
 
-            <!-- VIEW: THỜI TIẾT & KHUYẾN NÔNG -->
             <section id="view-weather" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -552,7 +531,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: SỔ QUỸ THU CHI (LEDGER) -->
             <section id="view-ledger" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -582,7 +560,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: QUẢN LÝ THỬA ĐẤT & KHU VỰC -->
             <section id="view-locations" class="content-view hidden space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
@@ -603,7 +580,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: QUẢN LÝ TÀI KHOẢN NHÂN VIÊN -->
             <section id="view-users" class="content-view hidden space-y-6">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-3">Ma Trận Quyền Vận Hành Hệ Thống</h3>
@@ -663,7 +639,6 @@
     </div>
 
     <!-- MODALS -->
-    <!-- MODAL MÃ QR TRUY XUẤT -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 space-y-4 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-r from-emerald-600 to-teal-500 -z-10"></div>
@@ -677,7 +652,6 @@
         </div>
     </div>
 
-    <!-- MODAL TIẾN HÀNH THU HOẠCH -->
     <div id="harvestModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
             <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-orange-600"></i><span>Xác Nhận Thu Hoạch</span></h3>
@@ -720,7 +694,6 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM CÔNG VIỆC -->
     <div id="taskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
             <h3 class="font-bold text-slate-800 text-sm">Giao Công Việc Mới</h3>
@@ -745,7 +718,6 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM SỔ QUỸ -->
     <div id="ledgerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
             <h3 class="font-bold text-slate-800 text-sm">Giao Dịch Sổ Quỹ Mới</h3>
@@ -783,7 +755,6 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM / SỬA VẬT TƯ NHÀ KHO -->
     <div id="inventoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
             <h3 id="inventoryModalTitle" class="font-bold text-slate-800 text-sm flex items-center space-x-2"><i class="fa-solid fa-warehouse text-teal-600"></i><span>Quản Lý Vật Tư Nhà Kho</span></h3>
@@ -828,7 +799,6 @@
         </div>
     </div>
 
-    <!-- MODAL GHI NHẬT KÝ THỰC ĐỊA -->
     <div id="logModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-1.5"><i class="fa-solid fa-book-open text-purple-600"></i><span>Ghi Nhật Ký Thực Địa & Chụp Ảnh</span></h3>
@@ -888,7 +858,6 @@
         </div>
     </div>
 
-    <!-- MODAL QUẢN LÝ DANH MỤC GIỐNG -->
     <div id="categoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs max-h-[85vh] flex flex-col">
             <h3 id="categoryModalTitle" class="font-bold text-slate-800 text-sm">Quản Lý Danh Mục Giống</h3>
@@ -907,7 +876,6 @@
         </div>
     </div>
 
-    <!-- MODAL QUẢN LÝ BATCH (LÔ / LỨA) -->
     <div id="batchModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
             <h3 id="batchModalTitle" class="font-bold text-slate-800 text-sm">Thêm Lô Canh Tác Mới</h3>
@@ -961,7 +929,6 @@
         </div>
     </div>
     
-    <!-- CHI TIẾT TÀI CHÍNH -->
     <div id="financialDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-4xl rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar text-xs">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -980,7 +947,6 @@
         </div>
     </div>
 
-    <!-- XUẤT BÁO CÁO -->
     <div id="exportReportModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs text-center shadow-2xl">
             <h3 class="font-bold mb-4 text-sm">Xuất Báo Cáo Canh Tác</h3>
@@ -992,7 +958,6 @@
         </div>
     </div>
 
-    <!-- QUẢN LÝ VỊ TRÍ -->
     <div id="locationModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl">
             <h3 class="font-bold mb-3 text-sm" id="locationModalTitle">Thêm Khu Vực Canh Tác</h3>
@@ -1015,7 +980,6 @@
         </div>
     </div>
 
-    <!-- QUẢN LÝ NHÂN VIÊN -->
     <div id="userModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl">
             <h3 class="font-bold mb-3 text-sm" id="userModalTitle">Cấp Tài Khoản Mới</h3>
@@ -1036,7 +1000,6 @@
         </div>
     </div>
 
-    <!-- THÊM CAMERA -->
     <div id="cameraModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4 text-xs">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -1057,11 +1020,9 @@
         </div>
     </div>
 
-    <!-- Cấu hình Google Drive & Quên mật khẩu -->
     <div id="driveConfigModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Cấu Hình Google Drive Web App URL</h3><input type="url" id="googleDriveUrlInput" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('driveConfigModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="saveDriveConfig()" class="bg-blue-500 text-white w-full p-2.5 rounded-xl font-bold">Lưu URL</button></div></div></div>
     <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Khôi Phục Mật Khẩu</h3><input type="email" id="forgotEmailInput" placeholder="Nhập email của bạn" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('forgotPasswordModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="handleForgotPassword()" class="bg-emerald-600 text-white w-full p-2.5 rounded-xl font-bold">Gửi Yêu Cầu</button></div></div></div>
     
-    <!-- Lightbox & Confirm & Toast -->
     <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4"><img id="lightboxImage" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"><p id="lightboxCaption" class="text-white mt-3 text-sm font-medium"></p><button onclick="closeModal('imageLightboxModal')" class="absolute top-4 right-4 text-white text-3xl hover:text-slate-300">×</button></div>
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white p-6 rounded-3xl text-center w-full max-w-sm"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto text-xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 id="confirmTitle" class="font-bold text-sm mb-2">Xác Nhận</h3><p id="confirmMessage" class="text-xs text-slate-500 mb-5"></p><div class="flex space-x-2 justify-center"><button onclick="closeModal('confirmModal')" class="px-5 py-2.5 bg-slate-100 rounded-xl font-bold">Hủy Bỏ</button><button id="confirmBtn" class="bg-rose-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-md">Xác Nhận</button></div></div></div>
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all bg-slate-900 text-white px-4 py-3 rounded-2xl flex items-center space-x-3 text-xs shadow-xl border border-slate-700"><i id="toastIcon"></i><span id="toastMessage"></span></div>
@@ -1071,7 +1032,7 @@
         const SUPABASE_URL = 'https://ujqkqopzztpmmahhncfv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_66DBjvCveyV28GL7-9bpCA_r-5N2I1K';
         let supabaseClient = null;
-        let googleDriveScriptUrl = localStorage.getItem('ongducfarm_drive_url') || '';
+        let googleDriveScriptUrl = localStorage.getItem('ongducfarm_drive_url') || 'https://script.google.com/macros/s/AKfycbxVF5Xx6Xo0bMMOE6jaTcCzuZurLHeVQPOrJlerd6h1pgXFkAwxmGTsJzeqK5skDFIe/exec';
 
         if (window.supabase && typeof window.supabase.createClient === 'function') {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1080,15 +1041,7 @@
         let db = {
             currentUser: null, currentRole: 'owner', cropFilter: 'all', livestockFilter: 'all', aquacultureFilter: 'all', inventoryFilter: 'all', cameraFilter: 'all', cameraGridCols: 2,
             harvestFilter: 'all',
-            categories: [],
-            locations: [],
-            batches: [],
-            harvests: [],
-            inventory: [],
-            cameras: [],
-            logs: [],
-            tasks: [],
-            ledger: [],
+            categories: [], locations: [], batches: [], harvests: [], inventory: [], cameras: [], logs: [], tasks: [], ledger: [],
             users: [
                 { id: 'u-1', name: 'Ông Đức', username: 'admin', email: 'admin@farm.com', password: '123', role: 'owner' }
             ]
@@ -1128,81 +1081,23 @@
             populateWeatherDropdown(); 
             checkAutoLogin(); 
             if (supabaseClient) {
-                await syncBatchesFromCloud();
-                await syncCategoriesFromCloud();
-                await syncLocationsFromCloud();
-                await syncLogsFromCloud();
-                await syncHarvestsFromCloud();
+                await syncAllFromCloud();
             }
         };
 
-        // ĐỒNG BỘ DỮ LIỆU TỪ SUPABASE CLOUD
-        async function syncBatchesFromCloud() {
+        async function syncAllFromCloud() {
             try {
-                const { data, error } = await supabaseClient.from('batches').select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    db.batches = data; 
-                    saveLocalState();
-                    renderAllViews(); 
+                const tables = ['batches', 'categories', 'locations', 'logs', 'harvests', 'inventory', 'tasks', 'ledger', 'users', 'cameras'];
+                for (const t of tables) {
+                    const { data, error } = await supabaseClient.from(t).select('*');
+                    if (!error && data && data.length > 0) db[t] = data;
                 }
+                saveLocalState();
+                renderAllViews(); 
             } catch (e) {
-                console.error("Lỗi đồng bộ Batches Supabase:", e);
+                console.error("Lỗi đồng bộ Supabase Cloud:", e);
             }
         }
-        async function syncCategoriesFromCloud() {
-            try {
-                const { data, error } = await supabaseClient.from('categories').select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    db.categories = data; 
-                    saveLocalState();
-                    renderAllViews(); 
-                }
-            } catch (e) {
-                console.error("Lỗi đồng bộ Categories Supabase:", e);
-            }
-        }
-        async function syncLocationsFromCloud() {
-            try {
-                const { data, error } = await supabaseClient.from('locations').select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    db.locations = data; 
-                    saveLocalState();
-                    renderAllViews(); 
-                }
-            } catch (e) {
-                console.error("Lỗi đồng bộ Locations Supabase:", e);
-            }
-        }
-        async function syncLogsFromCloud() {
-            try {
-                const { data, error } = await supabaseClient.from('logs').select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    db.logs = data; 
-                    saveLocalState();
-                    renderAllViews(); 
-                }
-            } catch (e) {
-                console.error("Lỗi đồng bộ Logs Supabase:", e);
-            }
-        }
-        async function syncHarvestsFromCloud() {
-            try {
-                const { data, error } = await supabaseClient.from('harvests').select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    db.harvests = data; 
-                    saveLocalState();
-                    renderAllViews(); 
-                }
-            } catch (e) {
-                console.error("Lỗi đồng bộ Harvests Supabase:", e);
-            }
-        }
-
 
         function loadLocalState() {
             const s = localStorage.getItem('ongducfarm_state');
@@ -1272,7 +1167,7 @@
             const lowStockDiv = document.getElementById('lowStockAlerts');
             const lowStocks = db.inventory.filter(i => Number(i.quantity) < 15);
             if(lowStocks.length > 0 && db.currentRole !== 'viewer') {
-                lowStockDiv.innerHTML = lowStocks.map(i => `<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-center text-xs font-bold shadow-sm mb-2"><i class="fa-solid fa-triangle-exclamation text-rose-500 mr-2 text-base"></i> Cảnh báo: "${i.name}" sắp hết (Kho: ${i.quantity} ${i.unit||''}).</div>`).join('');
+                lowStockDiv.innerHTML = lowStocks.map(i => `<div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-center text-xs font-bold shadow-sm mb-2"><i class="fa-solid fa-triangle-exclamation text-rose-50 mr-2 text-base"></i> Cảnh báo: "${i.name}" sắp hết (Kho: ${i.quantity} ${i.unit||''}).</div>`).join('');
                 lowStockDiv.classList.remove('hidden');
             } else { lowStockDiv.innerHTML = ''; }
 
@@ -1327,10 +1222,7 @@
             openModal('financialDetailModal');
         }
 
-        // SẮP XẾP THÔNG MINH (ALPHANUMERIC SORTING)
-        function sortBatches(arr) {
-            return arr.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' }));
-        }
+        function sortBatches(arr) { return arr.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' })); }
 
         function filterCropTab(type) { db.cropFilter = type; ['all','caylaunam','caynganngay'].forEach(t => { document.getElementById(`btn-crop-${t}`)&&(document.getElementById(`btn-crop-${t}`).className=t===type?"pb-2 border-b-2 border-emerald-600 text-emerald-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderCrops(); }
         function filterLivestockTab(type) { db.livestockFilter = type; ['all','giasuc','giacam'].forEach(t => { document.getElementById(`btn-ls-${t}`)&&(document.getElementById(`btn-ls-${t}`).className=t===type?"pb-2 border-b-2 border-amber-600 text-amber-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderLivestock(); }
@@ -1459,34 +1351,13 @@
                 return showToast('Mã đóng gói này đã tồn tại!', 'error');
             }
 
-            const newHarvest = {
-                id: 'harv-' + Date.now(),
-                batch_id: batch.id,
-                pack_code: packCode,
-                harvest_date: hDate,
-                quantity: hQty,
-                unit: hUnit,
-                revenue: hRev,
-                notes: hNotes,
-                created_by: db.currentUser?.name || 'Admin'
-            };
-            db.harvests = db.harvests || [];
-            db.harvests.push(newHarvest);
+            const newHarvest = { id: 'harv-' + Date.now(), batch_id: batch.id, pack_code: packCode, harvest_date: hDate, quantity: hQty, unit: hUnit, revenue: hRev, notes: hNotes, created_by: db.currentUser?.name || 'Admin' };
+            db.harvests = db.harvests || []; db.harvests.push(newHarvest);
 
-            const newLog = { 
-                id: 'log-' + Date.now(), 
-                batch_id: batch.id, 
-                action_type: 'Thu Hoạch', 
-                log_date: new Date().toISOString().slice(0, 16), 
-                description: `Tiến hành thu hoạch ${hType==='full'?'TOÀN BỘ':'một phần'}. Sản lượng: ${hQty} ${hUnit}. Mã đóng gói: ${packCode}.\n${hNotes}`, 
-                created_by: db.currentUser?.name || 'Admin', 
-                image_urls: [] 
-            };
+            const newLog = { id: 'log-' + Date.now(), batch_id: batch.id, action_type: 'Thu Hoạch', log_date: new Date().toISOString().slice(0, 16), description: `Tiến hành thu hoạch ${hType==='full'?'TOÀN BỘ':'một phần'}. Sản lượng: ${hQty} ${hUnit}. Mã đóng gói: ${packCode}.\n${hNotes}`, created_by: db.currentUser?.name || 'Admin', image_urls: [] };
             db.logs.push(newLog);
 
-            if(hType === 'full') {
-                batch.status = 'harvested';
-            }
+            if(hType === 'full') batch.status = 'harvested';
 
             saveLocalState();
             
@@ -1494,31 +1365,18 @@
                 try {
                     await supabaseClient.from('harvests').insert([newHarvest]);
                     await supabaseClient.from('logs').insert([newLog]);
-                    if (hType === 'full') {
-                        await supabaseClient.from('batches').update({ status: batch.status }).eq('id', batch.id);
-                    }
-                } catch (error) {
-                    console.error("Lỗi Supabase khi thu hoạch:", error);
-                    showToast('Đã lưu nội bộ nhưng lỗi đồng bộ Cloud!', 'error');
-                }
+                    if (hType === 'full') await supabaseClient.from('batches').update({ status: batch.status }).eq('id', batch.id);
+                } catch (error) { console.error("Lỗi Supabase khi thu hoạch:", error); }
             }
 
-            closeModal('harvestModal');
-            renderAllViews();
-            showToast('Đã lưu thông tin thu hoạch thành công!');
+            closeModal('harvestModal'); renderAllViews(); showToast('Đã lưu thông tin thu hoạch thành công!');
         }
 
         async function deleteHarvest(id) {
             showConfirmModal('Xóa Dữ Liệu Thu Hoạch', 'Bạn có chắc chắn muốn xóa?', async () => {
                 db.harvests = db.harvests.filter(h => h.id !== id);
-                saveLocalState();
-                renderAllViews();
-                showToast('Đã xóa thành công!');
-
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('harvests').delete().eq('id', id);
-                     if (error) console.error("Lỗi Supabase Delete Harvest:", error);
-                }
+                saveLocalState(); renderAllViews(); showToast('Đã xóa thành công!');
+                if (supabaseClient) await supabaseClient.from('harvests').delete().eq('id', id);
             });
         }
         
@@ -1528,16 +1386,8 @@
             document.getElementById('qrBatchCode').innerText = packCode;
             document.getElementById('qrcodeBox').innerHTML = '';
             
-            // TỰ ĐỘNG LẤY TÊN MIỀN HIỆN TẠI (Dù chạy trên GitHub hay bất kỳ đâu)
             const traceUrl = `${window.location.origin}/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
-            
-            new QRCode(document.getElementById('qrcodeBox'), { 
-                text: traceUrl, 
-                width: 200, 
-                height: 200, 
-                colorDark : "#022c22", 
-                colorLight : "#ffffff" 
-            });
+            new QRCode(document.getElementById('qrcodeBox'), { text: traceUrl, width: 200, height: 200, colorDark : "#022c22", colorLight : "#ffffff" });
             openModal('qrModal');
         }
 
@@ -1576,7 +1426,6 @@
             openModal('batchModal');
         }
 
-        // HÀM LƯU LÔ HOÀN CHỈNH - ĐÃ KẾT NỐI SUPABASE CLOUD
         async function handleSaveBatch(e) {
             e.preventDefault();
             const editId = document.getElementById('batchEditIdInput').value;
@@ -1600,46 +1449,22 @@
             if(editId) {
                 const idx = db.batches.findIndex(b => b.id === editId);
                 if(idx !== -1) db.batches[idx] = { ...db.batches[idx], ...bData };
-                
-                saveLocalState();
-                closeModal('batchModal');
-                renderAllViews();
+                if (supabaseClient) await supabaseClient.from('batches').update(bData).eq('id', editId);
                 showToast('Đã cập nhật thành công!');
-
-                if (supabaseClient) {
-                    const { error } = await supabaseClient.from('batches').update(bData).eq('id', editId);
-                    if (error) console.error("Lỗi Supabase Update:", error);
-                }
             } else {
                 const newBatch = { id: 'b-' + Date.now(), ...bData };
                 db.batches.push(newBatch);
-                
-                saveLocalState();
-                closeModal('batchModal');
-                renderAllViews();
+                if (supabaseClient) await supabaseClient.from('batches').insert([newBatch]);
                 showToast('Đã thêm lô mới thành công!');
-
-                if (supabaseClient) {
-                    const { error } = await supabaseClient.from('batches').insert([newBatch]);
-                    if (error) {
-                        console.error("Lỗi Supabase Insert:", error);
-                        showToast('Lưu local thành công nhưng lỗi đẩy lên Cloud!', 'error');
-                    }
-                }
             }
+            saveLocalState(); closeModal('batchModal'); renderAllViews();
         }
 
         async function deleteBatch(id) {
             showConfirmModal('Xóa Lô/Lứa', 'Bạn có chắc chắn muốn xóa dữ liệu này?', async () => {
                 db.batches = db.batches.filter(b => b.id !== id); 
-                saveLocalState(); 
-                renderAllViews(); 
-                showToast('Đã xóa thành công!');
-
-                if (supabaseClient) {
-                    const { error } = await supabaseClient.from('batches').delete().eq('id', id);
-                    if (error) console.error("Lỗi Supabase Delete:", error);
-                }
+                saveLocalState(); renderAllViews(); showToast('Đã xóa thành công!');
+                if (supabaseClient) await supabaseClient.from('batches').delete().eq('id', id);
             });
         }
 
@@ -1672,34 +1497,21 @@
             if(id) { 
                 const idx = db.categories.findIndex(c=>c.id===id); 
                 if(idx!==-1) { 
-                    db.categories[idx].name=name; 
-                    db.categories[idx].subtype=subtype; 
-                    if (supabaseClient) {
-                         const { error } = await supabaseClient.from('categories').update({ name, subtype }).eq('id', id);
-                         if(error) console.error("Lỗi Supabase Update Category:", error);
-                    }
+                    db.categories[idx].name=name; db.categories[idx].subtype=subtype; 
+                    if (supabaseClient) await supabaseClient.from('categories').update({ name, subtype }).eq('id', id);
                 } 
             } else { 
                 const newCat = {id:'cat-'+Date.now(), name, type, subtype, domain:type, group:subtype};
                 db.categories.push(newCat); 
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('categories').insert([newCat]);
-                     if(error) console.error("Lỗi Supabase Insert Category:", error);
-                }
+                if (supabaseClient) await supabaseClient.from('categories').insert([newCat]);
             }
             saveLocalState(); resetCategoryForm(); renderCategoryList(type); renderAllViews(); showToast('Lưu danh mục thành công!');
         }
         function deleteCategory(id) { 
             showConfirmModal('Xóa Danh Mục', 'Xác nhận xóa giống này?', async ()=>{ 
                 db.categories=db.categories.filter(c=>c.id!==id); 
-                saveLocalState(); 
-                renderCategoryList(document.getElementById('catTypeInput').value); 
-                renderAllViews(); 
-                showToast('Đã xóa!'); 
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('categories').delete().eq('id', id);
-                     if(error) console.error("Lỗi Supabase Delete Category:", error);
-                }
+                saveLocalState(); renderCategoryList(document.getElementById('catTypeInput').value); renderAllViews(); showToast('Đã xóa!'); 
+                if (supabaseClient) await supabaseClient.from('categories').delete().eq('id', id);
             }); 
         }
 
@@ -1707,7 +1519,7 @@
             const grid = document.getElementById('logsGrid');
             if(!grid) return;
             if(db.logs.length===0) { grid.innerHTML='<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có nhật ký thực địa nào.</p>'; return; }
-            grid.innerHTML = db.logs.slice().reverse().map(l => {
+            grid.innerHTML = db.logs.slice().sort((a,b) => new Date(b.log_date) - new Date(a.log_date)).map(l => {
                 const b = db.batches.find(x=>x.id===l.batch_id) || {code:'N/A'};
                 let imgHTML = '';
                 if(l.image_urls && l.image_urls.length > 0) {
@@ -1741,16 +1553,20 @@
         }
         async function handleSaveLog(e) {
             e.preventDefault();
+            const btn = document.getElementById('logSubmitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Đang lưu...'; btn.disabled = true;
+
             const bId = document.getElementById('logBatchSelect').value; let desc = document.getElementById('logDescInput').value;
-            let isBatchCostUpdated = false;
-            let newTotalCost = 0;
+            let isBatchCostUpdated = false; let newTotalCost = 0; let inventoryToUpdate = null;
 
             if(document.getElementById('logUseInventoryCheckbox').checked) {
                 const invId = document.getElementById('logInventorySelect').value, qty = Number(document.getElementById('logInventoryQtyInput').value);
                 const invItem = db.inventory.find(i => i.id === invId);
                 if(invItem && qty > 0) {
-                    if(qty > invItem.quantity) return showToast('Xuất kho vượt mức tồn!', 'error');
+                    if(qty > invItem.quantity) { btn.innerText = originalText; btn.disabled = false; return showToast('Xuất kho vượt mức tồn!', 'error'); }
                     invItem.quantity -= qty;
+                    inventoryToUpdate = invItem;
                     const cAdd = qty * Number(invItem.unit_price || 0);
                     const batch = db.batches.find(b => b.id === bId); 
                     if(batch) {
@@ -1761,8 +1577,14 @@
                     desc += `\n[Tự động] Đã xuất kho: ${qty} ${invItem.unit||''} ${invItem.name}. (+ ${formatCurrency(cAdd)})`;
                 }
             }
+            
             const fileInput = document.getElementById('logImageInput'); let imgUrls = [];
-            if(fileInput && fileInput.files[0]) { try{ const u = await uploadToGoogleDrive(fileInput.files[0]); if(u) imgUrls.push(u); }catch(e){} }
+            if(fileInput && fileInput.files[0]) { 
+                try { 
+                    const u = await uploadToGoogleDrive(fileInput.files[0]); 
+                    if(u) imgUrls.push(u); 
+                } catch(e) { console.error(e); } 
+            }
 
             const newLog = { id: 'log-' + Date.now(), batch_id: bId, action_type: document.getElementById('logActionSelect').value, log_date: document.getElementById('logDateInput').value, description: desc, created_by: db.currentUser?.name || 'Admin', image_urls: imgUrls };
             db.logs.push(newLog);
@@ -1771,28 +1593,19 @@
             if (supabaseClient) {
                 try {
                      await supabaseClient.from('logs').insert([newLog]);
-                     if (isBatchCostUpdated) {
-                          await supabaseClient.from('batches').update({ total_cost: newTotalCost }).eq('id', bId);
-                     }
-                } catch(error) {
-                    console.error("Lỗi Supabase khi lưu Log:", error);
-                    showToast('Đã lưu nội bộ nhưng lỗi đồng bộ Cloud!', 'error');
-                }
+                     if (isBatchCostUpdated) await supabaseClient.from('batches').update({ total_cost: newTotalCost }).eq('id', bId);
+                     if (inventoryToUpdate) await supabaseClient.from('inventory').update({ quantity: inventoryToUpdate.quantity }).eq('id', inventoryToUpdate.id);
+                } catch(error) { console.error("Lỗi Supabase khi lưu Log:", error); }
             }
 
-            closeModal('logModal'); renderLogs(); renderDashboard(); renderInventory(); renderCrops(); renderLivestock(); renderAquaculture(); showToast('Đã lưu nhật ký & Cập nhật chi phí!');
+            btn.innerText = originalText; btn.disabled = false;
+            closeModal('logModal'); renderLogs(); renderDashboard(); renderInventory(); renderCrops(); renderLivestock(); renderAquaculture(); showToast('Đã lưu nhật ký!');
         }
         function deleteLog(id) { 
             showConfirmModal('Xóa Nhật Ký', 'Bạn chắc chắn muốn xóa bản ghi này?', async ()=>{ 
                 db.logs=db.logs.filter(x=>x.id!==id); 
-                saveLocalState(); 
-                renderLogs(); 
-                renderDashboard(); 
-                showToast('Đã xóa!'); 
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('logs').delete().eq('id', id);
-                     if (error) console.error("Lỗi Supabase Delete Log:", error);
-                }
+                saveLocalState(); renderLogs(); renderDashboard(); showToast('Đã xóa!'); 
+                if (supabaseClient) await supabaseClient.from('logs').delete().eq('id', id);
             }); 
         }
 
@@ -1821,15 +1634,21 @@
             }).join('');
         }
         function openAddCameraModal() { document.getElementById('cameraForm').reset(); document.getElementById('camLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join(''); openModal('cameraModal'); }
-        function handleSaveCamera(e) { e.preventDefault(); db.cameras.push({ id:'cam-'+Date.now(), name:document.getElementById('camNameInput').value, location_id:document.getElementById('camLocationSelect').value, type:document.getElementById('camTypeSelect').value, stream_url:document.getElementById('camStreamUrlInput').value }); saveLocalState(); closeModal('cameraModal'); renderCameras(); showToast('Thêm camera thành công!'); }
-        function deleteCamera(id) { showConfirmModal('Xóa Camera', 'Khẳng định xóa?', ()=>{db.cameras=db.cameras.filter(c=>c.id!==id); saveLocalState(); renderCameras(); showToast('Đã xóa!');}); }
+        async function handleSaveCamera(e) { 
+            e.preventDefault(); 
+            const newCam = { id:'cam-'+Date.now(), name:document.getElementById('camNameInput').value, location_id:document.getElementById('camLocationSelect').value, type:document.getElementById('camTypeSelect').value, stream_url:document.getElementById('camStreamUrlInput').value };
+            db.cameras.push(newCam); saveLocalState(); closeModal('cameraModal'); renderCameras(); showToast('Thêm camera thành công!'); 
+            if (supabaseClient) await supabaseClient.from('cameras').insert([newCam]);
+        }
+        function deleteCamera(id) { showConfirmModal('Xóa Camera', 'Khẳng định xóa?', async ()=>{db.cameras=db.cameras.filter(c=>c.id!==id); saveLocalState(); renderCameras(); showToast('Đã xóa!'); if(supabaseClient) await supabaseClient.from('cameras').delete().eq('id',id);}); }
         async function captureCameraSnapshot(id) {
             const cam = db.cameras.find(c=>c.id===id); if(!cam) return;
             showToast('Đang chụp ảnh...', 'info');
             const cvs = document.createElement('canvas'); cvs.width=640; cvs.height=360; const ctx = cvs.getContext('2d');
             ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,640,360); ctx.fillStyle='#10b981'; ctx.font='bold 20px Inter'; ctx.fillText('CAMERA SNAPSHOT',30,50); ctx.fillStyle='#fff'; ctx.font='14px Inter'; ctx.fillText(cam.name,30,85); ctx.fillText(new Date().toLocaleString('vi-VN'),30,110);
-            db.logs.push({id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:new Date().toISOString().slice(0,16), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] });
-            saveLocalState(); renderLogs(); showToast('Đã lưu ảnh vào Nhật ký!', 'success');
+            const newLog = {id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:new Date().toISOString().slice(0,16), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] };
+            db.logs.push(newLog); saveLocalState(); renderLogs(); showToast('Đã lưu ảnh vào Nhật ký!', 'success');
+            if (supabaseClient) await supabaseClient.from('logs').insert([newLog]);
         }
 
         function renderLocationsTable() {
@@ -1842,35 +1661,23 @@
         async function handleSaveLocation(e) { 
             e.preventDefault(); 
             const id=document.getElementById('locEditIdInput').value, name=document.getElementById('locNameInput').value, type=document.getElementById('locTypeSelect').value, area=document.getElementById('locAreaInput').value; 
-            
             if(id){
                 const idx=db.locations.findIndex(x=>x.id===id); 
                 if(idx!==-1){
                     db.locations[idx].name=name; db.locations[idx].type=type; db.locations[idx].area=area;
-                    if (supabaseClient) {
-                         const { error } = await supabaseClient.from('locations').update({ name, type, area }).eq('id', id);
-                         if (error) console.error("Lỗi Supabase Update Location:", error);
-                    }
+                    if (supabaseClient) await supabaseClient.from('locations').update({ name, type, area }).eq('id', id);
                 }
             } else {
                 const newLoc = {id:'loc-'+Date.now(),name,type,area};
                 db.locations.push(newLoc);
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('locations').insert([newLoc]);
-                     if (error) console.error("Lỗi Supabase Insert Location:", error);
-                }
+                if (supabaseClient) await supabaseClient.from('locations').insert([newLoc]);
             } 
             saveLocalState(); closeModal('locationModal'); renderLocationsTable(); 
         }
         function deleteLocation(id) { 
             showConfirmModal('Xóa Khu Vực', 'Xác nhận xóa?', async ()=>{
-                db.locations=db.locations.filter(x=>x.id!==id); 
-                saveLocalState(); 
-                renderLocationsTable();
-                if (supabaseClient) {
-                     const { error } = await supabaseClient.from('locations').delete().eq('id', id);
-                     if (error) console.error("Lỗi Supabase Delete Location:", error);
-                }
+                db.locations=db.locations.filter(x=>x.id!==id); saveLocalState(); renderLocationsTable();
+                if (supabaseClient) await supabaseClient.from('locations').delete().eq('id', id);
             }); 
         }
 
@@ -1880,8 +1687,22 @@
         }
         function openAddUserModal() { document.getElementById('userForm').reset(); document.getElementById('userEditIdInput').value=''; document.getElementById('userModalTitle').innerText='Thêm Tài Khoản'; document.getElementById('userPasswordInput').required=true; openModal('userModal'); }
         function openEditUserModal(id) { const u = db.users.find(x=>x.id===id); if(!u) return; document.getElementById('userEditIdInput').value=u.id; document.getElementById('userNameInput').value=u.name; document.getElementById('userUsernameInput').value=u.username; document.getElementById('userEmailInput').value=u.email; document.getElementById('userRoleSelect').value=u.role; document.getElementById('userPasswordInput').value=''; document.getElementById('userPasswordInput').required=false; document.getElementById('userModalTitle').innerText='Sửa Tài Khoản'; openModal('userModal'); }
-        function handleSaveUser(e) { e.preventDefault(); const id=document.getElementById('userEditIdInput').value, name=document.getElementById('userNameInput').value, username=document.getElementById('userUsernameInput').value, email=document.getElementById('userEmailInput').value, pwd=document.getElementById('userPasswordInput').value, role=document.getElementById('userRoleSelect').value; if(id){const idx=db.users.findIndex(x=>x.id===id); if(idx!==-1){db.users[idx].name=name; db.users[idx].username=username; db.users[idx].email=email; db.users[idx].role=role; if(pwd)db.users[idx].password=pwd;}}else{db.users.push({id:'u-'+Date.now(),name,username,email,password:pwd||'123',role});} saveLocalState(); closeModal('userModal'); renderUsersTable(); }
-        function deleteUser(id) { if(id==='u-1') return showToast('Không thể xóa Admin!','error'); showConfirmModal('Xóa Tài Khoản', 'Xác nhận xóa?', ()=>{db.users=db.users.filter(x=>x.id!==id); saveLocalState(); renderUsersTable();}); }
+        async function handleSaveUser(e) { 
+            e.preventDefault(); const id=document.getElementById('userEditIdInput').value, name=document.getElementById('userNameInput').value, username=document.getElementById('userUsernameInput').value, email=document.getElementById('userEmailInput').value, pwd=document.getElementById('userPasswordInput').value, role=document.getElementById('userRoleSelect').value; 
+            if(id){
+                const idx=db.users.findIndex(x=>x.id===id); 
+                if(idx!==-1){
+                    db.users[idx].name=name; db.users[idx].username=username; db.users[idx].email=email; db.users[idx].role=role; if(pwd)db.users[idx].password=pwd;
+                    if(supabaseClient) await supabaseClient.from('users').update({name,username,email,role,...(pwd && {password:pwd})}).eq('id',id);
+                }
+            }else{
+                const newUser = {id:'u-'+Date.now(),name,username,email,password:pwd||'123',role};
+                db.users.push(newUser);
+                if(supabaseClient) await supabaseClient.from('users').insert([newUser]);
+            } 
+            saveLocalState(); closeModal('userModal'); renderUsersTable(); 
+        }
+        function deleteUser(id) { if(id==='u-1') return showToast('Không thể xóa Admin!','error'); showConfirmModal('Xóa Tài Khoản', 'Xác nhận xóa?', async ()=>{db.users=db.users.filter(x=>x.id!==id); saveLocalState(); renderUsersTable(); if(supabaseClient) await supabaseClient.from('users').delete().eq('id',id);}); }
 
         function openExportReportModal() { openModal('exportReportModal'); }
         function buildReportData() {
@@ -1897,7 +1718,53 @@
         function exportReportPDF() { showToast('Đang tạo PDF...', 'info'); setTimeout(()=>{closeModal('exportReportModal'); showToast('Đã lưu PDF!', 'success');},1000); }
         function openDriveConfigModal() { document.getElementById('googleDriveUrlInput').value=googleDriveScriptUrl; openModal('driveConfigModal'); }
         function saveDriveConfig() { googleDriveScriptUrl = document.getElementById('googleDriveUrlInput').value; localStorage.setItem('ongducfarm_drive_url', googleDriveScriptUrl); closeModal('driveConfigModal'); showToast('Đã lưu cấu hình!'); }
-        async function uploadToGoogleDrive(file) { return new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve(e.target.result); r.readAsDataURL(file); }); }
+        
+        async function uploadToGoogleDrive(file) { 
+            return new Promise(resolve => { 
+                const r = new FileReader(); 
+                r.onload = e => {
+                    const img = new Image();
+                    img.onload = async () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        let width = img.width, height = img.height;
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const base64String = canvas.toDataURL('image/jpeg', 0.6);
+                        
+                        if (googleDriveScriptUrl && googleDriveScriptUrl.includes('script.google.com')) {
+                            showToast('Đang tải ảnh lên Google Drive...', 'info');
+                            try {
+                                const base64Data = base64String.split(',')[1];
+                                const res = await fetch(googleDriveScriptUrl, {
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        name: 'OngDucFarm_' + Date.now() + '.jpg',
+                                        mimeType: 'image/jpeg',
+                                        data: base64Data
+                                    })
+                                });
+                                const responseData = await res.json();
+                                if (responseData && responseData.url) {
+                                    showToast('Upload Drive thành công!', 'success');
+                                    return resolve(responseData.url);
+                                }
+                            } catch (err) {
+                                console.error("Lỗi upload Drive:", err);
+                                showToast('Lỗi Upload, tự động lưu cục bộ!', 'error');
+                            }
+                        }
+                        resolve(base64String); // Fallback
+                    };
+                    img.src = e.target.result;
+                }; 
+                r.readAsDataURL(file); 
+            }); 
+        }
+
         function openImageLightbox(src, cap) { document.getElementById('lightboxImage').src=src; document.getElementById('lightboxCaption').innerText=cap; openModal('imageLightboxModal'); }
         function openForgotPasswordModal() { openModal('forgotPasswordModal'); }
         function handleForgotPassword() { closeModal('forgotPasswordModal'); showToast('Mật khẩu mới đã được gửi vào email của bạn!', 'info'); }
@@ -1952,9 +1819,16 @@
             }).join('');
         }
         function openAddTaskModal() { document.getElementById('taskTitleInput').value = ''; document.getElementById('taskDateInput').value = new Date().toISOString().slice(0, 10); document.getElementById('taskAssigneeSelect').innerHTML = db.users.filter(u=>u.role!=='viewer').map(u=>`<option value="${u.id}">${u.name}</option>`).join(''); openModal('taskModal'); }
-        function handleSaveTask(e) { e.preventDefault(); db.tasks = db.tasks || []; db.tasks.push({ id: 'task-'+Date.now(), title: document.getElementById('taskTitleInput').value, assignee_id: document.getElementById('taskAssigneeSelect').value, date: document.getElementById('taskDateInput').value, status: 'pending' }); saveLocalState(); closeModal('taskModal'); renderTasks(); showToast('Đã giao việc!'); }
-        function completeTask(id) { const t = db.tasks.find(x=>x.id===id); if(t) { t.status='completed'; saveLocalState(); renderTasks(); showToast('Hoàn thành xuất sắc!','success'); } }
-        function deleteTask(id) { db.tasks = db.tasks.filter(x=>x.id!==id); saveLocalState(); renderTasks(); }
+        async function handleSaveTask(e) { 
+            e.preventDefault(); const newTask = { id: 'task-'+Date.now(), title: document.getElementById('taskTitleInput').value, assignee_id: document.getElementById('taskAssigneeSelect').value, date: document.getElementById('taskDateInput').value, status: 'pending' };
+            db.tasks = db.tasks || []; db.tasks.push(newTask); saveLocalState(); closeModal('taskModal'); renderTasks(); showToast('Đã giao việc!'); 
+            if(supabaseClient) await supabaseClient.from('tasks').insert([newTask]);
+        }
+        async function completeTask(id) { 
+            const t = db.tasks.find(x=>x.id===id); 
+            if(t) { t.status='completed'; saveLocalState(); renderTasks(); showToast('Hoàn thành xuất sắc!','success'); if(supabaseClient) await supabaseClient.from('tasks').update({status:'completed'}).eq('id',id); } 
+        }
+        async function deleteTask(id) { db.tasks = db.tasks.filter(x=>x.id!==id); saveLocalState(); renderTasks(); if(supabaseClient) await supabaseClient.from('tasks').delete().eq('id',id); }
 
         function renderLedger() {
             const tbody = document.getElementById('ledgerTableBody'); const tfoot = document.getElementById('ledgerTableFooter');
@@ -1976,8 +1850,12 @@
             tfoot.innerHTML = `<tr><td colspan="3" class="p-4 font-black">TỔNG KẾT QUỸ CHUNG:</td><td class="p-4 text-right font-black"><span class="text-emerald-600">+${formatCurrency(totalInc)}</span><br><span class="text-rose-600">-${formatCurrency(totalExp)}</span></td><td></td></tr>`;
         }
         function openAddLedgerModal() { document.getElementById('ledgerForm').reset(); document.getElementById('ledgerDateInput').value=new Date().toISOString().slice(0,10); openModal('ledgerModal'); }
-        function handleSaveLedger(e) { e.preventDefault(); db.ledger = db.ledger || []; db.ledger.push({ id: 'leg-'+Date.now(), type: document.getElementById('ledgerTypeSelect').value, date: document.getElementById('ledgerDateInput').value, category: document.getElementById('ledgerCategoryInput').value, amount: Number(document.getElementById('ledgerAmountInput').value), notes: document.getElementById('ledgerNotesInput').value }); saveLocalState(); closeModal('ledgerModal'); renderLedger(); renderDashboard(); showToast('Đã lưu giao dịch!'); }
-        function deleteLedger(id) { db.ledger = db.ledger.filter(x=>x.id!==id); saveLocalState(); renderLedger(); renderDashboard(); }
+        async function handleSaveLedger(e) { 
+            e.preventDefault(); const newLedger = { id: 'leg-'+Date.now(), type: document.getElementById('ledgerTypeSelect').value, date: document.getElementById('ledgerDateInput').value, category: document.getElementById('ledgerCategoryInput').value, amount: Number(document.getElementById('ledgerAmountInput').value), notes: document.getElementById('ledgerNotesInput').value };
+            db.ledger = db.ledger || []; db.ledger.push(newLedger); saveLocalState(); closeModal('ledgerModal'); renderLedger(); renderDashboard(); showToast('Đã lưu giao dịch!'); 
+            if(supabaseClient) await supabaseClient.from('ledger').insert([newLedger]);
+        }
+        async function deleteLedger(id) { db.ledger = db.ledger.filter(x=>x.id!==id); saveLocalState(); renderLedger(); renderDashboard(); if(supabaseClient) await supabaseClient.from('ledger').delete().eq('id',id); }
 
         function navigateToInventory(categoryFilter) {
             if (db.currentRole === 'viewer') return showToast('Không có quyền truy cập Nhà Kho!', 'error');
@@ -1993,8 +1871,8 @@
         }
         function renderInventory() {
             const tbody = document.getElementById('inventoryTableBody'); if(!tbody) return;
-            let items = db.inventory;
-            if (db.inventoryFilter !== 'all') items = db.inventory.filter(i => i.category === db.inventoryFilter);
+            let items = db.inventory || [];
+            if (db.inventoryFilter !== 'all') items = (db.inventory || []).filter(i => i.category === db.inventoryFilter);
             let sum = 0;
             if(items.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Chưa có vật tư nào trong danh mục này.</td></tr>';
@@ -2037,31 +1915,22 @@
             document.getElementById('inventoryModalTitle').innerHTML = '<i class="fa-solid fa-warehouse text-teal-600 mr-2"></i><span>Sửa Thông Tin Vật Tư</span>';
             openModal('inventoryModal');
         }
-        function handleSaveInventory(e) { 
+        async function handleSaveInventory(e) { 
             e.preventDefault(); 
             const id = document.getElementById('invEditIdInput').value;
-            const itemData = {
-                name: document.getElementById('invNameInput').value, 
-                category: document.getElementById('invCategorySelect').value, 
-                quantity: Number(document.getElementById('invQuantityInput').value), 
-                unit: document.getElementById('invUnitInput').value, 
-                unit_price: Number(document.getElementById('invUnitPriceInput').value),
-                notes: document.getElementById('invNotesInput').value
-            };
+            const itemData = { name: document.getElementById('invNameInput').value, category: document.getElementById('invCategorySelect').value, quantity: Number(document.getElementById('invQuantityInput').value), unit: document.getElementById('invUnitInput').value, unit_price: Number(document.getElementById('invUnitPriceInput').value), notes: document.getElementById('invNotesInput').value };
             if(id) {
                 const idx = db.inventory.findIndex(i => i.id === id);
-                if(idx !== -1) db.inventory[idx] = { ...db.inventory[idx], ...itemData };
+                if(idx !== -1) { db.inventory[idx] = { ...db.inventory[idx], ...itemData }; if(supabaseClient) await supabaseClient.from('inventory').update(itemData).eq('id',id); }
             } else {
-                db.inventory.push({ id:'inv-'+Date.now(), ...itemData }); 
+                const newItem = { id:'inv-'+Date.now(), ...itemData }; db.inventory.push(newItem); if(supabaseClient) await supabaseClient.from('inventory').insert([newItem]);
             }
-            saveLocalState(); closeModal('inventoryModal'); renderInventory(); renderDashboard(); 
-            showToast('Lưu vật tư thành công!');
+            saveLocalState(); closeModal('inventoryModal'); renderInventory(); renderDashboard(); showToast('Lưu vật tư thành công!');
         }
         function deleteInventoryItem(id) { 
-            showConfirmModal('Xóa Vật Tư', 'Bạn có chắc chắn muốn xóa?', () => {
-                db.inventory=db.inventory.filter(i=>i.id!==id); 
-                saveLocalState(); renderInventory(); renderDashboard(); 
-                showToast('Đã xóa vật tư!');
+            showConfirmModal('Xóa Vật Tư', 'Bạn có chắc chắn muốn xóa?', async () => {
+                db.inventory=db.inventory.filter(i=>i.id!==id); saveLocalState(); renderInventory(); renderDashboard(); showToast('Đã xóa vật tư!');
+                if(supabaseClient) await supabaseClient.from('inventory').delete().eq('id',id);
             });
         }
     </script>
