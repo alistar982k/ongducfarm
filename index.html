@@ -1979,7 +1979,7 @@
         }
         async function captureCameraSnapshot(id) {
             const cam = db.cameras.find(c=>c.id===id); if(!cam) return;
-            showToast('Đang chụp ảnh...', 'info');
+            showToast('Đang chụp và tải ảnh lên Cloud...', 'info');
             const cvs = document.createElement('canvas'); cvs.width=640; cvs.height=360; const ctx = cvs.getContext('2d');
             
             const vnNow = getVNTime();
@@ -1987,9 +1987,64 @@
 
             ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,640,360); ctx.fillStyle='#10b981'; ctx.font='bold 20px Inter'; ctx.fillText('CAMERA SNAPSHOT',30,50); ctx.fillStyle='#fff'; ctx.font='14px Inter'; ctx.fillText(cam.name,30,85); ctx.fillText(timeStr,30,110);
             
-            const newLog = {id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:getVNDateTimeString(), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] };
+            let imgUrls = [];
+            const base64DataWithPrefix = cvs.toDataURL('image/jpeg', 0.8);
+            const base64Data = base64DataWithPrefix.split(',')[1];
+            
+            try {
+                const payloadJSON = JSON.stringify({
+                    file: base64Data,
+                    data: base64Data,
+                    base64: base64Data,
+                    filename: `CameraSnapshot_${Date.now()}_${cam.name.replace(/[^a-zA-Z0-9]/g, '')}.jpg`,
+                    mimeType: "image/jpeg"
+                });
+                
+                // Gửi request tới Google Drive Apps Script
+                const response = await fetch(googleDriveScriptUrl, { 
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
+                    },
+                    body: payloadJSON 
+                });
+                
+                const textResult = await response.text();
+                let driveLink = null;
+                
+                if (textResult.trim().startsWith("http")) {
+                    driveLink = textResult.trim();
+                } else {
+                    try {
+                        const result = JSON.parse(textResult);
+                        driveLink = result.link || result.url || result.fileUrl || result.webViewLink || (result.data && result.data.link) || result.id;
+                        if (!driveLink && result.status === 'success') driveLink = result.url;
+                    } catch (err) {
+                        console.warn("Google Drive không trả về JSON hợp lệ:", textResult.substring(0, 150));
+                    }
+                }
+                
+                if (driveLink) {
+                    imgUrls.push(driveLink);
+                } else {
+                    console.error("Lỗi Google Drive:", textResult);
+                    // Fallback to local Base64 if Drive upload fails
+                    imgUrls.push(base64DataWithPrefix);
+                    showToast('Lỗi Drive, lưu trữ ảnh cục bộ!', 'error');
+                }
+            } catch (e) {
+                console.error("Lỗi kết nối upload:", e);
+                // Fallback to local Base64 if fetch fails
+                imgUrls.push(base64DataWithPrefix);
+                showToast('Lỗi kết nối, lưu trữ ảnh cục bộ!', 'error');
+            }
+            
+            const newLog = {id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:getVNDateTimeString(), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls: imgUrls };
             db.logs.push(newLog);
-            saveLocalState(); renderLogs(); showToast('Đã lưu ảnh vào Nhật ký!', 'success');
+            saveLocalState(); renderLogs(); 
+            if (imgUrls[0] && imgUrls[0].startsWith('http')) {
+                showToast('Đã lưu ảnh vào Drive & Nhật ký!', 'success');
+            }
             if(supabaseClient) await supabaseClient.from('logs').insert([newLog]);
         }
 
