@@ -2074,10 +2074,112 @@
             });
         }
         function exportReportExcel() {
-            const data = buildReportData(); if(data.length===0) return showToast('Không có dữ liệu!','error');
-            const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "BaoCao"); XLSX.writeFile(wb, `BaoCao_${Date.now()}.xlsx`); closeModal('exportReportModal');
+            const batchData = buildReportData();
+            const inventoryData = db.inventory.map(i => ({
+                'Vật tư': i.name, 'Danh mục': i.category === 'seed' ? 'Cây Giống' : i.category === 'fertilizer' ? 'Phân Bón & Thuốc' : i.category === 'tool' ? 'Dụng Cụ' : 'Thức Ăn', 'Số lượng': i.quantity + ' ' + (i.unit||''), 'Thành tiền': i.quantity * i.unit_price
+            }));
+            const ledgerData = db.ledger.map(l => ({
+                'Ngày': formatDateStandard(l.date), 'Loại': l.type === 'expense' ? 'Khoản Chi' : 'Khoản Thu', 'Nội dung': l.category, 'Số tiền': l.type === 'expense' ? -l.amount : l.amount
+            }));
+
+            let sumCost = 0, sumRev = 0;
+            db.batches.forEach(b => { sumCost += Number(b.total_cost||0); sumRev += Number(b.estimated_revenue||0); });
+            db.ledger.forEach(l => { if (l.type === 'expense') sumCost += Number(l.amount); else sumRev += Number(l.amount); });
+            
+            const summaryData = [{'Tổng Chi Phí': sumCost, 'Tổng Doanh Thu': sumRev, 'Lợi Nhuận': sumRev - sumCost}];
+
+            if(batchData.length===0 && inventoryData.length===0 && ledgerData.length===0) return showToast('Không có dữ liệu!','error');
+            
+            const wb = XLSX.utils.book_new();
+            if(batchData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchData), "Lô_Canh_Tac");
+            if(inventoryData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(inventoryData), "Nha_Kho");
+            if(ledgerData.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ledgerData), "So_Quy");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), "Tong_Hop");
+
+            XLSX.writeFile(wb, `BaoCao_OngDucFarm_${getVNDateString()}.xlsx`); 
+            closeModal('exportReportModal');
         }
-        function exportReportPDF() { showToast('Đang tạo PDF...', 'info'); setTimeout(()=>{closeModal('exportReportModal'); showToast('Đã lưu PDF!', 'success');},1000); }
+        
+        function exportReportPDF() { 
+            showToast('Đang tạo PDF...', 'info');
+            
+            let htmlContent = `<div style="font-family: Arial, sans-serif; padding: 20px;">`;
+            htmlContent += `<h1 style="text-align: center; color: #064e3b; margin-bottom: 5px;">BÁO CÁO TỔNG HỢP ÔNG ĐỨC FARM</h1>`;
+            htmlContent += `<p style="text-align: center; font-size: 12px; color: #64748b; margin-bottom: 20px;">Ngày xuất: ${getVNDateTimeString()}</p>`;
+
+            // Tổng hợp tài chính
+            let sumCost = 0, sumRev = 0;
+            db.batches.forEach(b => { sumCost += Number(b.total_cost||0); sumRev += Number(b.estimated_revenue||0); });
+            db.ledger.forEach(l => { if (l.type === 'expense') sumCost += Number(l.amount); else sumRev += Number(l.amount); });
+            
+            htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">1. TỔNG QUAN TÀI CHÍNH</h2>`;
+            htmlContent += `<table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">`;
+            htmlContent += `<tr style="background: #f1f5f9;"><th style="border: 1px solid #cbd5e1; padding: 8px;">Tổng Chi Phí</th><th style="border: 1px solid #cbd5e1; padding: 8px;">Tổng Doanh Thu</th><th style="border: 1px solid #cbd5e1; padding: 8px;">Lợi Nhuận</th></tr>`;
+            htmlContent += `<tr><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; color: #e11d48; font-weight: bold;">${formatCurrency(sumCost)}</td><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; color: #16a34a; font-weight: bold;">${formatCurrency(sumRev)}</td><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold;">${formatCurrency(sumRev - sumCost)}</td></tr>`;
+            htmlContent += `</table>`;
+
+            // Lô canh tác
+            const batches = buildReportData();
+            if(batches.length > 0) {
+                htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">2. DANH SÁCH LÔ CANH TÁC ĐANG NUÔI TRỒNG</h2>`;
+                htmlContent += `<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px;">`;
+                htmlContent += `<tr style="background: #f8fafc;"><th style="border: 1px solid #e2e8f0; padding: 6px;">Mã Lô</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Giống</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Vị trí</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Số Lượng</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Chi Phí</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Dự Thu</th></tr>`;
+                batches.forEach(b => {
+                    htmlContent += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px; font-weight: bold;">${b['Mã Lô/Lứa']}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${b['Giống/Loài']}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${b['Vị trí']}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: center;">${formatNumber(b['Số lượng'])}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right; color: #e11d48;">${formatNumber(b['Chi Phí'])}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right; color: #16a34a;">${formatNumber(b['Dự Thu'])}</td></tr>`;
+                });
+                htmlContent += `</table>`;
+            }
+
+            // Nhà kho
+            if(db.inventory && db.inventory.length > 0) {
+                htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">3. TỒN KHO VẬT TƯ</h2>`;
+                htmlContent += `<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px;">`;
+                htmlContent += `<tr style="background: #f8fafc;"><th style="border: 1px solid #e2e8f0; padding: 6px;">Tên Vật Tư</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Số Lượng</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Tổng Tiền</th></tr>`;
+                db.inventory.forEach(i => {
+                    htmlContent += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${i.name}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: center;">${i.quantity} ${i.unit||''}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right;">${formatNumber(i.quantity * i.unit_price)}</td></tr>`;
+                });
+                htmlContent += `</table>`;
+            }
+
+            // Sổ quỹ
+            if(db.ledger && db.ledger.length > 0) {
+                 htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">4. SỔ QUỸ THU CHI</h2>`;
+                htmlContent += `<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px;">`;
+                htmlContent += `<tr style="background: #f8fafc;"><th style="border: 1px solid #e2e8f0; padding: 6px;">Ngày</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Hạng Mục</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Khoản Chi</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Khoản Thu</th></tr>`;
+                db.ledger.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(l => {
+                    const isExp = l.type === 'expense';
+                    htmlContent += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${formatDateStandard(l.date)}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${l.category}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right; color: #e11d48;">${isExp ? formatNumber(l.amount) : ''}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right; color: #16a34a;">${!isExp ? formatNumber(l.amount) : ''}</td></tr>`;
+                });
+                htmlContent += `</table>`;
+            }
+
+            htmlContent += `</div>`;
+
+            // Tạo div tạm để chứa HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            document.body.appendChild(tempDiv);
+            
+            // Cấu hình html2pdf
+            const opt = {
+                margin:       10,
+                filename:     `BaoCao_OngDucFarm_${getVNDateString()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Xuất PDF
+            html2pdf().set(opt).from(tempDiv).save().then(() => {
+                document.body.removeChild(tempDiv);
+                closeModal('exportReportModal'); 
+                showToast('Đã lưu PDF!', 'success');
+            }).catch(err => {
+                console.error("Lỗi xuất PDF: ", err);
+                document.body.removeChild(tempDiv);
+                showToast('Lỗi khi tạo PDF!', 'error');
+            });
+        }
         function openDriveConfigModal() { document.getElementById('googleDriveUrlInput').value=googleDriveScriptUrl; openModal('driveConfigModal'); }
         function saveDriveConfig() { googleDriveScriptUrl = document.getElementById('googleDriveUrlInput').value; localStorage.setItem('ongducfarm_drive_url', googleDriveScriptUrl); closeModal('driveConfigModal'); showToast('Đã lưu cấu hình!'); }
         
