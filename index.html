@@ -134,9 +134,8 @@
                     <button onclick="navigateTo('aquaculture')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-aquaculture">
                         <i class="fa-solid fa-fish text-cyan-400"></i><span>Thủy Sản</span>
                     </button>
-                    
-                    <button onclick="navigateTo('tasks')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5 viewer-hide" id="nav-tasks">
-                        <i class="fa-solid fa-list-check text-blue-400"></i><span>Công Việc</span>
+                    <button onclick="navigateTo('weather')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-weather">
+                        <i class="fa-solid fa-cloud-sun-rain text-amber-400"></i><span>Thời Tiết</span>
                     </button>
                     <button onclick="navigateTo('logs')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-logs">
                         <i class="fa-solid fa-book-open text-purple-400"></i><span>Nhật Ký</span>
@@ -167,8 +166,9 @@
                         </button>
                         <div class="absolute right-0 top-full pt-1 w-56 hidden group-hover:block z-50">
                             <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 text-xs">
+                                <button onclick="navigateTo('tasks')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2 viewer-hide"><i class="fa-solid fa-list-check w-4"></i><span>Công Việc & Phân Công</span></button>
                                 <button onclick="navigateTo('harvest')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-orange-400 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-4"></i><span>Lịch Sử Thu Hoạch</span></button>
-                                <button onclick="navigateTo('ledger')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-yellow-400 flex items-center space-x-2"><i class="fa-solid fa-file-invoice-dollar w-4"></i><span>Sổ Quỹ Thu Chi</span></button>
+                                <button onclick="navigateTo('ledger')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-yellow-400 flex items-center space-x-2"><i class="fa-solid fa-coins w-4"></i><span>Sổ Quỹ Thu Chi</span></button>
                                 <button onclick="navigateTo('locations')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-300 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-4"></i><span>Thửa Đất & Khu Vực</span></button>
                                 <button onclick="navigateTo('users')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
                                 <div class="border-t border-slate-800 my-1"></div>
@@ -209,12 +209,11 @@
 
             <!-- Mobile Drawer Menu -->
             <div id="mobileMenu" class="hidden lg:hidden bg-slate-800 border-t border-slate-700 p-3 space-y-1 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
-                <button onclick="navigateTo('tasks'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-blue-300 hover:bg-slate-700 flex items-center space-x-2 viewer-hide"><i class="fa-solid fa-list-check w-5"></i><span>Giao Việc & Lịch</span></button>
+                <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
                 <button onclick="navigateTo('logs'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-book-open text-purple-400 w-5"></i><span>Nhật Ký Ảnh</span></button>
                 <button onclick="navigateTo('cameras'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-tv text-rose-400 w-5"></i><span>Camera</span></button>
-                <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
 
-                <div class="pt-2 border-t border-slate-700 viewer-hide">
+                <div class="pt-2 border-t border-slate-700 viewer-hide mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Nhà Kho</p>
                     <button onclick="navigateToInventory('seed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-seedling w-5"></i><span>Cây Giống</span></button>
                     <button onclick="navigateToInventory('fertilizer'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-flask w-5"></i><span>Phân Bón & Thuốc</span></button>
@@ -222,10 +221,11 @@
                     <button onclick="navigateToInventory('feed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn w-5"></i><span>Thức Ăn Chăn Nuôi</span></button>
                 </div>
                 
-                <div class="pt-2 border-t border-slate-700">
+                <div class="pt-2 border-t border-slate-700 mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Quản Lý</p>
+                    <button onclick="navigateTo('tasks'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-blue-300 hover:bg-slate-700 flex items-center space-x-2 viewer-hide"><i class="fa-solid fa-list-check w-5"></i><span>Giao Việc & Phân Công</span></button>
                     <button onclick="navigateTo('harvest'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-5"></i><span>Lịch Sử Thu Hoạch</span></button>
-                    <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2 rounded-lg text-yellow-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-file-invoice-dollar w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
+                    <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2 rounded-lg text-yellow-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-coins w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
                     <button onclick="navigateTo('locations'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-5"></i><span>Thửa Đất & Khu Vực</span></button>
                     <button onclick="navigateTo('users'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-indigo-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-5"></i><span>Tài Khoản Nhân Viên</span></button>
                     <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
@@ -414,7 +414,7 @@
                         <p class="text-xs text-slate-500 mt-1">Danh sách công việc cần làm hôm nay của các nhân viên</p>
                     </div>
                     <button onclick="openAddTaskModal()" class="owner-only px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
-                        <i class="fa-solid fa-pen"></i><span>+ Giao Việc Mới</span>
+                        <i class="fa-solid fa-plus"></i><span>+ Giao Việc Mới</span>
                     </button>
                 </div>
                 <div id="tasksContainer" class="space-y-3"></div>
@@ -428,7 +428,7 @@
                         <p class="text-xs text-slate-500 mt-1">Ghi nhận thông số đo đạc, chụp ảnh từ Camera điện thoại / Webcam</p>
                     </div>
                     <button onclick="openAddLogModal()" class="viewer-hide px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
-                        <i class="fa-solid fa-book-open"></i><span>+ Ghi Nhật Ký</span>
+                        <i class="fa-solid fa-camera"></i><span>+ Ghi Nhật Ký</span>
                     </button>
                 </div>
                 <div id="logsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
@@ -503,9 +503,9 @@
                         <p class="text-xs text-slate-500 mt-1">Dữ liệu trạm khí tượng vi mô tự động cung cấp gợi ý tưới tiêu & phòng nấm bệnh</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <select id="weatherLocationSelect" onchange="loadWeatherData()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"></select>
+                        <select id="weatherLocationSelect" onchange="loadWeatherData()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none max-w-[200px]"></select>
                         <button onclick="loadWeatherData()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1">
-                            <i class="fa-solid fa-arrows-rotate"></i><span>Cập Nhật</span>
+                            <i class="fa-solid fa-arrows-rotate"></i><span class="hidden sm:inline">Cập Nhật</span>
                         </button>
                     </div>
                 </div>
@@ -515,7 +515,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="text-xs font-semibold uppercase tracking-wider text-amber-200">Trạm Khí Tượng Thực Địa</span>
-                                <h3 id="w-city-display" class="text-2xl font-black mt-0.5">Tỉnh Tây Ninh</h3>
+                                <h3 id="w-city-display" class="text-2xl font-black mt-0.5">Tây Ninh</h3>
                             </div>
                             <i id="w-icon" class="fa-solid fa-sun text-4xl text-amber-300"></i>
                         </div>
@@ -555,12 +555,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                    <h3 class="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center space-x-2">
-                        <i class="fa-solid fa-bell text-amber-500"></i><span>Cảnh Báo & Khuyến Cáo Canh Tác Thông Minh</span>
-                    </h3>
-                    <div id="weatherAlertsContainer" class="space-y-2"></div>
                 </div>
             </section>
 
@@ -1077,16 +1071,36 @@
     <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Khôi Phục Mật Khẩu</h3><input type="email" id="forgotEmailInput" placeholder="Nhập email của bạn" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('forgotPasswordModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="handleForgotPassword()" class="bg-emerald-600 text-white w-full p-2.5 rounded-xl font-bold">Gửi Yêu Cầu</button></div></div></div>
     
     <!-- Lightbox & Confirm & Toast -->
-    <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4"><img id="lightboxImage" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"><p id="lightboxCaption" class="text-white mt-3 text-sm font-medium"></p><button onclick="closeModal('imageLightboxModal')" class="absolute top-4 right-4 text-white text-3xl hover:text-slate-300">×</button></div>
+    <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4"><img id="lightboxImage" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"><p id="lightboxCaption" class="text-white mt-3 text-sm font-medium hidden"></p><button onclick="closeModal('imageLightboxModal')" class="absolute top-4 right-4 text-white text-3xl hover:text-slate-300">×</button></div>
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white p-6 rounded-3xl text-center w-full max-w-sm"><div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto text-xl mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 id="confirmTitle" class="font-bold text-sm mb-2">Xác Nhận</h3><p id="confirmMessage" class="text-xs text-slate-500 mb-5"></p><div class="flex space-x-2 justify-center"><button onclick="closeModal('confirmModal')" class="px-5 py-2.5 bg-slate-100 rounded-xl font-bold">Hủy Bỏ</button><button id="confirmBtn" class="bg-rose-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-md">Xác Nhận</button></div></div></div>
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all bg-slate-900 text-white px-4 py-3 rounded-2xl flex items-center space-x-3 text-xs shadow-xl border border-slate-700"><i id="toastIcon"></i><span id="toastMessage"></span></div>
 
     <script>
+        // HÀM LẤY MÚI GIỜ CHUẨN VIỆT NAM (UTC+7) TỰ ĐỘNG CHO MỌI THIẾT BỊ ĐẢM BẢO GIỜ 24H
+        function getVNTime() {
+            const d = new Date();
+            const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+            return new Date(utc + (3600000 * 7));
+        }
+        function getVNDateString() {
+            const d = getVNTime();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+        function getVNDateTimeString() {
+            const d = getVNTime();
+            return getVNDateString() + 'T' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        }
+
         // CẤU HÌNH SUPABASE
         const SUPABASE_URL = 'https://ujqkqopzztpmmahhncfv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_66DBjvCveyV28GL7-9bpCA_r-5N2I1K';
         let supabaseClient = null;
-        let googleDriveScriptUrl = localStorage.getItem('ongducfarm_drive_url') || 'https://script.google.com/macros/s/AKfycbxVF5Xx6Xo0bMMOE6jaTcCzuZurLHeVQPOrJlerd6h1pgXFkAwxmGTsJzeqK5skDFIe/exec';
+        
+        const DEFAULT_DRIVE_URL = 'https://script.google.com/macros/s/AKfycbxVF5Xx6Xo0bMMOE6jaTcCzuZurLHeVQPOrJlerd6h1pgXFkAwxmGTsJzeqK5skDFIe/exec';
+        let googleDriveScriptUrl = localStorage.getItem('ongducfarm_drive_url');
+        if (!googleDriveScriptUrl || googleDriveScriptUrl.trim() === '') {
+            googleDriveScriptUrl = DEFAULT_DRIVE_URL;
+        }
 
         if (window.supabase && typeof window.supabase.createClient === 'function') {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1122,10 +1136,32 @@
         }
         function formatNumber(n) { return Number(n||0).toLocaleString('vi-VN'); }
         function formatCurrency(n) { return formatNumber(n) + ' VNĐ'; }
+        
+        // Luôn ép định dạng 24h và thời gian VN chuẩn khi hiển thị
         function formatDateStandard(dStr) {
-            if(!dStr) return ''; let d = new Date(dStr); if(isNaN(d)) return dStr;
-            const h = String(d.getHours()).padStart(2,'0'), m = String(d.getMinutes()).padStart(2,'0');
-            return dStr.includes('T') ? `${h}:${m} - ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+            if(!dStr) return '';
+            if (dStr.length === 10 && dStr.includes('-')) {
+                const parts = dStr.split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            if (dStr.includes('T')) {
+                const parts = dStr.split('T');
+                const dateParts = parts[0].split('-');
+                const timeParts = parts[1].split(':');
+                return `${timeParts[0]}:${timeParts[1]} - ${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            }
+            let d = new Date(dStr); 
+            if(isNaN(d)) return dStr;
+            // Ép múi giờ VN (UTC+7)
+            const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+            const vnDate = new Date(utc + (3600000 * 7));
+            const h = String(vnDate.getHours()).padStart(2,'0');
+            const m = String(vnDate.getMinutes()).padStart(2,'0');
+            const dd = String(vnDate.getDate()).padStart(2,'0');
+            const mm = String(vnDate.getMonth()+1).padStart(2,'0');
+            const yyyy = vnDate.getFullYear();
+            
+            return (dStr.includes('T') || dStr.length > 10) ? `${h}:${m} - ${dd}/${mm}/${yyyy}` : `${dd}/${mm}/${yyyy}`;
         }
 
         window.onload = async function() { 
@@ -1389,7 +1425,7 @@
             document.getElementById('harvestForm').reset();
             document.getElementById('harvestBatchIdInput').value = batch.id;
             document.getElementById('harvestBatchCodeDisplay').innerText = batch.code;
-            document.getElementById('harvestDateInput').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('harvestDateInput').value = getVNDateString();
             const countThisBatch = (db.harvests || []).filter(h => h.batch_id === batch.id).length + 1;
             document.getElementById('harvestPackCodeInput').value = `${batch.code}-H${countThisBatch}`;
             openModal('harvestModal');
@@ -1431,7 +1467,7 @@
                 id: 'log-' + Date.now(), 
                 batch_id: batch.id, 
                 action_type: 'Thu Hoạch', 
-                log_date: new Date().toISOString().slice(0, 16), 
+                log_date: getVNDateTimeString(), 
                 description: `Tiến hành thu hoạch ${hType==='full'?'TOÀN BỘ':'một phần'}. Sản lượng: ${hQty} ${hUnit}. Mã đóng gói: ${packCode}.\n${hNotes}`, 
                 created_by: db.currentUser?.name || 'Admin', 
                 image_urls: [] 
@@ -1484,21 +1520,24 @@
             openModal('qrModal');
             
             document.getElementById('qrBatchCode').innerText = packCode;
-            document.getElementById('qrcodeBox').innerHTML = '';
+            const qrcodeBox = document.getElementById('qrcodeBox');
+            qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
             
-            // TỰ ĐỘNG LẤY TÊN MIỀN HIỆN TẠI (Dù chạy trên GitHub hay bất kỳ đâu)
-            const traceUrl = `${window.location.origin}/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
+            // SỬ DỤNG ĐƯỜNG LINK GITHUB PAGES CỦA BẠN
+            const traceUrl = `https://alistar982k.github.io/ongducfarm/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
             
             // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
-                new QRCode(document.getElementById('qrcodeBox'), { 
+                qrcodeBox.innerHTML = '';
+                new QRCode(qrcodeBox, { 
                     text: traceUrl, 
                     width: 200, 
                     height: 200, 
                     colorDark : "#022c22", 
-                    colorLight : "#ffffff" 
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
                 });
-            }, 50);
+            }, 150);
         }
 
         function downloadQR() {
@@ -1530,7 +1569,7 @@
             document.getElementById('batchEditIdInput').value = '';
             document.getElementById('batchCategorySelect').innerHTML = db.categories.filter(c=>(c.type||c.domain)===type).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
             document.getElementById('batchLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
-            document.getElementById('batchStartDateInput').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('batchStartDateInput').value = getVNDateString();
             openModal('batchModal');
         }
 
@@ -1559,6 +1598,7 @@
             openModal('batchModal');
         }
 
+        // HÀM LƯU LÔ HOÀN CHỈNH - ĐÃ KẾT NỐI SUPABASE CLOUD
         async function handleSaveBatch(e) {
             e.preventDefault();
             const editId = document.getElementById('batchEditIdInput').value;
@@ -1695,9 +1735,26 @@
                 let imgHTML = '';
                 if(l.image_urls && l.image_urls.length > 0) {
                     const imgUrl = Array.isArray(l.image_urls) ? l.image_urls[0] : (typeof l.image_urls==='string' && l.image_urls.startsWith('[')) ? JSON.parse(l.image_urls)[0] : l.image_urls;
-                    const captionText = `${l.created_by} - ${l.action_type} - Lô: ${b.code} (${loc.name}) - ${formatDateStandard(l.log_date)}`;
-                    const safeCap = captionText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    imgHTML = `<div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200 mt-2" onclick="openImageLightbox('${imgUrl}', '${safeCap}')"><img src="${imgUrl}" class="w-full h-36 object-cover hover:scale-105 transition" onerror="this.src='https://placehold.co/600x400/0f172a/ffffff?text=Anh+Loi';"></div>`;
+                    
+                    // Xử lý tạo nội dung cho chú thích ảnh: Làm gì - Ở đâu - Vật tư gì
+                    let materialUsed = 'Không dùng';
+                    if (l.description && l.description.includes('Đã xuất kho:')) {
+                        const parts = l.description.split('Đã xuất kho:');
+                        if (parts.length > 1) {
+                            materialUsed = parts[1].split('.')[0].trim();
+                        }
+                    }
+                    const captionText = `<i class="fa-solid fa-circle-check text-purple-500 mr-1"></i>Hoạt động: <strong>${l.action_type}</strong><br><i class="fa-solid fa-location-dot text-slate-400 mr-1 mt-1"></i>Vị trí: <strong>${loc.name} (Lô ${b.code})</strong><br><i class="fa-solid fa-box text-teal-500 mr-1 mt-1"></i>Vật tư: <strong>${materialUsed}</strong>`;
+                    
+                    imgHTML = `
+                        <div class="mt-2.5">
+                            <div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200" onclick="openImageLightbox('${imgUrl}', '')">
+                                <img src="${imgUrl}" class="w-full h-36 object-cover hover:scale-105 transition" onerror="this.src='https://placehold.co/600x400/0f172a/ffffff?text=Anh+Loi';">
+                            </div>
+                            <div class="bg-slate-50 border border-slate-100 p-2.5 rounded-xl mt-1.5 text-[10px] text-slate-600 leading-relaxed shadow-sm">
+                                ${captionText}
+                            </div>
+                        </div>`;
                 }
                 return `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
@@ -1713,7 +1770,7 @@
         function openAddLogModal() {
             if (db.currentRole === 'viewer') return showToast('Không có quyền!', 'error');
             document.getElementById('logBatchSelect').innerHTML = db.batches.map(b => `<option value="${b.id}">${b.code}</option>`).join('');
-            document.getElementById('logDateInput').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('logDateInput').value = getVNDateTimeString();
             document.getElementById('logUseInventoryCheckbox').checked = false;
             document.getElementById('logDescInput').value = '';
             document.getElementById('logImageInput').value = '';
@@ -1785,31 +1842,56 @@
             const fileInput = document.getElementById('logImageInput'); let imgUrls = [];
             if(fileInput && fileInput.files[0]) { 
                 try{ 
-                    showToast('Đang nén và xử lý ảnh...', 'info');
-                    const compressedBase64 = await compressImage(fileInput.files[0]);
+                    showToast('Đang nén và tải ảnh lên Cloud...', 'info');
                     
-                    if (googleDriveScriptUrl) {
-                        showToast('Đang tải ảnh lên Cloud...', 'info');
-                        const base64Data = compressedBase64.split(',')[1];
-                        const formData = new FormData();
-                        formData.append("file", base64Data);
-                        formData.append("filename", `FarmLog_${Date.now()}.jpg`);
-                        formData.append("mimeType", "image/jpeg");
-                        
-                        const response = await fetch(googleDriveScriptUrl, { method: "POST", body: formData });
-                        const result = await response.json();
-                        
-                        if(result && result.link) {
-                            imgUrls.push(result.link);
-                        } else {
-                            throw new Error("Lỗi nhận link từ Drive");
-                        }
+                    // Sử dụng compressImage để nén ảnh trước khi lấy base64 (giảm từ 3-4MB xuống ~100KB)
+                    const compressedBase64 = await compressImage(fileInput.files[0]);
+                    const base64Data = compressedBase64.split(',')[1];
+                    const mimeType = "image/jpeg";
+                    
+                    const payloadJSON = JSON.stringify({
+                        file: base64Data,
+                        data: base64Data,
+                        base64: base64Data,
+                        filename: `FarmLog_${Date.now()}_${fileInput.files[0].name.replace(/[^a-zA-Z0-9.]/g, '')}.jpg`,
+                        mimeType: mimeType
+                    });
+                    
+                    // Gửi request tới Google Drive Apps Script
+                    const response = await fetch(googleDriveScriptUrl, { 
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
+                        },
+                        body: payloadJSON 
+                    });
+                    
+                    const textResult = await response.text();
+                    let driveLink = null;
+                    
+                    if (textResult.trim().startsWith("http")) {
+                        driveLink = textResult.trim();
                     } else {
-                         imgUrls.push(compressedBase64);
+                        try {
+                            const result = JSON.parse(textResult);
+                            driveLink = result.link || result.url || result.fileUrl || result.webViewLink || (result.data && result.data.link) || result.id;
+                            if (!driveLink && result.status === 'success') driveLink = result.url;
+                        } catch (err) {
+                            console.warn("Google Drive không trả về JSON hợp lệ:", textResult.substring(0, 150));
+                        }
+                    }
+                    
+                    if (driveLink) {
+                        imgUrls.push(driveLink);
+                    } else {
+                        let shortErr = textResult.substring(0, 40);
+                        throw new Error(shortErr ? "Drive trả về: " + shortErr : "Phản hồi rỗng");
                     }
                 } catch(e) {
                     console.error("Lỗi upload ảnh:", e);
-                    showToast('Lỗi Upload, chuyển sang lưu tạm!', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Lưu Nhật Ký";
+                    return showToast('Lỗi Upload: ' + e.message, 'error'); 
                 } 
             }
 
@@ -1899,9 +1981,13 @@
             const cam = db.cameras.find(c=>c.id===id); if(!cam) return;
             showToast('Đang chụp ảnh...', 'info');
             const cvs = document.createElement('canvas'); cvs.width=640; cvs.height=360; const ctx = cvs.getContext('2d');
-            ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,640,360); ctx.fillStyle='#10b981'; ctx.font='bold 20px Inter'; ctx.fillText('CAMERA SNAPSHOT',30,50); ctx.fillStyle='#fff'; ctx.font='14px Inter'; ctx.fillText(cam.name,30,85); ctx.fillText(new Date().toLocaleString('vi-VN'),30,110);
             
-            const newLog = {id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:new Date().toISOString().slice(0,16), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] };
+            const vnNow = getVNTime();
+            const timeStr = String(vnNow.getHours()).padStart(2,'0') + ':' + String(vnNow.getMinutes()).padStart(2,'0') + ' - ' + String(vnNow.getDate()).padStart(2,'0') + '/' + String(vnNow.getMonth()+1).padStart(2,'0') + '/' + vnNow.getFullYear();
+
+            ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,640,360); ctx.fillStyle='#10b981'; ctx.font='bold 20px Inter'; ctx.fillText('CAMERA SNAPSHOT',30,50); ctx.fillStyle='#fff'; ctx.font='14px Inter'; ctx.fillText(cam.name,30,85); ctx.fillText(timeStr,30,110);
+            
+            const newLog = {id:'log-'+Date.now(), batch_id:db.batches[0]?.id||'', action_type:'Chụp Snapshot Camera', log_date:getVNDateTimeString(), description:`Ảnh chụp từ ${cam.name}`, created_by:db.currentUser?.name, image_urls:[cvs.toDataURL('image/jpeg')] };
             db.logs.push(newLog);
             saveLocalState(); renderLogs(); showToast('Đã lưu ảnh vào Nhật ký!', 'success');
             if(supabaseClient) await supabaseClient.from('logs').insert([newLog]);
@@ -1995,7 +2081,7 @@
         function openDriveConfigModal() { document.getElementById('googleDriveUrlInput').value=googleDriveScriptUrl; openModal('driveConfigModal'); }
         function saveDriveConfig() { googleDriveScriptUrl = document.getElementById('googleDriveUrlInput').value; localStorage.setItem('ongducfarm_drive_url', googleDriveScriptUrl); closeModal('driveConfigModal'); showToast('Đã lưu cấu hình!'); }
         
-        function openImageLightbox(src, cap) { document.getElementById('lightboxImage').src=src; document.getElementById('lightboxCaption').innerText=cap; openModal('imageLightboxModal'); }
+        function openImageLightbox(src, cap) { document.getElementById('lightboxImage').src=src; document.getElementById('lightboxCaption').innerHTML=cap; openModal('imageLightboxModal'); }
         function openForgotPasswordModal() { openModal('forgotPasswordModal'); }
         function handleForgotPassword() { closeModal('forgotPasswordModal'); showToast('Mật khẩu mới đã được gửi vào email của bạn!', 'info'); }
         function downloadBackupJSON() {
@@ -2003,15 +2089,78 @@
             const a = document.createElement('a'); a.href = d; a.download = 'Backup_OngDucFarm.json'; document.body.appendChild(a); a.click(); a.remove(); showToast('Tải xuống bản sao lưu thành công!');
         }
 
+        // Tự động sắp xếp từ A-Z 63 tỉnh thành Việt Nam
         const provinceList = [
-            { id: 'hanoi', name: 'Hà Nội', lat: 21.02, lon: 105.83 },
-            { id: 'tayninh', name: 'Tây Ninh', lat: 11.31, lon: 106.10 },
-            { id: 'dongnai', name: 'Đồng Nai', lat: 11.00, lon: 107.00 },
-        ];
+            { id: 'angiang', name: 'An Giang', lat: 10.3711, lon: 105.4364 },
+            { id: 'bariavungtau', name: 'Bà Rịa - Vũng Tàu', lat: 10.4973, lon: 107.1682 },
+            { id: 'bacgiang', name: 'Bắc Giang', lat: 21.2731, lon: 106.1946 },
+            { id: 'backan', name: 'Bắc Kạn', lat: 22.1470, lon: 105.8348 },
+            { id: 'baclieu', name: 'Bạc Liêu', lat: 9.2941, lon: 105.7278 },
+            { id: 'bacninh', name: 'Bắc Ninh', lat: 21.1861, lon: 106.0763 },
+            { id: 'bentre', name: 'Bến Tre', lat: 10.2449, lon: 106.3753 },
+            { id: 'binhdinh', name: 'Bình Định', lat: 13.7772, lon: 109.2274 },
+            { id: 'binhduong', name: 'Bình Dương', lat: 11.1667, lon: 106.6667 },
+            { id: 'binhphuoc', name: 'Bình Phước', lat: 11.7500, lon: 106.9167 },
+            { id: 'binhthuan', name: 'Bình Thuận', lat: 11.1000, lon: 108.2833 },
+            { id: 'camau', name: 'Cà Mau', lat: 9.1769, lon: 105.1500 },
+            { id: 'cantho', name: 'Cần Thơ', lat: 10.0299, lon: 105.7706 },
+            { id: 'caobang', name: 'Cao Bằng', lat: 22.6667, lon: 106.2500 },
+            { id: 'danang', name: 'Đà Nẵng', lat: 16.0678, lon: 108.2208 },
+            { id: 'daklak', name: 'Đắk Lắk', lat: 12.6667, lon: 108.0000 },
+            { id: 'daknong', name: 'Đắk Nông', lat: 12.2167, lon: 107.7167 },
+            { id: 'dienbien', name: 'Điện Biên', lat: 21.3833, lon: 103.0167 },
+            { id: 'dongnai', name: 'Đồng Nai', lat: 11.0000, lon: 107.0000 },
+            { id: 'dongthap', name: 'Đồng Tháp', lat: 10.4667, lon: 105.6333 },
+            { id: 'gialai', name: 'Gia Lai', lat: 13.8833, lon: 108.0500 },
+            { id: 'hagiang', name: 'Hà Giang', lat: 22.8167, lon: 104.9833 },
+            { id: 'hanam', name: 'Hà Nam', lat: 20.5333, lon: 105.9167 },
+            { id: 'hanoi', name: 'Hà Nội', lat: 21.0285, lon: 105.8542 },
+            { id: 'hatinh', name: 'Hà Tĩnh', lat: 18.3333, lon: 105.9000 },
+            { id: 'haiduong', name: 'Hải Dương', lat: 20.9333, lon: 106.3167 },
+            { id: 'haiphong', name: 'Hải Phòng', lat: 20.8648, lon: 106.6835 },
+            { id: 'haugiang', name: 'Hậu Giang', lat: 9.7833, lon: 105.6500 },
+            { id: 'hoabinh', name: 'Hòa Bình', lat: 20.8167, lon: 105.3333 },
+            { id: 'hungyen', name: 'Hưng Yên', lat: 20.8333, lon: 106.0000 },
+            { id: 'khanhhoa', name: 'Khánh Hòa', lat: 12.2500, lon: 109.1833 },
+            { id: 'kiengiang', name: 'Kiên Giang', lat: 10.0167, lon: 105.0833 },
+            { id: 'kontum', name: 'Kon Tum', lat: 14.3500, lon: 108.0000 },
+            { id: 'laichau', name: 'Lai Châu', lat: 22.3833, lon: 103.4667 },
+            { id: 'lamdong', name: 'Lâm Đồng', lat: 11.5833, lon: 108.1333 },
+            { id: 'langson', name: 'Lạng Sơn', lat: 21.8333, lon: 106.7500 },
+            { id: 'laocai', name: 'Lào Cai', lat: 22.4833, lon: 103.9667 },
+            { id: 'longan', name: 'Long An', lat: 10.5333, lon: 106.1667 },
+            { id: 'namdinh', name: 'Nam Định', lat: 20.4333, lon: 106.1667 },
+            { id: 'nghean', name: 'Nghệ An', lat: 19.3333, lon: 104.9000 },
+            { id: 'ninhbinh', name: 'Ninh Bình', lat: 20.2500, lon: 105.9667 },
+            { id: 'ninhthuan', name: 'Ninh Thuận', lat: 11.5833, lon: 108.9833 },
+            { id: 'phutho', name: 'Phú Thọ', lat: 21.3167, lon: 105.2167 },
+            { id: 'phuyen', name: 'Phú Yên', lat: 13.0833, lon: 109.0833 },
+            { id: 'quangbinh', name: 'Quảng Bình', lat: 17.4833, lon: 106.2333 },
+            { id: 'quangnam', name: 'Quảng Nam', lat: 15.5833, lon: 108.0000 },
+            { id: 'quangngai', name: 'Quảng Ngãi', lat: 15.1167, lon: 108.8000 },
+            { id: 'quangninh', name: 'Quảng Ninh', lat: 21.2500, lon: 107.3333 },
+            { id: 'quangtri', name: 'Quảng Trị', lat: 16.7500, lon: 107.1833 },
+            { id: 'soctrang', name: 'Sóc Trăng', lat: 9.6000, lon: 105.9833 },
+            { id: 'sonla', name: 'Sơn La', lat: 21.3333, lon: 103.9000 },
+            { id: 'tayninh', name: 'Tây Ninh', lat: 11.3000, lon: 106.1000 },
+            { id: 'thaibinh', name: 'Thái Bình', lat: 20.4500, lon: 106.3333 },
+            { id: 'thainguyen', name: 'Thái Nguyên', lat: 21.6000, lon: 105.8167 },
+            { id: 'thanhhoa', name: 'Thanh Hóa', lat: 20.0667, lon: 105.3000 },
+            { id: 'thuathienhue', name: 'Thừa Thiên Huế', lat: 16.4667, lon: 107.6000 },
+            { id: 'tiengiang', name: 'Tiền Giang', lat: 10.4167, lon: 106.3333 },
+            { id: 'hcm', name: 'TP Hồ Chí Minh', lat: 10.8231, lon: 106.6297 },
+            { id: 'travinh', name: 'Trà Vinh', lat: 9.8167, lon: 106.2999 },
+            { id: 'tuyenquang', name: 'Tuyên Quang', lat: 22.0667, lon: 105.2667 },
+            { id: 'vinhlong', name: 'Vĩnh Long', lat: 10.2500, lon: 105.9667 },
+            { id: 'vinhphuc', name: 'Vĩnh Phúc', lat: 21.3000, lon: 105.6000 },
+            { id: 'yenbai', name: 'Yên Bái', lat: 21.7167, lon: 104.8667 }
+        ].sort((a,b) => a.name.localeCompare(b.name, 'vi'));
+
         function populateWeatherDropdown() { document.getElementById('weatherLocationSelect').innerHTML = provinceList.map(p => `<option value="${p.id}" ${p.id === 'tayninh' ? 'selected' : ''}>📍 ${p.name}</option>`).join(''); }
+        
         async function loadWeatherData() {
             const locKey = document.getElementById('weatherLocationSelect')?.value || 'tayninh';
-            const targetLoc = provinceList.find(p => p.id === locKey) || provinceList[1];
+            const targetLoc = provinceList.find(p => p.id === locKey) || provinceList.find(p => p.id === 'tayninh');
             document.getElementById('w-city-display').innerText = targetLoc.name;
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${targetLoc.lat}&longitude=${targetLoc.lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m&timezone=Asia%2FBangkok`);
@@ -2048,7 +2197,7 @@
                 `;
             }).join('');
         }
-        function openAddTaskModal() { document.getElementById('taskTitleInput').value = ''; document.getElementById('taskDateInput').value = new Date().toISOString().slice(0, 10); document.getElementById('taskAssigneeSelect').innerHTML = db.users.filter(u=>u.role!=='viewer').map(u=>`<option value="${u.id}">${u.name}</option>`).join(''); openModal('taskModal'); }
+        function openAddTaskModal() { document.getElementById('taskTitleInput').value = ''; document.getElementById('taskDateInput').value = getVNDateString(); document.getElementById('taskAssigneeSelect').innerHTML = db.users.filter(u=>u.role!=='viewer').map(u=>`<option value="${u.id}">${u.name}</option>`).join(''); openModal('taskModal'); }
         async function handleSaveTask(e) { 
             e.preventDefault(); 
             const newTask = { id: 'task-'+Date.now(), title: document.getElementById('taskTitleInput').value, assignee_id: document.getElementById('taskAssigneeSelect').value, date: document.getElementById('taskDateInput').value, status: 'pending' };
@@ -2086,7 +2235,7 @@
             }).join('');
             tfoot.innerHTML = `<tr><td colspan="3" class="p-4 font-black">TỔNG KẾT QUỸ CHUNG:</td><td class="p-4 text-right font-black"><span class="text-emerald-600">+${formatCurrency(totalInc)}</span><br><span class="text-rose-600">-${formatCurrency(totalExp)}</span></td><td></td></tr>`;
         }
-        function openAddLedgerModal() { document.getElementById('ledgerForm').reset(); document.getElementById('ledgerDateInput').value=new Date().toISOString().slice(0,10); openModal('ledgerModal'); }
+        function openAddLedgerModal() { document.getElementById('ledgerForm').reset(); document.getElementById('ledgerDateInput').value=getVNDateString(); openModal('ledgerModal'); }
         async function handleSaveLedger(e) { 
             e.preventDefault(); 
             const newLedger = { id: 'leg-'+Date.now(), type: document.getElementById('ledgerTypeSelect').value, date: document.getElementById('ledgerDateInput').value, category: document.getElementById('ledgerCategoryInput').value, amount: Number(document.getElementById('ledgerAmountInput').value), notes: document.getElementById('ledgerNotesInput').value };
