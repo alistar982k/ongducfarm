@@ -78,7 +78,6 @@
             </div>
             <form onsubmit="handleLoginSubmit(event)" class="p-8 space-y-5 bg-white">
                 <div>
-                    <!-- SỬA: Đổi Label Tên tài khoản thành Email và type = email -->
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tài Khoản (Email) <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-400 text-sm"></i>
@@ -1255,7 +1254,7 @@
                 return;
             }
 
-            // Lấy thông tin Role từ bảng Users sau khi Auth thành công
+            // Lấy thông vị Role từ bảng Users sau khi Auth thành công
             await fetchUserProfile(email);
             btn.innerHTML = originalBtnHTML;
         }
@@ -1573,14 +1572,17 @@
             const harvest = (db.harvests || []).find(x => x.pack_code === packCode); 
             if(!harvest) return;
 
+            // Bắt buộc mở Modal TRƯỚC ĐỂ qrcode.js có thể tính toán chính xác kích thước container
             openModal('qrModal');
             
             document.getElementById('qrBatchCode').innerText = packCode;
             const qrcodeBox = document.getElementById('qrcodeBox');
-            qrcodeBox.innerHTML = ''; 
+            qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
             
-            const traceUrl = `https://alistar982k.github.io/ongducfarm/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
+            // SỬ DỤNG ĐƯỜNG LINK GITHUB PAGES CỦA BẠN (Đã bọc encodeURIComponent để chống lỗi tiếng Việt)
+            const traceUrl = `https://alistar982k.github.io/ongducfarm/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
             
+            // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
                 qrcodeBox.innerHTML = '';
                 new QRCode(qrcodeBox, { 
@@ -1652,6 +1654,7 @@
             openModal('batchModal');
         }
 
+        // HÀM LƯU LÔ HOÀN CHỈNH - ĐÃ KẾT NỐI SUPABASE CLOUD
         async function handleSaveBatch(e) {
             e.preventDefault();
             const editId = document.getElementById('batchEditIdInput').value;
@@ -1789,6 +1792,7 @@
                 if(l.image_urls && l.image_urls.length > 0) {
                     const imgUrl = Array.isArray(l.image_urls) ? l.image_urls[0] : (typeof l.image_urls==='string' && l.image_urls.startsWith('[')) ? JSON.parse(l.image_urls)[0] : l.image_urls;
                     
+                    // Xử lý tạo nội dung cho chú thích ảnh: Làm gì - Ở đâu - Vật tư gì
                     let materialUsed = 'Không dùng';
                     if (l.description && l.description.includes('Đã xuất kho:')) {
                         const parts = l.description.split('Đã xuất kho:');
@@ -1896,6 +1900,7 @@
                 try{ 
                     showToast('Đang nén và tải ảnh lên Cloud...', 'info');
                     
+                    // Sử dụng compressImage để nén ảnh trước khi lấy base64 (giảm từ 3-4MB xuống ~100KB)
                     const compressedBase64 = await compressImage(fileInput.files[0]);
                     const base64Data = compressedBase64.split(',')[1];
                     const mimeType = "image/jpeg";
@@ -1908,10 +1913,11 @@
                         mimeType: mimeType
                     });
                     
+                    // Gửi request tới Google Drive Apps Script
                     const response = await fetch(googleDriveScriptUrl, { 
                         method: "POST",
                         headers: {
-                            "Content-Type": "text/plain;charset=utf-8"
+                            "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
                         },
                         body: payloadJSON 
                     });
@@ -2050,10 +2056,11 @@
                     mimeType: "image/jpeg"
                 });
                 
+                // Gửi request tới Google Drive Apps Script
                 const response = await fetch(googleDriveScriptUrl, { 
                     method: "POST",
                     headers: {
-                        "Content-Type": "text/plain;charset=utf-8" 
+                        "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
                     },
                     body: payloadJSON 
                 });
@@ -2077,11 +2084,13 @@
                     imgUrls.push(driveLink);
                 } else {
                     console.error("Lỗi Google Drive:", textResult);
+                    // Fallback to local Base64 if Drive upload fails
                     imgUrls.push(base64DataWithPrefix);
                     showToast('Lỗi Drive, lưu trữ ảnh cục bộ!', 'error');
                 }
             } catch (e) {
                 console.error("Lỗi kết nối upload:", e);
+                // Fallback to local Base64 if fetch fails
                 imgUrls.push(base64DataWithPrefix);
                 showToast('Lỗi kết nối, lưu trữ ảnh cục bộ!', 'error');
             }
@@ -2336,10 +2345,12 @@
 
             htmlContent += `</div>`;
 
+            // Tạo div tạm để chứa HTML
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = htmlContent;
             document.body.appendChild(tempDiv);
             
+            // Cấu hình html2pdf
             const opt = {
                 margin:       10,
                 filename:     `BaoCao_OngDucFarm_${getVNDateString()}.pdf`,
@@ -2348,6 +2359,7 @@
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
+            // Xuất PDF
             html2pdf().set(opt).from(tempDiv).save().then(() => {
                 document.body.removeChild(tempDiv);
                 closeModal('exportReportModal'); 
