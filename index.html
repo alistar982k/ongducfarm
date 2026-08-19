@@ -78,10 +78,11 @@
             </div>
             <form onsubmit="handleLoginSubmit(event)" class="p-8 space-y-5 bg-white">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên Tài Khoản <span class="text-rose-500">*</span></label>
+                    <!-- SỬA: Đổi Label Tên tài khoản thành Email và type = email -->
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tài Khoản (Email) <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-400 text-sm"></i>
-                        <input type="text" id="loginUsernameInput" required autocapitalize="off" autocorrect="off" placeholder="Nhập tên tài khoản" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                        <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="email" id="loginUsernameInput" required autocapitalize="off" autocorrect="off" placeholder="Nhập email nhân viên" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                     </div>
                 </div>
                 <div>
@@ -98,7 +99,7 @@
                     </label>
                     <button type="button" onclick="openForgotPasswordModal()" class="text-emerald-700 font-bold hover:underline">Quên tài khoản?</button>
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-900/20 transition flex items-center justify-center space-x-2">
+                <button id="btnLoginSubmit" type="submit" class="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-900/20 transition flex items-center justify-center space-x-2">
                     <span>Đăng Nhập Hệ Thống</span>
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
@@ -170,7 +171,7 @@
                                 <button onclick="navigateTo('harvest')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-orange-400 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-4"></i><span>Lịch Sử Thu Hoạch</span></button>
                                 <button onclick="navigateTo('ledger')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-yellow-400 flex items-center space-x-2"><i class="fa-solid fa-coins w-4"></i><span>Sổ Quỹ Thu Chi</span></button>
                                 <button onclick="navigateTo('locations')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-300 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-4"></i><span>Thửa Đất & Khu Vực</span></button>
-                                <button onclick="navigateTo('users')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
+                                <button onclick="navigateTo('users')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
                                 <div class="border-t border-slate-800 my-1"></div>
                                 <button onclick="openExportReportModal()" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-file-export w-4"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                                 <button onclick="downloadBackupJSON()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2"><i class="fa-solid fa-download w-4"></i><span>Sao Lưu DB JSON</span></button>
@@ -227,7 +228,7 @@
                     <button onclick="navigateTo('harvest'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-5"></i><span>Lịch Sử Thu Hoạch</span></button>
                     <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2 rounded-lg text-yellow-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-coins w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
                     <button onclick="navigateTo('locations'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-amber-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-5"></i><span>Thửa Đất & Khu Vực</span></button>
-                    <button onclick="navigateTo('users'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-indigo-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-5"></i><span>Tài Khoản Nhân Viên</span></button>
+                    <button onclick="navigateTo('users'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2 rounded-lg text-indigo-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-5"></i><span>Tài Khoản Nhân Viên</span></button>
                     <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-400 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                 </div>
             </div>
@@ -652,14 +653,14 @@
                         <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-users-gear text-indigo-600"></i><span>Danh Sách Tài Khoản</span></h2>
                         <p class="text-xs text-slate-500 mt-1">Quản lý cấp tài khoản, đổi mật khẩu và phân quyền hệ thống</p>
                     </div>
-                    <button onclick="openAddUserModal()" class="px-4 py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
+                    <button onclick="openAddUserModal()" class="owner-only px-4 py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1">
                         <i class="fa-solid fa-user-plus"></i><span>+ Cấp Tài Khoản Mới</span>
                     </button>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <table class="w-full text-left text-xs text-slate-600 min-w-[600px]">
                         <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
-                            <tr><th class="p-4">Họ & Tên</th><th class="p-4">Tên Đăng Nhập</th><th class="p-4">Email</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
+                            <tr><th class="p-4">Họ & Tên</th><th class="p-4">Email (Tên đăng nhập)</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
                         </thead>
                         <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
                     </table>
@@ -1028,12 +1029,11 @@
     <div id="userModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl">
             <h3 class="font-bold mb-3 text-sm" id="userModalTitle">Cấp Tài Khoản Mới</h3>
+            <p class="text-[10px] text-amber-600 mb-3 font-bold bg-amber-50 p-2 rounded-lg border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> Lưu ý: Bạn cần tạo tài khoản Email/Password này trong Supabase Authentication Dashboard trước để họ có thể đăng nhập.</p>
             <form id="userForm" onsubmit="handleSaveUser(event)">
                 <input type="hidden" id="userEditIdInput">
-                <input type="text" id="userNameInput" placeholder="Họ & Tên" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
-                <input type="text" id="userUsernameInput" placeholder="Tên đăng nhập" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
-                <input type="email" id="userEmailInput" placeholder="Email" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
-                <input type="password" id="userPasswordInput" placeholder="Mật khẩu (Trống nếu không đổi)" class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <input type="text" id="userNameInput" placeholder="Họ & Tên nhân viên" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl">
+                <input type="email" id="userEmailInput" placeholder="Email nhân viên" required class="border border-slate-200 bg-slate-50 w-full mb-2 p-2.5 rounded-xl disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
                 <select id="userRoleSelect" class="border border-slate-200 bg-slate-50 w-full mb-4 p-2.5 rounded-xl">
                     <option value="owner">Chủ Trang Trại (Owner)</option><option value="worker">Nhân Viên (Worker)</option><option value="viewer">Chỉ Xem (Viewer)</option>
                 </select>
@@ -1110,7 +1110,7 @@
             currentUser: null, currentRole: 'owner', cropFilter: 'all', livestockFilter: 'all', aquacultureFilter: 'all', inventoryFilter: 'all', cameraFilter: 'all', cameraGridCols: 2,
             harvestFilter: 'all',
             categories: [], locations: [], batches: [], harvests: [], inventory: [], cameras: [], logs: [], tasks: [], ledger: [],
-            users: [{ id: 'u-1', name: 'Ông Đức', username: 'admin', email: 'admin@farm.com', password: '123', role: 'owner' }]
+            users: []
         };
 
         window.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
@@ -1137,7 +1137,6 @@
         function formatNumber(n) { return Number(n||0).toLocaleString('vi-VN'); }
         function formatCurrency(n) { return formatNumber(n) + ' VNĐ'; }
         
-        // Luôn ép định dạng 24h và thời gian VN chuẩn khi hiển thị
         function formatDateStandard(dStr) {
             if(!dStr) return '';
             if (dStr.length === 10 && dStr.includes('-')) {
@@ -1152,7 +1151,6 @@
             }
             let d = new Date(dStr); 
             if(isNaN(d)) return dStr;
-            // Ép múi giờ VN (UTC+7)
             const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
             const vnDate = new Date(utc + (3600000 * 7));
             const h = String(vnDate.getHours()).padStart(2,'0');
@@ -1169,17 +1167,33 @@
             populateWeatherDropdown(); 
             checkAutoLogin(); 
             if (supabaseClient) {
-                await syncAllFromCloud();
+                // Khắc phục lỗi WebSocket không được phép trong Canvas:
+                // Sử dụng HTTP Polling (Cập nhật ngầm định kỳ) thay cho Realtime WebSocket
+                // Cập nhật lại dữ liệu mỗi 30 giây để tránh Race Condition
+                setInterval(() => {
+                    if (db.currentUser) {
+                        syncAllFromCloud();
+                    }
+                }, 30000);
             }
         };
 
-        // ĐỒNG BỘ TOÀN BỘ DỮ LIỆU TỪ SUPABASE CLOUD
+        // ĐỒNG BỘ TOÀN BỘ DỮ LIỆU TỪ SUPABASE CLOUD (KẾT HỢP LIMIT ĐỂ TRÁNH QUÁ TẢI)
         async function syncAllFromCloud() {
             try {
-                const tables = ['batches', 'categories', 'locations', 'logs', 'harvests', 'inventory', 'tasks', 'ledger', 'users', 'cameras'];
+                const tables = ['batches', 'categories', 'locations', 'inventory', 'users', 'cameras', 'logs', 'harvests', 'tasks', 'ledger'];
                 for (const table of tables) {
-                    const { data, error } = await supabaseClient.from(table).select('*');
-                    if (!error && data && data.length > 0) {
+                    let query = supabaseClient.from(table).select('*');
+                    
+                    // SỬA LỖI 3: SCALABILITY - Chỉ fetch 200 bản ghi mới nhất cho các bảng History
+                    if (['logs', 'harvests', 'tasks', 'ledger'].includes(table)) {
+                        // Thường các bảng này sẽ sắp xếp theo ngày/giờ giảm dần. 
+                        // Dùng limit(200) để không treo RAM
+                        query = query.limit(200); 
+                    }
+
+                    const { data, error } = await query;
+                    if (!error && data) {
                         db[table] = data;
                     }
                 }
@@ -1194,27 +1208,70 @@
         }
         function saveLocalState() { localStorage.setItem('ongducfarm_state', JSON.stringify(db)); }
         
-        function checkAutoLogin() {
-            const u = localStorage.getItem('ongducfarm_user');
-            if(u) { try { loginSuccess(JSON.parse(u)); } catch(e){showLoginView();} } else showLoginView();
+        // SỬA LỖI 1: TÍCH HỢP SUPABASE NATIVE AUTH
+        async function checkAutoLogin() {
+            if(!supabaseClient) return showLoginView();
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if(session) {
+                await fetchUserProfile(session.user.email);
+            } else { 
+                showLoginView(); 
+            }
         }
-        function showLoginView() { document.getElementById('loginView').classList.remove('hidden'); document.getElementById('mainView').classList.add('hidden'); }
-        function handleLogout() { localStorage.removeItem('ongducfarm_user'); db.currentUser = null; showLoginView(); }
-        function handleLoginSubmit(e) {
+
+        async function fetchUserProfile(email) {
+            const { data: profile } = await supabaseClient.from('users').select('*').eq('email', email).single();
+            if(profile) {
+                loginSuccess(profile);
+            } else {
+                showToast('Không tìm thấy hồ sơ nhân sự trên DB!', 'error');
+                supabaseClient.auth.signOut();
+                showLoginView();
+            }
+        }
+
+        function showLoginView() { document.getElementById('loginView').classList.remove('hidden'); document.getElementById('mainView').classList.add('hidden'); document.getElementById('mainView').classList.remove('flex');}
+        
+        async function handleLogout() { 
+            if(supabaseClient) await supabaseClient.auth.signOut();
+            db.currentUser = null; 
+            showLoginView(); 
+        }
+
+        async function handleLoginSubmit(e) {
             e.preventDefault();
-            const usr = document.getElementById('loginUsernameInput').value.trim().toLowerCase(), pwd = document.getElementById('loginPasswordInput').value;
-            const user = db.users.find(u => (u.username.toLowerCase() === usr || u.email.toLowerCase() === usr) && (u.password === pwd || pwd === '123'));
-            if (user) loginSuccess(user); else showToast('Tài khoản hoặc mật khẩu không đúng!', 'error');
+            const email = document.getElementById('loginUsernameInput').value.trim(); 
+            const pwd = document.getElementById('loginPasswordInput').value;
+            const btn = document.getElementById('btnLoginSubmit');
+            const originalBtnHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            if(!supabaseClient) return showToast('Lỗi cấu hình Supabase Client!', 'error');
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pwd });
+            if (error) {
+                showToast('Tài khoản hoặc mật khẩu không đúng!', 'error');
+                btn.innerHTML = originalBtnHTML;
+                return;
+            }
+
+            // Lấy thông tin Role từ bảng Users sau khi Auth thành công
+            await fetchUserProfile(email);
+            btn.innerHTML = originalBtnHTML;
         }
-        function loginSuccess(u) {
+
+        async function loginSuccess(u) {
             db.currentUser = u;
-            if(document.getElementById('rememberMeCheckbox')?.checked) localStorage.setItem('ongducfarm_user', JSON.stringify(u));
             document.getElementById('currentUserName').innerText = u.name;
             switchRole(u.role);
             document.getElementById('loginView').classList.add('hidden');
-            document.getElementById('mainView').classList.remove('hidden'); document.getElementById('mainView').classList.add('flex');
-            renderAllViews();
+            document.getElementById('mainView').classList.remove('hidden'); 
+            document.getElementById('mainView').classList.add('flex');
+            
+            // Kéo dữ liệu sau khi Auth thành công
+            await syncAllFromCloud();
         }
+
         function switchRole(r) {
             db.currentRole = r;
             const b = document.getElementById('currentRoleBadge'); b.innerText = r; b.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase role-badge-${r}`;
@@ -1516,17 +1573,14 @@
             const harvest = (db.harvests || []).find(x => x.pack_code === packCode); 
             if(!harvest) return;
 
-            // Bắt buộc mở Modal TRƯỚC ĐỂ qrcode.js có thể tính toán chính xác kích thước container
             openModal('qrModal');
             
             document.getElementById('qrBatchCode').innerText = packCode;
             const qrcodeBox = document.getElementById('qrcodeBox');
-            qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
+            qrcodeBox.innerHTML = ''; 
             
-            // SỬ DỤNG ĐƯỜNG LINK GITHUB PAGES CỦA BẠN
             const traceUrl = `https://alistar982k.github.io/ongducfarm/trace.html?batch=${harvest.batch_id}&pack=${packCode}`;
             
-            // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
                 qrcodeBox.innerHTML = '';
                 new QRCode(qrcodeBox, { 
@@ -1598,7 +1652,6 @@
             openModal('batchModal');
         }
 
-        // HÀM LƯU LÔ HOÀN CHỈNH - ĐÃ KẾT NỐI SUPABASE CLOUD
         async function handleSaveBatch(e) {
             e.preventDefault();
             const editId = document.getElementById('batchEditIdInput').value;
@@ -1736,7 +1789,6 @@
                 if(l.image_urls && l.image_urls.length > 0) {
                     const imgUrl = Array.isArray(l.image_urls) ? l.image_urls[0] : (typeof l.image_urls==='string' && l.image_urls.startsWith('[')) ? JSON.parse(l.image_urls)[0] : l.image_urls;
                     
-                    // Xử lý tạo nội dung cho chú thích ảnh: Làm gì - Ở đâu - Vật tư gì
                     let materialUsed = 'Không dùng';
                     if (l.description && l.description.includes('Đã xuất kho:')) {
                         const parts = l.description.split('Đã xuất kho:');
@@ -1844,7 +1896,6 @@
                 try{ 
                     showToast('Đang nén và tải ảnh lên Cloud...', 'info');
                     
-                    // Sử dụng compressImage để nén ảnh trước khi lấy base64 (giảm từ 3-4MB xuống ~100KB)
                     const compressedBase64 = await compressImage(fileInput.files[0]);
                     const base64Data = compressedBase64.split(',')[1];
                     const mimeType = "image/jpeg";
@@ -1857,11 +1908,10 @@
                         mimeType: mimeType
                     });
                     
-                    // Gửi request tới Google Drive Apps Script
                     const response = await fetch(googleDriveScriptUrl, { 
                         method: "POST",
                         headers: {
-                            "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
+                            "Content-Type": "text/plain;charset=utf-8"
                         },
                         body: payloadJSON 
                     });
@@ -2000,11 +2050,10 @@
                     mimeType: "image/jpeg"
                 });
                 
-                // Gửi request tới Google Drive Apps Script
                 const response = await fetch(googleDriveScriptUrl, { 
                     method: "POST",
                     headers: {
-                        "Content-Type": "text/plain;charset=utf-8" // Tránh bị lỗi chặn CORS preflight OPTIONS
+                        "Content-Type": "text/plain;charset=utf-8" 
                     },
                     body: payloadJSON 
                 });
@@ -2028,13 +2077,11 @@
                     imgUrls.push(driveLink);
                 } else {
                     console.error("Lỗi Google Drive:", textResult);
-                    // Fallback to local Base64 if Drive upload fails
                     imgUrls.push(base64DataWithPrefix);
                     showToast('Lỗi Drive, lưu trữ ảnh cục bộ!', 'error');
                 }
             } catch (e) {
                 console.error("Lỗi kết nối upload:", e);
-                // Fallback to local Base64 if fetch fails
                 imgUrls.push(base64DataWithPrefix);
                 showToast('Lỗi kết nối, lưu trữ ảnh cục bộ!', 'error');
             }
@@ -2051,7 +2098,22 @@
         function renderLocationsTable() {
             const tbody = document.getElementById('locationsTableBody'); if(!tbody) return;
             if(db.locations.length===0){tbody.innerHTML='<tr><td colspan="4" class="p-4 text-center">Chưa có dữ liệu.</td></tr>'; return;}
-            tbody.innerHTML = db.locations.map(l => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${l.name}</td><td class="p-4">${l.type}</td><td class="p-4 font-medium">${l.area ? l.area + ' m²' : '---'}</td><td class="p-4 text-right">${db.currentRole==='owner'?`<button onclick="openEditLocationModal('${l.id}')" class="text-indigo-600 mr-2"><i class="fa-solid fa-pen"></i></button><button onclick="deleteLocation('${l.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');
+            
+            // Map loại tiếng Anh sang tiếng Việt để hiển thị và sắp xếp
+            const typeMap = { 'field': 'Thửa đất ngoài trời', 'greenhouse': 'Nhà màng / Kính', 'barn': 'Khu Chuồng', 'pond': 'Ao / Bể' };
+            
+            // Logic sắp xếp: Gom nhóm theo Loại (ABC) -> Sắp xếp Tên vị trí (ABC)
+            const sortedLocs = [...db.locations].sort((a, b) => {
+                const typeA = typeMap[a.type] || a.type;
+                const typeB = typeMap[b.type] || b.type;
+                
+                const typeCompare = typeA.localeCompare(typeB, 'vi');
+                if (typeCompare !== 0) return typeCompare;
+                
+                return a.name.localeCompare(b.name, 'vi', { numeric: true, sensitivity: 'base' });
+            });
+
+            tbody.innerHTML = sortedLocs.map(l => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${l.name}</td><td class="p-4">${typeMap[l.type] || l.type}</td><td class="p-4 font-medium">${l.area ? l.area + ' m²' : '---'}</td><td class="p-4 text-right">${db.currentRole==='owner'?`<button onclick="openEditLocationModal('${l.id}')" class="text-indigo-600 mr-2"><i class="fa-solid fa-pen"></i></button><button onclick="deleteLocation('${l.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');
         }
         function openAddLocationModal() { document.getElementById('locationForm').reset(); document.getElementById('locEditIdInput').value=''; document.getElementById('locationModalTitle').innerText='Thêm Khu Vực'; openModal('locationModal'); }
         function openEditLocationModal(id) { const l = db.locations.find(x=>x.id===id); if(!l) return; document.getElementById('locEditIdInput').value=l.id; document.getElementById('locNameInput').value=l.name; document.getElementById('locTypeSelect').value=l.type; document.getElementById('locAreaInput').value=l.area||''; document.getElementById('locationModalTitle').innerText='Sửa Khu Vực'; openModal('locationModal'); }
@@ -2092,32 +2154,96 @@
 
         function renderUsersTable() {
             const tbody = document.getElementById('usersTableBody'); if(!tbody) return;
-            tbody.innerHTML = db.users.map(u => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${u.name}</td><td class="p-4">${u.username}</td><td class="p-4">${u.email}</td><td class="p-4"><span class="role-badge-${u.role} px-2 py-0.5 rounded text-[10px] font-bold uppercase">${u.role}</span></td><td class="p-4 text-right">${db.currentRole==='owner'?`<button onclick="openEditUserModal('${u.id}')" class="text-indigo-600 mr-2"><i class="fa-solid fa-pen"></i></button>${u.id!=='u-1'?`<button onclick="deleteUser('${u.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>`:''}`:''}</td></tr>`).join('');
+            
+            // Logic sắp xếp ưu tiên Admin cấp cao -> Role -> Tên
+            const roleOrder = { 'owner': 1, 'worker': 2, 'viewer': 3 };
+            const sortedUsers = [...db.users].sort((a, b) => {
+                // Ưu tiên 1: alistar982k@gmail.com luôn nằm trên cùng
+                if (a.email === 'alistar982k@gmail.com') return -1;
+                if (b.email === 'alistar982k@gmail.com') return 1;
+                
+                // Ưu tiên 2: Xếp theo chức vụ Owner -> Worker -> Viewer
+                const roleDiff = (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99);
+                if (roleDiff !== 0) return roleDiff;
+                
+                // Ưu tiên 3: Xếp theo tên chữ cái ABC
+                return a.name.localeCompare(b.name, 'vi');
+            });
+
+            tbody.innerHTML = sortedUsers.map(u => {
+                const isSuperAdmin = u.email === 'alistar982k@gmail.com';
+                const canModify = db.currentRole === 'owner' && (!isSuperAdmin || db.currentUser?.email === 'alistar982k@gmail.com');
+                return `<tr class="hover:bg-slate-50"><td class="p-4 font-bold">${u.name}</td><td class="p-4">${u.email}</td><td class="p-4"><span class="role-badge-${u.role} px-2 py-0.5 rounded text-[10px] font-bold uppercase">${u.role}</span></td><td class="p-4 text-right">${canModify ? `<button onclick="openEditUserModal('${u.id}')" class="text-indigo-600 mr-3"><i class="fa-solid fa-pen"></i></button><button onclick="deleteUser('${u.id}')" class="text-rose-600"><i class="fa-solid fa-trash"></i></button>` : ''}</td></tr>`;
+            }).join('');
         }
-        function openAddUserModal() { document.getElementById('userForm').reset(); document.getElementById('userEditIdInput').value=''; document.getElementById('userModalTitle').innerText='Thêm Tài Khoản'; document.getElementById('userPasswordInput').required=true; openModal('userModal'); }
-        function openEditUserModal(id) { const u = db.users.find(x=>x.id===id); if(!u) return; document.getElementById('userEditIdInput').value=u.id; document.getElementById('userNameInput').value=u.name; document.getElementById('userUsernameInput').value=u.username; document.getElementById('userEmailInput').value=u.email; document.getElementById('userRoleSelect').value=u.role; document.getElementById('userPasswordInput').value=''; document.getElementById('userPasswordInput').required=false; document.getElementById('userModalTitle').innerText='Sửa Tài Khoản'; openModal('userModal'); }
+        function openAddUserModal() { 
+            document.getElementById('userForm').reset(); 
+            document.getElementById('userEditIdInput').value=''; 
+            document.getElementById('userEmailInput').disabled = false;
+            document.getElementById('userModalTitle').innerText = 'Cấp Tài Khoản Mới';
+            openModal('userModal'); 
+        }
+        function openEditUserModal(id) {
+            const u = db.users.find(x => x.id === id); if(!u) return;
+            if (u.email === 'alistar982k@gmail.com' && db.currentUser?.email !== 'alistar982k@gmail.com') return showToast('Không có quyền sửa tài khoản Admin cấp cao!', 'error');
+            document.getElementById('userForm').reset(); 
+            document.getElementById('userEditIdInput').value = u.id;
+            document.getElementById('userNameInput').value = u.name;
+            document.getElementById('userEmailInput').value = u.email;
+            document.getElementById('userEmailInput').disabled = true; // Khóa email khi sửa để tránh lệch với Auth
+            document.getElementById('userRoleSelect').value = u.role;
+            document.getElementById('userModalTitle').innerText = 'Sửa Phân Quyền Tài Khoản';
+            openModal('userModal');
+        }
+
         async function handleSaveUser(e) { 
             e.preventDefault(); 
-            const id=document.getElementById('userEditIdInput').value, name=document.getElementById('userNameInput').value, username=document.getElementById('userUsernameInput').value, email=document.getElementById('userEmailInput').value, pwd=document.getElementById('userPasswordInput').value, role=document.getElementById('userRoleSelect').value; 
-            if(id){
-                const idx=db.users.findIndex(x=>x.id===id); 
-                if(idx!==-1){
-                    db.users[idx].name=name; db.users[idx].username=username; db.users[idx].email=email; db.users[idx].role=role; 
-                    if(pwd)db.users[idx].password=pwd;
-                    if(supabaseClient) await supabaseClient.from('users').update({name, username, email, password: pwd||db.users[idx].password, role}).eq('id', id);
+            
+            const id = document.getElementById('userEditIdInput').value;
+            const name = document.getElementById('userNameInput').value;
+            const email = document.getElementById('userEmailInput').value; 
+            const role = document.getElementById('userRoleSelect').value; 
+            
+            if (id) {
+                const u = db.users.find(x => x.id === id);
+                if (u && u.email === 'alistar982k@gmail.com' && db.currentUser?.email !== 'alistar982k@gmail.com') {
+                    return showToast('Không có quyền sửa tài khoản Admin cấp cao!', 'error');
                 }
-            }else{
-                const newUser = {id:'u-'+Date.now(),name,username,email,password:pwd||'123',role};
+                const idx = db.users.findIndex(x => x.id === id);
+                if (idx !== -1) {
+                    db.users[idx].name = name;
+                    db.users[idx].role = role;
+                    if(supabaseClient) {
+                        const { error } = await supabaseClient.from('users').update({ name, role }).eq('id', id);
+                        if(error) console.error("Lỗi Supabase Update User:", error);
+                    }
+                }
+                showToast('Đã cập nhật thông tin tài khoản!');
+            } else {
+                const newUser = {id:'u-'+Date.now(), name: name, username: email, email: email, password: '***', role: role};
                 db.users.push(newUser);
-                if(supabaseClient) await supabaseClient.from('users').insert([newUser]);
-            } 
-            saveLocalState(); closeModal('userModal'); renderUsersTable(); 
+                if(supabaseClient) {
+                    const { error } = await supabaseClient.from('users').insert([newUser]);
+                    if(error) console.error("Lỗi Supabase Insert User:", error);
+                }
+                showToast('Đã thêm nhân viên! Nhớ tạo Auth bằng Dashboard nhé!');
+            }
+            
+            saveLocalState(); 
+            closeModal('userModal'); 
+            renderUsersTable(); 
         }
         function deleteUser(id) { 
-            if(id==='u-1') return showToast('Không thể xóa Admin!','error'); 
-            showConfirmModal('Xóa Tài Khoản', 'Xác nhận xóa?', async ()=>{
-                db.users=db.users.filter(x=>x.id!==id); saveLocalState(); renderUsersTable();
-                if(supabaseClient) await supabaseClient.from('users').delete().eq('id', id);
+            const u = db.users.find(x => x.id === id);
+            if (u && u.email === 'alistar982k@gmail.com' && db.currentUser?.email !== 'alistar982k@gmail.com') {
+                return showToast('Không có quyền xóa tài khoản Admin cấp cao!', 'error');
+            }
+            showConfirmModal('Xóa Tài Khoản', 'Xác nhận xóa? (Lưu ý chỉ xóa Profile, không xóa Auth)', async ()=>{
+                db.users=db.users.filter(x=>x.id!==id); saveLocalState(); renderUsersTable(); showToast('Đã xóa tài khoản!');
+                if(supabaseClient) {
+                    const { error } = await supabaseClient.from('users').delete().eq('id', id);
+                    if(error) console.error("Lỗi Supabase Delete User:", error);
+                }
             }); 
         }
 
@@ -2210,12 +2336,10 @@
 
             htmlContent += `</div>`;
 
-            // Tạo div tạm để chứa HTML
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = htmlContent;
             document.body.appendChild(tempDiv);
             
-            // Cấu hình html2pdf
             const opt = {
                 margin:       10,
                 filename:     `BaoCao_OngDucFarm_${getVNDateString()}.pdf`,
@@ -2224,7 +2348,6 @@
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Xuất PDF
             html2pdf().set(opt).from(tempDiv).save().then(() => {
                 document.body.removeChild(tempDiv);
                 closeModal('exportReportModal'); 
