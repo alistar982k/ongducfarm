@@ -1067,7 +1067,7 @@
 
     <!-- Cấu hình Google Drive & Quên mật khẩu -->
     <div id="driveConfigModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Cấu Hình Google Drive Web App URL</h3><input type="url" id="googleDriveUrlInput" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('driveConfigModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="saveDriveConfig()" class="bg-blue-500 text-white w-full p-2.5 rounded-xl font-bold">Lưu URL</button></div></div></div>
-    <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Khôi Phục Mật Khẩu</h3><input type="email" id="forgotEmailInput" placeholder="Nhập email của bạn" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('forgotPasswordModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="handleForgotPassword()" class="bg-emerald-600 text-white w-full p-2.5 rounded-xl font-bold">Gửi Yêu Cầu</button></div></div></div>
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md rounded-3xl p-6 text-xs shadow-2xl"><h3 class="font-bold mb-3">Khôi Phục Mật Khẩu</h3><input type="email" id="forgotEmailInput" placeholder="Nhập email tài khoản của bạn" class="border border-slate-200 bg-slate-50 rounded-xl w-full p-2.5 mb-3"><div class="flex space-x-2"><button onclick="closeModal('forgotPasswordModal')" class="w-full bg-slate-100 p-2.5 rounded-xl font-bold">Hủy</button><button onclick="handleForgotPassword()" class="bg-emerald-600 text-white w-full p-2.5 rounded-xl font-bold">Gửi Link Khôi Phục</button></div></div></div>
     
     <!-- Lightbox & Confirm & Toast -->
     <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4"><img id="lightboxImage" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"><p id="lightboxCaption" class="text-white mt-3 text-sm font-medium hidden"></p><button onclick="closeModal('imageLightboxModal')" class="absolute top-4 right-4 text-white text-3xl hover:text-slate-300">×</button></div>
@@ -2374,8 +2374,25 @@
         function saveDriveConfig() { googleDriveScriptUrl = document.getElementById('googleDriveUrlInput').value; localStorage.setItem('ongducfarm_drive_url', googleDriveScriptUrl); closeModal('driveConfigModal'); showToast('Đã lưu cấu hình!'); }
         
         function openImageLightbox(src, cap) { document.getElementById('lightboxImage').src=src; document.getElementById('lightboxCaption').innerHTML=cap; openModal('imageLightboxModal'); }
+        
+        // HÀM MỞ MODAL VÀ XỬ LÝ QUÊN MẬT KHẨU BẰNG SUPABASE
         function openForgotPasswordModal() { openModal('forgotPasswordModal'); }
-        function handleForgotPassword() { closeModal('forgotPasswordModal'); showToast('Mật khẩu mới đã được gửi vào email của bạn!', 'info'); }
+        async function handleForgotPassword() {
+            const email = document.getElementById('forgotEmailInput').value.trim();
+            if (!email) return showToast('Vui lòng nhập email tài khoản!', 'error');
+            if (!supabaseClient) return showToast('Lỗi cấu hình Supabase Client!', 'error');
+            
+            const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+            
+            if (error) {
+                showToast('Lỗi gửi email: ' + error.message, 'error');
+            } else {
+                closeModal('forgotPasswordModal'); 
+                showToast('Link khôi phục đã được gửi vào email của bạn!', 'success');
+                document.getElementById('forgotEmailInput').value = ''; // Reset form
+            }
+        }
+        
         function downloadBackupJSON() {
             const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
             const a = document.createElement('a'); a.href = d; a.download = 'Backup_OngDucFarm.json'; document.body.appendChild(a); a.click(); a.remove(); showToast('Tải xuống bản sao lưu thành công!');
