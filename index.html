@@ -1641,14 +1641,33 @@
             const qrcodeBox = document.getElementById('qrcodeBox');
             qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
             
-            // XỬ LÝ LINK QR THÔNG MINH (Chống lỗi khi test trên máy tính bằng file:///)
-            let baseUrl = window.location.origin;
-            // Nếu đang chạy trên máy tính dạng file:/// hoặc "null", dùng link Github dự phòng
-            if (baseUrl === "null" || baseUrl === "file://" || !baseUrl.startsWith("http")) {
-                baseUrl = "https://alistar982k.github.io/ongducfarm";
-            }
+            // --- CẬP NHẬT TẠO ĐƯỜNG LINK TRUY XUẤT QR TỐI ƯU MỌI TÊN MIỀN ---
+            let traceUrl = '';
             
-            const traceUrl = `${baseUrl}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
+            if (window.location.protocol === 'file:') {
+                // CỐ ĐỊNH: Nếu chạy trực tiếp file trên máy tính, link QR phải trỏ về web thật 
+                // (Vì điện thoại không thể quét link file:/// của máy tính bạn)
+                // Dựa vào hình ảnh Github của bạn, repo là 'ongducfarm'
+                const githubPagesUrl = 'https://alistar982k.github.io/ongducfarm'; 
+                traceUrl = `${githubPagesUrl}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
+            } else {
+                // TỰ ĐỘNG: Khi chạy trên Github Pages, Vercel, Host riêng...
+                // Sử dụng Web API 'URL' để trình duyệt tự động nối đường dẫn chuẩn xác 100%
+                // File 'trace.html' sẽ tự động được tìm thấy cùng cấp với file hiện tại.
+                try {
+                    const urlObj = new URL('trace.html', window.location.href);
+                    urlObj.searchParams.set('batch', harvest.batch_id);
+                    urlObj.searchParams.set('pack', packCode);
+                    traceUrl = urlObj.href;
+                } catch (e) {
+                    // Fallback an toàn phòng hờ lỗi trình duyệt cũ
+                    let basePath = window.location.href.split('?')[0];
+                    if (basePath.endsWith('.html')) basePath = basePath.substring(0, basePath.lastIndexOf('/'));
+                    if (basePath.endsWith('/')) basePath = basePath.slice(0, -1);
+                    traceUrl = `${basePath}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
+                }
+            }
+            // ---------------------------------------------
             
             // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
