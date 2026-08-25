@@ -1622,8 +1622,8 @@
             const qrcodeBox = document.getElementById('qrcodeBox');
             qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
             
-            // SỬ DỤNG ĐƯỜNG LINK GITHUB PAGES CỦA BẠN (Đã bọc encodeURIComponent để chống lỗi tiếng Việt)
-            const traceUrl = `https://alistar982k.github.io/ongducfarm/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
+            // SỬ DỤNG TÊN MIỀN ĐỘNG TỰ NHẬN DIỆN (Hoạt động trên cả localhost, github và ongducfarm.com)
+            const traceUrl = `${window.location.origin}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
             
             // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
