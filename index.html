@@ -184,12 +184,13 @@
                 </div>
             </div>
 
-            <!-- Mobile Drawer Menu (Chuyển thành Full width bên dưới Header) -->
-            <div id="mobileMenu" class="hidden lg:hidden absolute w-full bg-slate-900 border-b border-slate-700 p-3 space-y-1 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar shadow-2xl z-50 left-0">
+            <!-- Mobile Drawer Menu (Cập nhật đầy đủ tính năng như PC) -->
+            <div id="mobileMenu" class="hidden lg:hidden absolute w-full bg-slate-900 border-b border-slate-700 p-3 space-y-1 text-xs max-h-[85vh] overflow-y-auto custom-scrollbar shadow-2xl z-50 left-0">
                 <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-amber-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
                 <button onclick="navigateTo('logs'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-book-open text-purple-400 w-5"></i><span>Nhật Ký Ảnh</span></button>
                 <button onclick="navigateTo('cameras'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-tv text-rose-400 w-5"></i><span>Camera Giám Sát</span></button>
 
+                <!-- Nhóm: Nhà Kho -->
                 <div class="pt-2 border-t border-slate-700 viewer-hide mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Nhà Kho</p>
                     <button onclick="navigateToInventory('seed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-emerald-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-seedling w-5"></i><span>Cây Giống</span></button>
@@ -198,13 +199,25 @@
                     <button onclick="navigateToInventory('feed'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-orange-300 hover:bg-slate-700 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn w-5"></i><span>Thức Ăn Chăn Nuôi</span></button>
                 </div>
                 
+                <!-- Nhóm: Quản Lý Vận Hành -->
                 <div class="pt-2 border-t border-slate-700 mt-1">
-                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Danh Mục Quản Lý</p>
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Quản Lý & Vận Hành</p>
+                    <button onclick="navigateTo('tasks'); toggleMobileMenu();" class="viewer-hide w-full text-left px-3 py-2.5 rounded-lg text-blue-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-list-check w-5"></i><span>Công Việc & Phân Công</span></button>
+                    <button onclick="navigateTo('harvest'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-orange-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-boxes-packing w-5"></i><span>Lịch Sử Thu Hoạch</span></button>
+                    <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-yellow-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-coins w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
+                    <button onclick="navigateTo('locations'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-amber-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-map-location-dot w-5"></i><span>Thửa Đất & Khu Vực</span></button>
                     <button onclick="navigateTo('users'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-indigo-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-users-gear w-5"></i><span>Tài Khoản Nhân Viên</span></button>
-                    <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                 </div>
 
-                <div class="pt-2 border-t border-slate-700 mt-2">
+                <!-- Nhóm: Hệ Thống & Báo Cáo -->
+                <div class="pt-2 border-t border-slate-700 mt-1">
+                    <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hệ Thống & Báo Cáo</p>
+                    <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
+                    <button onclick="downloadBackupJSON(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-blue-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-download w-5"></i><span>Sao Lưu DB JSON</span></button>
+                    <button onclick="openDriveConfigModal(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-teal-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-brands fa-google-drive w-5"></i><span>Cấu Hình Google Drive</span></button>
+                </div>
+
+                <div class="pt-2 border-t border-slate-700 mt-2 mb-2">
                     <button onclick="handleLogout()" class="w-full text-left px-3 py-2.5 rounded-lg text-rose-400 hover:bg-rose-900/30 flex items-center space-x-2 font-bold"><i class="fa-solid fa-right-from-bracket w-5"></i><span>Đăng Xuất</span></button>
                 </div>
             </div>
@@ -577,12 +590,14 @@
                     </button>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table class="w-full text-left text-xs text-slate-600 min-w-[500px]">
-                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
-                            <tr><th class="p-4">Tên Vị Trí / Thửa Đất</th><th class="p-4">Loại Khu Vực</th><th class="p-4">Diện Tích</th><th class="p-4 text-right">Thao Tác</th></tr>
-                        </thead>
-                        <tbody id="locationsTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
+                    <div class="overflow-x-auto custom-scrollbar w-full">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[500px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr><th class="p-4">Tên Vị Trí / Thửa Đất</th><th class="p-4">Loại Khu Vực</th><th class="p-4">Diện Tích</th><th class="p-4 text-right">Thao Tác</th></tr>
+                            </thead>
+                            <tbody id="locationsTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -634,12 +649,14 @@
                     </button>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table class="w-full text-left text-xs text-slate-600 min-w-[600px]">
-                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
-                            <tr><th class="p-4">Họ & Tên</th><th class="p-4">Email (Tên đăng nhập)</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
-                        </thead>
-                        <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
+                    <div class="overflow-x-auto custom-scrollbar w-full">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[600px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr><th class="p-4">Họ & Tên</th><th class="p-4">Email (Tên đăng nhập)</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
+                            </thead>
+                            <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>
@@ -974,14 +991,16 @@
                 <h3 class="font-bold text-sm text-slate-800">Chi Tiết Thu Chi (Chỉ tính lô chưa thu hoạch toàn bộ)</h3>
                 <button onclick="closeModal('financialDetailModal')" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <table class="w-full text-left">
-                <thead><tr class="bg-slate-50 text-slate-600">
-                    <th class="p-3">Mã Lô</th><th class="p-3">Giống</th><th class="p-3">Vị Trí</th>
-                    <th class="p-3 text-right">Chi Phí</th><th class="p-3 text-right">Dự Thu</th><th class="p-3 text-right">Lợi Nhuận</th>
-                </tr></thead>
-                <tbody id="financialDetailTableBody"></tbody>
-                <tfoot id="financialDetailTableFooter"></tfoot>
-            </table>
+            <div class="overflow-x-auto custom-scrollbar w-full pb-2">
+                <table class="w-full text-left min-w-[600px]">
+                    <thead><tr class="bg-slate-50 text-slate-600">
+                        <th class="p-3">Mã Lô</th><th class="p-3">Giống</th><th class="p-3">Vị Trí</th>
+                        <th class="p-3 text-right">Chi Phí</th><th class="p-3 text-right">Dự Thu</th><th class="p-3 text-right">Lợi Nhuận</th>
+                    </tr></thead>
+                    <tbody id="financialDetailTableBody"></tbody>
+                    <tfoot id="financialDetailTableFooter"></tfoot>
+                </table>
+            </div>
             <div class="text-right pt-2"><button onclick="closeModal('financialDetailModal')" class="px-4 py-2 bg-slate-100 font-bold rounded-xl">Đóng</button></div>
         </div>
     </div>
@@ -1622,8 +1641,14 @@
             const qrcodeBox = document.getElementById('qrcodeBox');
             qrcodeBox.innerHTML = ''; // Xóa QR cũ nếu có
             
-            // SỬ DỤNG TÊN MIỀN ĐỘNG TỰ NHẬN DIỆN (Hoạt động trên cả localhost, github và ongducfarm.com)
-            const traceUrl = `${window.location.origin}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
+            // XỬ LÝ LINK QR THÔNG MINH (Chống lỗi khi test trên máy tính bằng file:///)
+            let baseUrl = window.location.origin;
+            // Nếu đang chạy trên máy tính dạng file:/// hoặc "null", dùng link Github dự phòng
+            if (baseUrl === "null" || baseUrl === "file://" || !baseUrl.startsWith("http")) {
+                baseUrl = "https://alistar982k.github.io/ongducfarm";
+            }
+            
+            const traceUrl = `${baseUrl}/trace.html?batch=${harvest.batch_id}&pack=${encodeURIComponent(packCode)}`;
             
             // Dùng setTimeout để đảm bảo DOM của Modal đã hiển thị 100% rồi mới vẽ mã QR
             setTimeout(() => {
