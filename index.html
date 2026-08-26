@@ -1034,7 +1034,7 @@
                 <input type="number" id="locAreaInput" placeholder="VD: 500" class="border border-slate-200 bg-slate-50 w-full mb-4 p-2.5 rounded-xl">
                 <div class="flex justify-end space-x-2">
                     <button type="button" onclick="closeModal('locationModal')" class="bg-slate-100 px-4 py-2 rounded-xl font-bold">Hủy</button>
-                    <button type="submit" class="bg-amber-500 text-white px-4 py-2 rounded-xl font-bold">Lưu</button>
+                    <button type="submit" class="bg-amber-50 text-white px-4 py-2 rounded-xl font-bold">Lưu</button>
                 </div>
             </form>
         </div>
@@ -1119,6 +1119,17 @@
         function getVNDateTimeString() {
             const d = getVNTime();
             return getVNDateString() + 'T' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        }
+        
+        // HÀM ĐỊNH DẠNG THỜI GIAN THEO YÊU CẦU: Giờ - Ngày - Tháng - Năm
+        function getReportTimeString() {
+            const d = getVNTime();
+            const h = String(d.getHours()).padStart(2, '0');
+            const m = String(d.getMinutes()).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            return `${h}:${m} - ${dd}/${mm}/${yyyy}`;
         }
 
         // CẤU HÌNH SUPABASE
@@ -2344,17 +2355,67 @@
         }
 
         function openExportReportModal() { openModal('exportReportModal'); }
+        
+        // HÀM TẠO DỮ LIỆU LÔ CANH TÁC CÓ ÁP DỤNG SORT THÔNG MINH ABC VÀ NHÓM THEO YÊU CẦU
         function buildReportData() {
-            return db.batches.map(b => {
-                const cat = db.categories.find(c=>c.id===b.category_id)||{}; const loc = db.locations.find(l=>l.id===b.location_id)||{};
-                return {'Mã Lô/Lứa': b.code, 'Giống/Loài': cat.name||'N/A', 'Vị trí': loc.name||'N/A', 'Số lượng': b.initial_quantity, 'Sản lượng': b.yield_amount, 'Chi Phí': b.total_cost||0, 'Dự Thu': b.estimated_revenue||0, 'Lợi Nhuận': (b.estimated_revenue||0)-(b.total_cost||0)};
+            const batchOrder = { 'caynganngay': 1, 'caylaunam': 2, 'giasuc': 3, 'giacam': 4, 'canuocngot': 5, 'dacsan': 6 };
+            
+            const sortedBatches = [...db.batches].sort((a, b) => {
+                const catA = db.categories.find(c => c.id === a.category_id) || {};
+                const catB = db.categories.find(c => c.id === b.category_id) || {};
+                
+                // 1. Sắp xếp theo nhóm (Cây ngắn ngày -> lâu năm -> gia súc...)
+                const weightA = batchOrder[catA.subtype] || 99;
+                const weightB = batchOrder[catB.subtype] || 99;
+                if (weightA !== weightB) return weightA - weightB;
+                
+                // 2. Sắp xếp theo tên giống ABC trong cùng một nhóm
+                const nameA = catA.name || '';
+                const nameB = catB.name || '';
+                if (nameA.localeCompare(nameB, 'vi') !== 0) return nameA.localeCompare(nameB, 'vi');
+                
+                // 3. Nếu cùng tên giống, sắp xếp theo mã lô
+                return a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            return sortedBatches.map(b => {
+                const cat = db.categories.find(c=>c.id===b.category_id)||{}; 
+                const loc = db.locations.find(l=>l.id===b.location_id)||{};
+                return {
+                    'Mã Lô/Lứa': b.code, 
+                    'Giống/Loài': cat.name||'N/A', 
+                    'Vị trí': loc.name||'N/A', 
+                    'Số lượng': b.initial_quantity, 
+                    'Sản lượng': b.yield_amount, 
+                    'Chi Phí': b.total_cost||0, 
+                    'Dự Thu': b.estimated_revenue||0, 
+                    'Lợi Nhuận': (b.estimated_revenue||0)-(b.total_cost||0)
+                };
             });
         }
+        
         function exportReportExcel() {
             const batchData = buildReportData();
-            const inventoryData = db.inventory.map(i => ({
-                'Vật tư': i.name, 'Danh mục': i.category === 'seed' ? 'Cây Giống' : i.category === 'fertilizer' ? 'Phân Bón & Thuốc' : i.category === 'tool' ? 'Dụng Cụ' : 'Thức Ăn', 'Số lượng': i.quantity + ' ' + (i.unit||''), 'Thành tiền': i.quantity * i.unit_price
+            
+            // XỬ LÝ SẮP XẾP TỒN KHO THEO YÊU CẦU VÀ ABC
+            const invOrder = { 'seed': 1, 'fertilizer': 2, 'tool': 3, 'feed': 4 };
+            const sortedInventory = [...db.inventory].sort((a, b) => {
+                // 1. Sắp xếp theo loại
+                const weightA = invOrder[a.category] || 99;
+                const weightB = invOrder[b.category] || 99;
+                if (weightA !== weightB) return weightA - weightB;
+                
+                // 2. Sắp xếp theo tên vật tư ABC
+                return a.name.localeCompare(b.name, 'vi', { numeric: true, sensitivity: 'base' });
+            });
+
+            const inventoryData = sortedInventory.map(i => ({
+                'Vật tư': i.name, 
+                'Danh mục': i.category === 'seed' ? 'Cây Giống' : i.category === 'fertilizer' ? 'Phân Bón & Thuốc' : i.category === 'tool' ? 'Dụng Cụ' : 'Thức Ăn', 
+                'Số lượng': i.quantity + ' ' + (i.unit||''), 
+                'Thành tiền': i.quantity * i.unit_price
             }));
+            
             const ledgerData = db.ledger.map(l => ({
                 'Ngày': formatDateStandard(l.date), 'Loại': l.type === 'expense' ? 'Khoản Chi' : 'Khoản Thu', 'Nội dung': l.category, 'Số tiền': l.type === 'expense' ? -l.amount : l.amount
             }));
@@ -2382,7 +2443,7 @@
             
             let htmlContent = `<div style="font-family: Arial, sans-serif; padding: 20px;">`;
             htmlContent += `<h1 style="text-align: center; color: #064e3b; margin-bottom: 5px;">BÁO CÁO TỔNG HỢP ÔNG ĐỨC FARM</h1>`;
-            htmlContent += `<p style="text-align: center; font-size: 12px; color: #64748b; margin-bottom: 20px;">Ngày xuất: ${getVNDateTimeString()}</p>`;
+            htmlContent += `<p style="text-align: center; font-size: 12px; color: #64748b; margin-bottom: 20px;">Ngày xuất: ${getReportTimeString()}</p>`;
 
             // Tổng hợp tài chính
             let sumCost = 0, sumRev = 0;
@@ -2395,7 +2456,7 @@
             htmlContent += `<tr><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; color: #e11d48; font-weight: bold;">${formatCurrency(sumCost)}</td><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; color: #16a34a; font-weight: bold;">${formatCurrency(sumRev)}</td><td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold;">${formatCurrency(sumRev - sumCost)}</td></tr>`;
             htmlContent += `</table>`;
 
-            // Lô canh tác
+            // Lô canh tác (Đã được sắp xếp tự động ở hàm buildReportData)
             const batches = buildReportData();
             if(batches.length > 0) {
                 htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">2. DANH SÁCH LÔ CANH TÁC ĐANG NUÔI TRỒNG</h2>`;
@@ -2409,10 +2470,19 @@
 
             // Nhà kho
             if(db.inventory && db.inventory.length > 0) {
+                // XỬ LÝ SẮP XẾP TỒN KHO THEO YÊU CẦU VÀ ABC TRƯỚC KHI RENDER HTML
+                const invOrder = { 'seed': 1, 'fertilizer': 2, 'tool': 3, 'feed': 4 };
+                const sortedInventory = [...db.inventory].sort((a, b) => {
+                    const weightA = invOrder[a.category] || 99;
+                    const weightB = invOrder[b.category] || 99;
+                    if (weightA !== weightB) return weightA - weightB;
+                    return a.name.localeCompare(b.name, 'vi', { numeric: true, sensitivity: 'base' });
+                });
+
                 htmlContent += `<h2 style="font-size: 16px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px;">3. TỒN KHO VẬT TƯ</h2>`;
                 htmlContent += `<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px;">`;
                 htmlContent += `<tr style="background: #f8fafc;"><th style="border: 1px solid #e2e8f0; padding: 6px;">Tên Vật Tư</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Số Lượng</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Tổng Tiền</th></tr>`;
-                db.inventory.forEach(i => {
+                sortedInventory.forEach(i => {
                     htmlContent += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${i.name}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: center;">${i.quantity} ${i.unit||''}</td><td style="border: 1px solid #e2e8f0; padding: 6px; text-align: right;">${formatNumber(i.quantity * i.unit_price)}</td></tr>`;
                 });
                 htmlContent += `</table>`;
