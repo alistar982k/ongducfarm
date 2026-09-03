@@ -1724,6 +1724,11 @@
             document.getElementById('batchCategorySelect').innerHTML = db.categories.filter(c=>(c.type||c.domain)===type).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
             document.getElementById('batchLocationSelect').innerHTML = db.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
             document.getElementById('batchStartDateInput').value = getVNDateString();
+            
+            // Đổi text nút Submit theo loại domain
+            const btnText = type === 'crop' ? 'Lưu Lô Trồng' : (type === 'livestock' ? 'Lưu vật nuôi' : 'Lưu con giống');
+            document.getElementById('batchSubmitBtn').innerText = btnText;
+            
             openModal('batchModal');
         }
 
@@ -1749,6 +1754,11 @@
 
             document.getElementById('batchCostInput').value = batch.total_cost || 0;
             document.getElementById('batchRevenueInput').value = batch.estimated_revenue || 0;
+            
+            // Đổi text nút Submit theo loại domain
+            const btnText = type === 'crop' ? 'Lưu Lô Trồng' : (type === 'livestock' ? 'Lưu vật nuôi' : 'Lưu con giống');
+            document.getElementById('batchSubmitBtn').innerText = btnText;
+            
             openModal('batchModal');
         }
 
