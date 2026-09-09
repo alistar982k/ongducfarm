@@ -162,6 +162,7 @@
                                 <button onclick="navigateTo('locations')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-300 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-4"></i><span>Thửa Đất & Khu Vực</span></button>
                                 <button onclick="navigateTo('users')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
                                 <div class="border-t border-slate-800 my-1"></div>
+                                <button onclick="navigateTo('cashflow')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-green-400 flex items-center space-x-2"><i class="fa-solid fa-chart-line w-4"></i><span>Báo Cáo Dòng Tiền</span></button>
                                 <button onclick="openExportReportModal()" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-file-export w-4"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                                 <button onclick="downloadBackupJSON()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2"><i class="fa-solid fa-download w-4"></i><span>Sao Lưu DB JSON</span></button>
                                 <button onclick="openDriveConfigModal()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-teal-400 flex items-center space-x-2"><i class="fa-brands fa-google-drive w-4"></i><span>Cấu Hình Google Drive</span></button>
@@ -212,6 +213,7 @@
                 <!-- Nhóm: Hệ Thống & Báo Cáo -->
                 <div class="pt-2 border-t border-slate-700 mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hệ Thống & Báo Cáo</p>
+                    <button onclick="navigateTo('cashflow'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-green-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-chart-line w-5"></i><span>Báo Cáo Dòng Tiền</span></button>
                     <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                     <button onclick="downloadBackupJSON(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-blue-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-download w-5"></i><span>Sao Lưu DB JSON</span></button>
                     <button onclick="openDriveConfigModal(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-teal-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-brands fa-google-drive w-5"></i><span>Cấu Hình Google Drive</span></button>
@@ -303,6 +305,52 @@
                             <h3 class="font-bold text-slate-800 text-xs mb-4 text-center">LỢI NHUẬN DỰ KIẾN THEO MẢNG</h3>
                             <div class="h-64 flex justify-center"><canvas id="profitChart"></canvas></div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: BÁO CÁO DÒNG TIỀN -->
+            <section id="view-cashflow" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-chart-line text-green-600"></i><span>Báo Cáo Dòng Tiền 12 Tháng</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Dữ liệu các tháng cũ sẽ được hệ thống chốt sổ tự động và không thể thay đổi.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs font-bold text-slate-600">Chọn Năm:</label>
+                        <select id="cashflowYearSelect" onchange="renderCashflow()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none min-w-[120px]"></select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div><p class="text-[11px] font-bold text-slate-400">Tổng Doanh Thu</p><p id="cf-total-rev" class="text-lg font-black text-blue-600">0 VNĐ</p></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                        <div><p class="text-[11px] font-bold text-slate-400">Tổng Chi Phí</p><p id="cf-total-exp" class="text-lg font-black text-red-600">0 VNĐ</p></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div><p class="text-[11px] font-bold text-slate-400">Lợi Nhuận Tổng</p><p id="cf-total-profit" class="text-lg font-black text-green-600">0 VNĐ</p></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar w-full">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[700px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-4">Tháng (Năm được chọn)</th>
+                                    <th class="p-4 text-right text-blue-700">Doanh Thu (VNĐ)</th>
+                                    <th class="p-4 text-right text-red-700">Chi Phí (VNĐ)</th>
+                                    <th class="p-4 text-right text-green-700">Lợi Nhuận (VNĐ)</th>
+                                    <th class="p-4 text-center">Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashflowTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -1144,14 +1192,21 @@
         }
 
         if (window.supabase && typeof window.supabase.createClient === 'function') {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // Tối ưu khởi tạo để bảo mật Session tốt hơn
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: false // Tắt nếu không dùng Magic Link để tránh rủi ro bảo mật
+                }
+            });
         }
 
         let db = {
             currentUser: null, currentRole: 'owner', cropFilter: 'all', livestockFilter: 'all', aquacultureFilter: 'all', inventoryFilter: 'all', cameraFilter: 'all', cameraGridCols: 2,
             harvestFilter: 'all',
             categories: [], locations: [], batches: [], harvests: [], inventory: [], cameras: [], logs: [], tasks: [], ledger: [],
-            users: []
+            users: [], cashflow: []
         };
 
         window.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
@@ -1219,23 +1274,23 @@
             }
         };
 
-        // ĐỒNG BỘ TOÀN BỘ DỮ LIỆU TỪ SUPABASE CLOUD (KẾT HỢP LIMIT ĐỂ TRÁNH QUÁ TẢI)
+        // ĐỒNG BỘ TOÀN BỘ DỮ LIỆU TỪ SUPABASE CLOUD
         async function syncAllFromCloud() {
             try {
-                const tables = ['batches', 'categories', 'locations', 'inventory', 'users', 'cameras', 'logs', 'harvests', 'tasks', 'ledger'];
+                const tables = ['batches', 'categories', 'locations', 'inventory', 'users', 'cameras', 'logs', 'harvests', 'tasks', 'ledger', 'cashflow'];
                 for (const table of tables) {
                     let query = supabaseClient.from(table).select('*');
                     
-                    // SỬA LỖI 3: SCALABILITY - Chỉ fetch 200 bản ghi mới nhất cho các bảng History
                     if (['logs', 'harvests', 'tasks', 'ledger'].includes(table)) {
-                        // Thường các bảng này sẽ sắp xếp theo ngày/giờ giảm dần. 
-                        // Dùng limit(200) để không treo RAM
                         query = query.limit(200); 
                     }
 
                     const { data, error } = await query;
+                    // Bỏ qua lỗi 42P01 (Bảng không tồn tại) đối với bảng mới cashflow
                     if (!error && data) {
                         db[table] = data;
+                    } else if (error && error.code !== '42P01') {
+                        console.error(`Lỗi đồng bộ bảng ${table}:`, error);
                     }
                 }
                 saveLocalState();
@@ -1252,9 +1307,12 @@
         // SỬA LỖI 1: TÍCH HỢP SUPABASE NATIVE AUTH
         async function checkAutoLogin() {
             if(!supabaseClient) return showLoginView();
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if(session) {
-                await fetchUserProfile(session.user.email);
+            
+            // SỬ DỤNG getUser() ĐỂ XÁC THỰC BẢO MẬT (Call tới Server)
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            
+            if(user && !error) {
+                await fetchUserProfile(user.email);
             } else { 
                 showLoginView(); 
             }
@@ -1368,11 +1426,133 @@
             window.scrollTo({ top: 0 });
             if(v==='dashboard') renderDashboard();
             if(v==='harvest') renderHarvests();
+            if(v==='cashflow') renderCashflow();
         }
 
         function renderAllViews() {
             renderDashboard(); renderCrops(); renderLivestock(); renderAquaculture(); renderInventory(); 
             renderTasks(); renderLogs(); renderLedger(); renderLocationsTable(); renderUsersTable(); renderCameras(); renderHarvests();
+            if(db.currentRole === 'owner') renderCashflow();
+        }
+
+        // TÍNH TOÁN BÁO CÁO DÒNG TIỀN VÀ CHỐT SỔ TỰ ĐỘNG
+        function calculateMonthData(year, month) {
+            let rev = 0, exp = 0;
+            const targetMonthStr = `${year}-${String(month).padStart(2, '0')}`;
+
+            // Doanh thu từ thu hoạch
+            (db.harvests || []).forEach(h => {
+                if (h.harvest_date && h.harvest_date.startsWith(targetMonthStr)) {
+                    rev += Number(h.revenue || 0);
+                }
+            });
+
+            // Doanh thu / Chi phí từ Sổ Quỹ
+            (db.ledger || []).forEach(l => {
+                if (l.date && l.date.startsWith(targetMonthStr)) {
+                    if (l.type === 'income') rev += Number(l.amount || 0);
+                    if (l.type === 'expense') exp += Number(l.amount || 0);
+                }
+            });
+
+            // Chi phí từ Lô canh tác (tính vào tháng khởi tạo/chăm sóc lô)
+            (db.batches || []).forEach(b => {
+                if (b.start_date && b.start_date.startsWith(targetMonthStr)) {
+                    exp += Number(b.total_cost || 0);
+                }
+            });
+
+            return { revenue: rev, expense: exp, profit: rev - exp };
+        }
+
+        function renderCashflow() {
+            if (db.currentRole !== 'owner') return;
+            const container = document.getElementById('cashflowTableBody');
+            if(!container) return;
+            if(!db.cashflow) db.cashflow = [];
+
+            // 1. Xác định danh sách năm có dữ liệu thực tế
+            let years = new Set();
+            const vnNow = getVNTime();
+            years.add(vnNow.getFullYear()); // Luôn có năm hiện tại
+            db.batches.forEach(b => { if(b.start_date) years.add(parseInt(b.start_date.split('-')[0])); });
+            db.harvests.forEach(h => { if(h.harvest_date) years.add(parseInt(h.harvest_date.split('-')[0])); });
+            db.ledger.forEach(l => { if(l.date) years.add(parseInt(l.date.split('-')[0])); });
+            
+            years = Array.from(years).sort((a,b) => b - a);
+            
+            const yearSelect = document.getElementById('cashflowYearSelect');
+            const currentSelectedYear = yearSelect.value || vnNow.getFullYear().toString();
+            yearSelect.innerHTML = years.map(y => `<option value="${y}" ${y.toString() === currentSelectedYear ? 'selected' : ''}>Năm ${y}</option>`).join('');
+            
+            const selectedYear = parseInt(yearSelect.value);
+            const currentMonth = vnNow.getMonth() + 1;
+            const currentYear = vnNow.getFullYear();
+
+            let totalRev = 0, totalExp = 0, totalProfit = 0;
+            let html = '';
+
+            for(let m = 1; m <= 12; m++) {
+                const monthId = `cf-${selectedYear}-${String(m).padStart(2, '0')}`;
+                let isPastMonth = (selectedYear < currentYear) || (selectedYear === currentYear && m < currentMonth);
+                
+                // Kiểm tra xem đã chốt sổ trong db (Snapshot) chưa
+                let lockedData = db.cashflow.find(c => c.id === monthId);
+                
+                let rev = 0, exp = 0, profit = 0;
+                let statusBadge = '';
+
+                if (lockedData) {
+                    // Ưu tiên dùng data đã chốt
+                    rev = Number(lockedData.revenue || 0);
+                    exp = Number(lockedData.expense || 0);
+                    profit = Number(lockedData.profit || 0);
+                    statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 rounded font-bold text-[10px]"><i class="fa-solid fa-lock mr-1"></i>Đã Chốt</span>';
+                } else {
+                    // Tính toán on-the-fly từ lịch sử
+                    const monthData = calculateMonthData(selectedYear, m);
+                    rev = monthData.revenue;
+                    exp = monthData.expense;
+                    profit = monthData.profit;
+
+                    if (isPastMonth) {
+                        // CHỐT SỔ TỰ ĐỘNG CÁC THÁNG ĐÃ QUA
+                        const newLock = { id: monthId, year: selectedYear, month: m, revenue: rev, expense: exp, profit: profit, locked_at: getVNDateTimeString() };
+                        db.cashflow.push(newLock);
+                        saveLocalState();
+                        
+                        if (supabaseClient) {
+                            supabaseClient.from('cashflow').insert([newLock]).then(({error}) => {
+                                if(error && error.code !== '42P01') console.error("Lỗi Supabase Insert Cashflow Snapshot:", error);
+                            });
+                        }
+                        statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 rounded font-bold text-[10px]"><i class="fa-solid fa-lock mr-1"></i>Đã Chốt</span>';
+                    } else if (selectedYear === currentYear && m === currentMonth) {
+                        statusBadge = '<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded font-bold text-[10px]"><i class="fa-solid fa-rotate mr-1 fa-spin"></i>Tạm Tính</span>';
+                    } else {
+                        statusBadge = '<span class="px-2 py-1 bg-slate-50 text-slate-400 rounded font-bold text-[10px]">Chưa đến</span>';
+                    }
+                }
+
+                totalRev += rev;
+                totalExp += exp;
+                totalProfit += profit;
+
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 font-bold text-slate-700">Tháng ${m}</td>
+                        <td class="p-4 text-right font-bold text-blue-600">${formatCurrency(rev)}</td>
+                        <td class="p-4 text-right font-bold text-red-600">${formatCurrency(exp)}</td>
+                        <td class="p-4 text-right font-bold text-green-600">${formatCurrency(profit)}</td>
+                        <td class="p-4 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('cf-total-rev').innerText = formatCurrency(totalRev);
+            document.getElementById('cf-total-exp').innerText = formatCurrency(totalExp);
+            document.getElementById('cf-total-profit').innerText = formatCurrency(totalProfit);
+            container.innerHTML = html;
         }
 
         let expenseChartInst = null, profitChartInst = null;
@@ -1454,7 +1634,7 @@
         function filterCropTab(type) { db.cropFilter = type; ['all','caylaunam','caynganngay'].forEach(t => { document.getElementById(`btn-crop-${t}`)&&(document.getElementById(`btn-crop-${t}`).className=t===type?"pb-2 border-b-2 border-emerald-600 text-emerald-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderCrops(); }
         function filterLivestockTab(type) { db.livestockFilter = type; ['all','giasuc','giacam'].forEach(t => { document.getElementById(`btn-ls-${t}`)&&(document.getElementById(`btn-ls-${t}`).className=t===type?"pb-2 border-b-2 border-amber-600 text-amber-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderLivestock(); }
         function filterAquacultureTab(type) { db.aquacultureFilter = type; ['all','canuocngot','dacsan'].forEach(t => { document.getElementById(`btn-aqua-${t}`)&&(document.getElementById(`btn-aqua-${t}`).className=t===type?"pb-2 border-b-2 border-cyan-600 text-cyan-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderAquaculture(); }
-        function filterHarvestTab(type) { db.harvestFilter = type; ['all','crop','livestock','aquaculture'].forEach(t => { document.getElementById(`btn-harvest-${t}`)&&(document.getElementById(`btn-harvest-${t}`).className=t===type?"pb-2 border-b-2 border-orange-600 text-orange-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderHarvests(); } 
+        function filterHarvestTab(type) { db.harvestFilter = type; ['all','crop','livestock','aquaculture'].forEach(t => { document.getElementById(`btn-harvest-${t}`)&&(document.getElementById(`btn-harvest-${t}`).className=t===type?"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderHarvests(); } 
 
         function renderCrops() { 
             const list = db.batches.filter(b => b.domain === 'crop' && b.status !== 'harvested' && (db.cropFilter === 'all' || (db.categories.find(c => c.id === b.category_id)?.subtype === db.cropFilter)));
