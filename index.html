@@ -661,79 +661,6 @@
                     </div>
                 </div>
             </section>
-        // --- CHỨC NĂNG BÁO CÁO DÒNG TIỀN (BẢN CẬP NHẬT) ---
-        function renderCashflow() {
-            const yearSelect = document.getElementById('cashflowYearSelect');
-            if(!yearSelect) return;
-            
-            // Lấy danh sách các năm an toàn bằng cách cắt chuỗi YYYY-MM-DD
-            let years = new Set();
-            (db.ledger || []).forEach(l => {
-                if(l.date && l.date.includes('-')) {
-                    const y = l.date.split('-')[0];
-                    if(y && !isNaN(y)) years.add(Number(y));
-                }
-            });
-            years.add(new Date().getFullYear()); // Đảm bảo luôn có năm hiện hành
-            
-            const sortedYears = Array.from(years).sort((a,b) => b - a); // Năm mới nhất lên đầu
-            const currentSelected = yearSelect.value || new Date().getFullYear();
-            
-            yearSelect.innerHTML = sortedYears.map(y => `<option value="${y}" ${y == currentSelected ? 'selected' : ''}>Năm ${y}</option>`).join('');
-            renderCashflowTable();
-        }
-
-        function renderCashflowTable() {
-            const tbody = document.getElementById('cashflowTableBody');
-            const tfoot = document.getElementById('cashflowTableFooter');
-            const yearSelect = document.getElementById('cashflowYearSelect');
-            if(!tbody || !yearSelect || !yearSelect.value) return;
-
-            const year = parseInt(yearSelect.value);
-            let totalRev = 0, totalExp = 0;
-            let html = '';
-
-            for(let m = 1; m <= 12; m++) {
-                let mRev = 0, mExp = 0;
-                
-                // Quét dữ liệu Sổ Quỹ theo từng tháng
-                (db.ledger || []).forEach(l => {
-                    if(l.date && l.date.includes('-')) {
-                        const parts = l.date.split('-'); // Cắt thành [YYYY, MM, DD]
-                        if (parts.length >= 2) {
-                            const lYear = parseInt(parts[0]);
-                            const lMonth = parseInt(parts[1]);
-                            
-                            if(lYear === year && lMonth === m) {
-                                if(l.type === 'income') mRev += Number(l.amount || 0);
-                                if(l.type === 'expense') mExp += Number(l.amount || 0);
-                            }
-                        }
-                    }
-                });
-                
-                const mProfit = mRev - mExp;
-                totalRev += mRev; 
-                totalExp += mExp;
-
-                html += `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100">
-                        <td class="p-4 text-center font-bold text-slate-700">Tháng ${m}</td>
-                        <td class="p-4 text-right text-emerald-600 font-medium">${mRev > 0 ? formatCurrency(mRev) : '-'}</td>
-                        <td class="p-4 text-right text-rose-600 font-medium">${mExp > 0 ? formatCurrency(mExp) : '-'}</td>
-                        <td class="p-4 text-right font-bold ${mProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(mProfit)}</td>
-                    </tr>`;
-            }
-
-            tbody.innerHTML = html;
-            tfoot.innerHTML = `
-                <tr>
-                    <td class="p-4 text-center font-black">TỔNG KẾT NĂM ${year}</td>
-                    <td class="p-4 text-right font-black text-emerald-600">${formatCurrency(totalRev)}</td>
-                    <td class="p-4 text-right font-black text-rose-600">${formatCurrency(totalExp)}</td>
-                    <td class="p-4 text-right font-black ${totalRev - totalExp >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(totalRev - totalExp)}</td>
-                </tr>`;
-        }
         </main>
         
         <!-- THÀNH ĐIỀU HƯỚNG BOTTOM (CHỈ DÀNH CHO MOBILE) -->
@@ -2952,6 +2879,79 @@
                 showToast('Đã xóa vật tư!');
                 if(supabaseClient) await supabaseClient.from('inventory').delete().eq('id', id);
             });
+        }
+                    // --- CHỨC NĂNG BÁO CÁO DÒNG TIỀN (BẢN CẬP NHẬT) ---
+        function renderCashflow() {
+            const yearSelect = document.getElementById('cashflowYearSelect');
+            if(!yearSelect) return;
+            
+            // Lấy danh sách các năm an toàn bằng cách cắt chuỗi YYYY-MM-DD
+            let years = new Set();
+            (db.ledger || []).forEach(l => {
+                if(l.date && l.date.includes('-')) {
+                    const y = l.date.split('-')[0];
+                    if(y && !isNaN(y)) years.add(Number(y));
+                }
+            });
+            years.add(new Date().getFullYear()); // Đảm bảo luôn có năm hiện hành
+            
+            const sortedYears = Array.from(years).sort((a,b) => b - a); // Năm mới nhất lên đầu
+            const currentSelected = yearSelect.value || new Date().getFullYear();
+            
+            yearSelect.innerHTML = sortedYears.map(y => `<option value="${y}" ${y == currentSelected ? 'selected' : ''}>Năm ${y}</option>`).join('');
+            renderCashflowTable();
+        }
+
+        function renderCashflowTable() {
+            const tbody = document.getElementById('cashflowTableBody');
+            const tfoot = document.getElementById('cashflowTableFooter');
+            const yearSelect = document.getElementById('cashflowYearSelect');
+            if(!tbody || !yearSelect || !yearSelect.value) return;
+
+            const year = parseInt(yearSelect.value);
+            let totalRev = 0, totalExp = 0;
+            let html = '';
+
+            for(let m = 1; m <= 12; m++) {
+                let mRev = 0, mExp = 0;
+                
+                // Quét dữ liệu Sổ Quỹ theo từng tháng
+                (db.ledger || []).forEach(l => {
+                    if(l.date && l.date.includes('-')) {
+                        const parts = l.date.split('-'); // Cắt thành [YYYY, MM, DD]
+                        if (parts.length >= 2) {
+                            const lYear = parseInt(parts[0]);
+                            const lMonth = parseInt(parts[1]);
+                            
+                            if(lYear === year && lMonth === m) {
+                                if(l.type === 'income') mRev += Number(l.amount || 0);
+                                if(l.type === 'expense') mExp += Number(l.amount || 0);
+                            }
+                        }
+                    }
+                });
+                
+                const mProfit = mRev - mExp;
+                totalRev += mRev; 
+                totalExp += mExp;
+
+                html += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="p-4 text-center font-bold text-slate-700">Tháng ${m}</td>
+                        <td class="p-4 text-right text-emerald-600 font-medium">${mRev > 0 ? formatCurrency(mRev) : '-'}</td>
+                        <td class="p-4 text-right text-rose-600 font-medium">${mExp > 0 ? formatCurrency(mExp) : '-'}</td>
+                        <td class="p-4 text-right font-bold ${mProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(mProfit)}</td>
+                    </tr>`;
+            }
+
+            tbody.innerHTML = html;
+            tfoot.innerHTML = `
+                <tr>
+                    <td class="p-4 text-center font-black">TỔNG KẾT NĂM ${year}</td>
+                    <td class="p-4 text-right font-black text-emerald-600">${formatCurrency(totalRev)}</td>
+                    <td class="p-4 text-right font-black text-rose-600">${formatCurrency(totalExp)}</td>
+                    <td class="p-4 text-right font-black ${totalRev - totalExp >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(totalRev - totalExp)}</td>
+                </tr>`;
         }
     </script>
 </body>
