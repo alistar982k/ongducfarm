@@ -2880,6 +2880,7 @@
                 if(supabaseClient) await supabaseClient.from('inventory').delete().eq('id', id);
             });
         }
+
                     // --- CHỨC NĂNG BÁO CÁO DÒNG TIỀN (BẢN CẬP NHẬT) ---
         function renderCashflow() {
             const yearSelect = document.getElementById('cashflowYearSelect');
@@ -2953,6 +2954,7 @@
                     <td class="p-4 text-right font-black ${totalRev - totalExp >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(totalRev - totalExp)}</td>
                 </tr>`;
         }
+
     </script>
 </body>
 </html>
