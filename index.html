@@ -162,6 +162,7 @@
                                 <button onclick="navigateTo('locations')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-300 flex items-center space-x-2"><i class="fa-solid fa-map-location-dot w-4"></i><span>Thửa Đất & Khu Vực</span></button>
                                 <button onclick="navigateTo('users')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-indigo-300 flex items-center space-x-2"><i class="fa-solid fa-users-gear w-4"></i><span>Tài Khoản Nhân Viên</span></button>
                                 <div class="border-t border-slate-800 my-1"></div>
+                                <button onclick="navigateTo('cashflow')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2" id="nav-cashflow"><i class="fa-solid fa-money-bill-trend-up w-4"></i><span>Báo Cáo Dòng Tiền</span></button>
                                 <button onclick="openExportReportModal()" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-file-export w-4"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                                 <button onclick="downloadBackupJSON()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2"><i class="fa-solid fa-download w-4"></i><span>Sao Lưu DB JSON</span></button>
                                 <button onclick="openDriveConfigModal()" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-teal-400 flex items-center space-x-2"><i class="fa-brands fa-google-drive w-4"></i><span>Cấu Hình Google Drive</span></button>
@@ -212,6 +213,7 @@
                 <!-- Nhóm: Hệ Thống & Báo Cáo -->
                 <div class="pt-2 border-t border-slate-700 mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hệ Thống & Báo Cáo</p>
+                    <button onclick="navigateTo('cashflow'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-slate-800 flex items-center space-x-2 font-medium" id="nav-cashflow-mob"><i class="fa-solid fa-money-bill-trend-up w-5"></i><span>Báo Cáo Dòng Tiền</span></button>
                     <button onclick="openExportReportModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-file-export w-5"></i><span>Xuất Báo Cáo Canh Tác</span></button>
                     <button onclick="downloadBackupJSON(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-blue-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-download w-5"></i><span>Sao Lưu DB JSON</span></button>
                     <button onclick="openDriveConfigModal(); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-teal-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-brands fa-google-drive w-5"></i><span>Cấu Hình Google Drive</span></button>
@@ -655,6 +657,35 @@
                                 <tr><th class="p-4">Họ & Tên</th><th class="p-4">Email (Tên đăng nhập)</th><th class="p-4">Vai Trò</th><th class="p-4 text-right">Thao Tác</th></tr>
                             </thead>
                             <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+                    <!-- VIEW: BÁO CÁO DÒNG TIỀN -->
+            <section id="view-cashflow" class="content-view hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-money-bill-trend-up text-emerald-600"></i><span>Báo Cáo Dòng Tiền Sổ Quỹ (Chủ Trang Trại)</span></h2>
+                        <p class="text-xs text-slate-500 mt-1">Thống kê Doanh Thu - Chi Phí - Lợi Nhuận theo 12 tháng từ Sổ quỹ thu chi</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs font-bold text-slate-700">Chọn Năm:</label>
+                        <select id="cashflowYearSelect" onchange="renderCashflowTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"></select>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs text-slate-600 min-w-[600px]">
+                            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-4 text-center">Tháng</th>
+                                    <th class="p-4 text-right">Doanh Thu (VNĐ)</th>
+                                    <th class="p-4 text-right">Chi Phí (VNĐ)</th>
+                                    <th class="p-4 text-right">Lợi Nhuận (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashflowTableBody" class="divide-y divide-slate-100"></tbody>
+                            <tfoot id="cashflowTableFooter" class="bg-slate-50 font-bold border-t border-slate-200 text-slate-900"></tfoot>
                         </table>
                     </div>
                 </div>
@@ -1372,7 +1403,7 @@
 
         function renderAllViews() {
             renderDashboard(); renderCrops(); renderLivestock(); renderAquaculture(); renderInventory(); 
-            renderTasks(); renderLogs(); renderLedger(); renderLocationsTable(); renderUsersTable(); renderCameras(); renderHarvests();
+            renderTasks(); renderLogs(); renderLedger(); renderLocationsTable(); renderUsersTable(); renderCameras(); renderHarvests(); renderCashflow();
         }
 
         let expenseChartInst = null, profitChartInst = null;
@@ -2719,6 +2750,68 @@
             if(supabaseClient) await supabaseClient.from('ledger').insert([newLedger]);
         }
         async function deleteLedger(id) { 
+                    // --- CHỨC NĂNG BÁO CÁO DÒNG TIỀN ---
+        function renderCashflow() {
+            const yearSelect = document.getElementById('cashflowYearSelect');
+            if(!yearSelect) return;
+            
+            // Lấy danh sách các năm có trong sổ quỹ
+            let years = new Set(db.ledger.map(l => l.date ? new Date(l.date).getFullYear() : null).filter(y => !isNaN(y) && y !== null));
+            years.add(new Date().getFullYear()); // Đảm bảo luôn có năm hiện hành
+            
+            const sortedYears = Array.from(years).sort((a,b) => b - a); // Năm mới nhất lên đầu
+            const currentSelected = yearSelect.value || new Date().getFullYear();
+            
+            yearSelect.innerHTML = sortedYears.map(y => `<option value="${y}" ${y == currentSelected ? 'selected' : ''}>Năm ${y}</option>`).join('');
+            renderCashflowTable();
+        }
+
+        function renderCashflowTable() {
+            const tbody = document.getElementById('cashflowTableBody');
+            const tfoot = document.getElementById('cashflowTableFooter');
+            const year = document.getElementById('cashflowYearSelect')?.value;
+            if(!tbody || !year) return;
+
+            let totalRev = 0, totalExp = 0;
+            let html = '';
+
+            for(let m = 1; m <= 12; m++) {
+                let mRev = 0, mExp = 0;
+                
+                // Quét dữ liệu Sổ Quỹ theo từng tháng
+                db.ledger.forEach(l => {
+                    if(l.date) {
+                        const d = new Date(l.date);
+                        if(d.getFullYear() == year && (d.getMonth() + 1) == m) {
+                            if(l.type === 'income') mRev += Number(l.amount || 0);
+                            if(l.type === 'expense') mExp += Number(l.amount || 0);
+                        }
+                    }
+                });
+                
+                const mProfit = mRev - mExp;
+                totalRev += mRev; 
+                totalExp += mExp;
+
+                html += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="p-4 text-center font-bold">Tháng ${m}</td>
+                        <td class="p-4 text-right text-emerald-600 font-medium">${formatCurrency(mRev)}</td>
+                        <td class="p-4 text-right text-rose-600 font-medium">${formatCurrency(mExp)}</td>
+                        <td class="p-4 text-right font-bold ${mProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(mProfit)}</td>
+                    </tr>`;
+            }
+
+            tbody.innerHTML = html;
+            tfoot.innerHTML = `
+                <tr>
+                    <td class="p-4 text-center font-black">TỔNG KẾT NĂM</td>
+                    <td class="p-4 text-right font-black text-emerald-600">${formatCurrency(totalRev)}</td>
+                    <td class="p-4 text-right font-black text-rose-600">${formatCurrency(totalExp)}</td>
+                    <td class="p-4 text-right font-black ${totalRev - totalExp >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(totalRev - totalExp)}</td>
+                </tr>`;
+        }
+
             db.ledger = db.ledger.filter(x=>x.id!==id); saveLocalState(); renderLedger(); renderDashboard(); 
             if(supabaseClient) await supabaseClient.from('ledger').delete().eq('id', id);
         }
