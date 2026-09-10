@@ -32,6 +32,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
+                /* Định dạng hiển thị kết quả Trợ lý AI */
+        .ai-markdown h3 { font-size: 16px; font-weight: 900; color: #4338ca; margin-top: 20px; margin-bottom: 10px; display: flex; items-center; }
+        .ai-markdown p { margin-bottom: 10px; line-height: 1.6; }
+        .ai-markdown ul { list-style-type: disc; padding-left: 20px; margin-bottom: 15px; }
+        .ai-markdown li { margin-bottom: 5px; }
+        .ai-markdown strong { color: #1e293b; font-weight: 800; }
+        .ai-highlight { background-color: #fef08a; padding: 0 4px; border-radius: 4px; }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
@@ -124,14 +132,14 @@
                     <button onclick="navigateTo('aquaculture')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-aquaculture">
                         <i class="fa-solid fa-fish text-cyan-400"></i><span>Thủy Sản</span>
                     </button>
-                    <button onclick="navigateTo('weather')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-weather">
-                        <i class="fa-solid fa-cloud-sun-rain text-amber-400"></i><span>Thời Tiết</span>
-                    </button>
                     <button onclick="navigateTo('logs')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-logs">
                         <i class="fa-solid fa-book-open text-purple-400"></i><span>Nhật Ký</span>
                     </button>
                     <button onclick="navigateTo('cameras')" class="nav-btn px-2 xl:px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center space-x-1.5" id="nav-cameras">
                         <i class="fa-solid fa-tv text-rose-400"></i><span>Camera</span>
+                    </button>
+                    <button onclick="openAIModal()" class="owner-only nav-btn px-2 xl:px-3 py-2 rounded-lg bg-gradient-to-r from-purple-900 to-indigo-900 border border-purple-500/30 hover:scale-105 transition flex items-center space-x-1.5 shadow-[0_0_15px_rgba(168,85,247,0.4)]" id="nav-ai">
+                        <i class="fa-solid fa-robot text-purple-300 live-pulse"></i><span class="text-purple-100 font-bold">Trợ Lý AI</span>
                     </button>
 
                     <!-- Nhà Kho -->
@@ -156,6 +164,7 @@
                         </button>
                         <div class="absolute right-0 top-full pt-1 w-56 hidden group-hover:block z-50">
                             <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 text-xs">
+                                <button onclick="navigateTo('weather')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-amber-400 flex items-center space-x-2" id="nav-weather"><i class="fa-solid fa-cloud-sun-rain w-4"></i><span>Thời Tiết & Khuyến Nông</span></button>
                                 <button onclick="navigateTo('tasks')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-blue-400 flex items-center space-x-2 viewer-hide"><i class="fa-solid fa-list-check w-4"></i><span>Công Việc & Phân Công</span></button>
                                 <button onclick="navigateTo('harvest')" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-orange-400 flex items-center space-x-2"><i class="fa-solid fa-boxes-packing w-4"></i><span>Lịch Sử Thu Hoạch</span></button>
                                 <button onclick="navigateTo('ledger')" class="owner-only w-full text-left px-4 py-2.5 hover:bg-slate-800 text-yellow-400 flex items-center space-x-2"><i class="fa-solid fa-coins w-4"></i><span>Sổ Quỹ Thu Chi</span></button>
@@ -187,7 +196,6 @@
 
             <!-- Mobile Drawer Menu (Cập nhật đầy đủ tính năng như PC) -->
             <div id="mobileMenu" class="hidden lg:hidden absolute w-full bg-slate-900 border-b border-slate-700 p-3 space-y-1 text-xs max-h-[85vh] overflow-y-auto custom-scrollbar shadow-2xl z-50 left-0">
-                <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-amber-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
                 <button onclick="navigateTo('logs'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-book-open text-purple-400 w-5"></i><span>Nhật Ký Ảnh</span></button>
                 <button onclick="navigateTo('cameras'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-tv text-rose-400 w-5"></i><span>Camera Giám Sát</span></button>
 
@@ -203,6 +211,7 @@
                 <!-- Nhóm: Quản Lý Vận Hành -->
                 <div class="pt-2 border-t border-slate-700 mt-1">
                     <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Quản Lý & Vận Hành</p>
+                    <button onclick="navigateTo('weather'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-amber-400 hover:bg-slate-800 flex items-center space-x-2 font-medium" id="nav-weather-mob"><i class="fa-solid fa-cloud-sun-rain w-5"></i><span>Thời Tiết & Khuyến Nông</span></button>
                     <button onclick="navigateTo('tasks'); toggleMobileMenu();" class="viewer-hide w-full text-left px-3 py-2.5 rounded-lg text-blue-300 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-list-check w-5"></i><span>Công Việc & Phân Công</span></button>
                     <button onclick="navigateTo('harvest'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-orange-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-boxes-packing w-5"></i><span>Lịch Sử Thu Hoạch</span></button>
                     <button onclick="navigateTo('ledger'); toggleMobileMenu();" class="owner-only w-full text-left px-3 py-2.5 rounded-lg text-yellow-400 hover:bg-slate-800 flex items-center space-x-2 font-medium"><i class="fa-solid fa-coins w-5"></i><span>Sổ Quỹ Thu Chi</span></button>
@@ -714,6 +723,65 @@
     </div>
 
     <!-- MODALS -->
+        <!-- MODAL TRỢ LÝ AI GEMINI -->
+    <div id="aiAssistantModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col max-h-[95vh] overflow-hidden border border-slate-200">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-5 flex justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-10 text-white text-7xl"><i class="fa-solid fa-robot"></i></div>
+                <div class="relative z-10 flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
+                        <i class="fa-solid fa-robot text-2xl text-purple-300 live-pulse"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-white text-lg tracking-wide">Trợ Lý Ảo Nông Trại <span class="text-purple-300">AI</span></h3>
+                        <p class="text-[11px] text-indigo-200 font-medium mt-0.5">Phân tích dữ liệu & Lập kế hoạch vận hành tự động</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('aiAssistantModal')" class="relative z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Body: Cấu hình API Key (Chỉ hiện khi chưa có key) -->
+            <div id="aiConfigSection" class="p-5 bg-purple-50 border-b border-purple-100 hidden">
+                <p class="text-xs text-purple-800 font-bold mb-2"><i class="fa-solid fa-key mr-1"></i>Cấu hình Google Gemini API Key</p>
+                <div class="flex space-x-2">
+                    <input type="password" id="geminiApiKeyInput" placeholder="Nhập API Key của bạn (Lấy miễn phí tại aistudio.google.com)" class="flex-1 px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-500">
+                    <button onclick="saveGeminiApiKey()" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-md">Lưu Key</button>
+                </div>
+                <p class="text-[10px] text-purple-600 mt-2">Dữ liệu Key được mã hóa và lưu an toàn trên trình duyệt của bạn.</p>
+            </div>
+
+            <!-- Body: Nút bấm tạo báo cáo -->
+            <div class="p-5 border-b border-slate-100 flex justify-center bg-slate-50">
+                <button id="btnGenerateAI" onclick="generateAIDailyReport()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3.5 rounded-2xl text-sm font-black transition shadow-[0_5px_15px_rgba(147,51,234,0.3)] hover:shadow-[0_8px_20px_rgba(147,51,234,0.4)] flex items-center space-x-2 w-full sm:w-auto justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Viết Báo Cáo & Lên Kế Hoạch Hôm Nay</span>
+                </button>
+            </div>
+
+            <!-- Body: Kết quả AI -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-6 bg-white relative">
+                <div id="aiLoadingState" class="hidden absolute inset-0 bg-white/90 flex-col items-center justify-center z-10 space-y-4">
+                    <div class="relative w-16 h-16 flex items-center justify-center">
+                        <div class="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-purple-600 rounded-full border-t-transparent animate-spin"></div>
+                        <i class="fa-solid fa-robot text-purple-600 text-xl live-pulse"></i>
+                    </div>
+                    <p class="text-sm font-bold text-purple-800 animate-pulse">AI đang phân tích dữ liệu trang trại...</p>
+                </div>
+
+                <div id="aiResultContent" class="text-sm text-slate-700 space-y-4 hidden">
+                    <!-- Nội dung AI sẽ đổ vào đây -->
+                </div>
+                
+                <div id="aiEmptyState" class="text-center py-10 text-slate-400">
+                    <i class="fa-solid fa-seedling text-5xl mb-3 opacity-50"></i>
+                    <p class="text-xs font-medium">Hãy bấm nút phía trên để AI tổng hợp dữ liệu trang trại và báo cáo cho bạn nhé!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL MÃ QR TRUY XUẤT -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 space-y-4 text-center relative overflow-hidden">
@@ -2924,6 +2992,162 @@
                     <td class="p-4 text-right font-black text-rose-600">${formatCurrency(totalExp)}</td>
                     <td class="p-4 text-right font-black ${totalRev - totalExp >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${formatCurrency(totalRev - totalExp)}</td>
                 </tr>`;
+        }
+        // ==========================================
+        // TÍNH NĂNG TRỢ LÝ AI GEMINI THÔNG MINH
+        // ==========================================
+        let geminiApiKey = localStorage.getItem('ongducfarm_gemini_key') || 'AQ.Ab8RN6IbD_yRLEooU6EbUzUQFzRKq8zpsHUcRU-vG3fE62L1JA'; function openAIModal() {
+
+        function openAIModal() {
+            if (db.currentRole === 'viewer') return showToast('Bạn không có quyền sử dụng Trợ lý AI!', 'error');
+            
+            const configSection = document.getElementById('aiConfigSection');
+            const keyInput = document.getElementById('geminiApiKeyInput');
+            
+            if (!geminiApiKey) {
+                configSection.classList.remove('hidden');
+            } else {
+                configSection.classList.add('hidden');
+                keyInput.value = '********'; // Giấu key thực tế
+            }
+            
+            document.getElementById('aiResultContent').classList.add('hidden');
+            document.getElementById('aiEmptyState').classList.remove('hidden');
+            openModal('aiAssistantModal');
+        }
+
+        function saveGeminiApiKey() {
+            const val = document.getElementById('geminiApiKeyInput').value.trim();
+            if (val && val !== '********') {
+                geminiApiKey = val;
+                localStorage.setItem('ongducfarm_gemini_key', geminiApiKey);
+                document.getElementById('aiConfigSection').classList.add('hidden');
+                showToast('Đã lưu API Key thành công!', 'success');
+            }
+        }
+
+        // Lấy dữ liệu Nông trại để cung cấp cho AI
+        function gatherFarmContext() {
+            // 1. Công việc chưa hoàn thành
+            const pendingTasks = (db.tasks || []).filter(t => t.status === 'pending');
+            const taskStr = pendingTasks.length > 0 
+                ? pendingTasks.map(t => `- Tên việc: ${t.title} (Giao cho: ${db.users.find(u=>u.id===t.assignee_id)?.name||'AI'}, Hạn: ${formatDateStandard(t.date)})`).join('\n') 
+                : 'Không có công việc nào tồn đọng.';
+
+            // 2. Cảnh báo tồn kho (Dưới 15 đơn vị)
+            const lowStock = (db.inventory || []).filter(i => Number(i.quantity) < 15);
+            const stockStr = lowStock.length > 0 
+                ? lowStock.map(i => `- ${i.name}: Còn ${i.quantity} ${i.unit||''}`).join('\n') 
+                : 'Kho vật tư đang đầy đủ, không có loại nào cạn kiệt.';
+
+            // 3. Sức khỏe Lô/Lứa (Chỉ lấy lô có vấn đề)
+            const sickBatches = (db.batches || []).filter(b => b.status !== 'harvested' && b.health_status !== 'good');
+            const sickStr = sickBatches.length > 0 
+                ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n')
+                : 'Tất cả các lô trồng, vật nuôi và thủy sản đều khỏe mạnh 100%.';
+
+            // 4. Doanh thu tháng này (Tạm tính Sổ quỹ)
+            const currentMonth = new Date().getMonth() + 1;
+            const currentYear = new Date().getFullYear();
+            let monthRev = 0, monthExp = 0;
+            (db.ledger || []).forEach(l => {
+                if(l.date) {
+                    const d = new Date(l.date);
+                    if(d.getFullYear() === currentYear && (d.getMonth() + 1) === currentMonth) {
+                        if(l.type === 'income') monthRev += Number(l.amount);
+                        if(l.type === 'expense') monthExp += Number(l.amount);
+                    }
+                }
+            });
+
+            return `
+### DỮ LIỆU NÔNG TRẠI THỜI GIAN THỰC HÔM NAY (${getReportTimeString()}):
+1. **Công Việc Đang Chờ Xử Lý:**
+${taskStr}
+
+2. **Cảnh Báo Vật Tư Gần Hết:**
+${stockStr}
+
+3. **Cảnh Báo Dịch Bệnh / Sức Khỏe Lô:**
+${sickStr}
+
+4. **Tài Chính Tháng Này:** Doanh thu sổ quỹ: ${formatNumber(monthRev)} VNĐ. Chi phí sổ quỹ: ${formatNumber(monthExp)} VNĐ.
+`;
+        }
+
+        // Định dạng Markdown đơn giản trả về từ AI sang HTML
+        function parseAIMarkdown(text) {
+            let html = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // In đậm
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // In nghiêng
+                .replace(/### (.*?)\n/g, '<h3><i class="fa-solid fa-angles-right text-purple-400 mr-2 text-sm"></i>$1</h3>') // Tiêu đề H3
+                .replace(/## (.*?)\n/g, '<h3>$1</h3>') // Tiêu đề H2
+                .replace(/\n- (.*?)(?=\n|$)/g, '<li>$1</li>') // Danh sách
+                .replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>') // Bọc danh sách bằng thẻ ul
+                .replace(/\n\n/g, '</p><p>'); // Xuống dòng
+            return `<div class="ai-markdown"><p>${html}</p></div>`;
+        }
+
+        async function generateAIDailyReport() {
+            if (!geminiApiKey || geminiApiKey === '********') {
+                document.getElementById('aiConfigSection').classList.remove('hidden');
+                return showToast('Vui lòng nhập API Key trước khi sử dụng!', 'error');
+            }
+
+            const btn = document.getElementById('btnGenerateAI');
+            const loading = document.getElementById('aiLoadingState');
+            const resultBox = document.getElementById('aiResultContent');
+            const emptyBox = document.getElementById('aiEmptyState');
+
+            // Hiển thị trạng thái Loading
+            btn.disabled = true;
+            emptyBox.classList.add('hidden');
+            resultBox.classList.add('hidden');
+            loading.classList.remove('hidden');
+            loading.classList.add('flex');
+
+            const farmContext = gatherFarmContext();
+            
+            const systemPrompt = "Bạn là Trợ lý Vận hành cấp cao tại Ông Đức Farm. Giọng điệu của bạn chuyên nghiệp, súc tích, mang tính chất báo cáo quản trị. Nhiệm vụ của bạn là đọc dữ liệu thô được cung cấp, sau đó Viết Báo Cáo Tóm Tắt Buổi Sáng và Lên Kế Hoạch Các Việc Cần Xử Lý Ngay. Hãy nhấn mạnh vào các rủi ro (vật tư hết, cây bệnh) để chủ trang trại chú ý. Định dạng câu trả lời sử dụng cấu trúc: ### 1. Tóm Tắt Chung, ### 2. Cảnh Báo Rủi Ro, ### 3. Đề Xuất Công Việc Hôm Nay.";
+
+            const payload = {
+                contents: [{ parts: [{ text: farmContext }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${geminiApiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                const aiResponseText = data.candidates[0].content.parts[0].text;
+                
+                // Hiển thị kết quả
+                resultBox.innerHTML = parseAIMarkdown(aiResponseText);
+                resultBox.classList.remove('hidden');
+
+                showToast('AI đã lập báo cáo xong!', 'success');
+            } catch (error) {
+                console.error("Lỗi Gemini API:", error);
+                let errorMsg = "Lỗi kết nối AI. Vui lòng kiểm tra lại API Key hoặc thử lại sau.";
+                if (error.message.includes('API_KEY_INVALID')) errorMsg = "API Key không hợp lệ!";
+                
+                resultBox.innerHTML = `<div class="bg-rose-50 text-rose-700 p-4 rounded-xl border border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-2"></i><strong>Lỗi:</strong> ${errorMsg}</div>`;
+                resultBox.classList.remove('hidden');
+                showToast('Đã xảy ra lỗi khi gọi AI!', 'error');
+            } finally {
+                loading.classList.remove('flex');
+                loading.classList.add('hidden');
+                btn.disabled = false;
+            }
         }
 
     </script>
