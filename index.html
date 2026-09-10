@@ -2986,59 +2986,33 @@
                 </tr>`;
         }
         // ==========================================
-        // TÍNH NĂNG TRỢ LÝ AI GEMINI THÔNG MINH
+        // TÍNH NĂNG TRỢ LÝ AI GEMINI THÔNG MINH (CHATBOT)
         // ==========================================
-        let geminiApiKey = localStorage.getItem('ongducfarm_gemini_key') || 'AQ.Ab8RN6IbD_yRLEooU6EbUzUQFzRKq8zpsHUcRU-vG3fE62L1JA';
+        let geminiApiKey = 'AQ.Ab8RN6K26EUy5ZnkB6wFwfAJYfOvTr-zBSkA6R-sbDVAy75axQ';
+        let aiChatHistory = []; // Lưu trữ lịch sử trò chuyện
 
         function openAIModal() {
             if (db.currentRole === 'viewer') return showToast('Bạn không có quyền sử dụng Trợ lý AI!', 'error');
-            
-            const configSection = document.getElementById('aiConfigSection');
-            const keyInput = document.getElementById('geminiApiKeyInput');
-            
-            if (!geminiApiKey) {
-                configSection.classList.remove('hidden');
-            } else {
-                configSection.classList.add('hidden');
-                keyInput.value = '********'; // Giấu key thực tế
-            }
-            
-            document.getElementById('aiResultContent').classList.add('hidden');
-            document.getElementById('aiEmptyState').classList.remove('hidden');
             openModal('aiAssistantModal');
+            
+            // Tự động căn chỉnh kích thước khung nhập liệu
+            setTimeout(() => {
+                const tx = document.getElementById('aiChatInput');
+                if(tx) { tx.style.height = 'auto'; tx.style.height = (tx.scrollHeight) + 'px'; tx.focus(); }
+            }, 100);
         }
 
-        function saveGeminiApiKey() {
-            const val = document.getElementById('geminiApiKeyInput').value.trim();
-            if (val && val !== '********') {
-                geminiApiKey = val;
-                localStorage.setItem('ongducfarm_gemini_key', geminiApiKey);
-                document.getElementById('aiConfigSection').classList.add('hidden');
-                showToast('Đã lưu API Key thành công!', 'success');
-            }
-        }
-
-        // Lấy dữ liệu Nông trại để cung cấp cho AI
+        // Lấy dữ liệu Nông trại để cung cấp cho AI (Đã tối ưu cho hội thoại)
         function gatherFarmContext() {
-            // 1. Công việc chưa hoàn thành
             const pendingTasks = (db.tasks || []).filter(t => t.status === 'pending');
-            const taskStr = pendingTasks.length > 0 
-                ? pendingTasks.map(t => `- Tên việc: ${t.title} (Giao cho: ${db.users.find(u=>u.id===t.assignee_id)?.name||'AI'}, Hạn: ${formatDateStandard(t.date)})`).join('\n') 
-                : 'Không có công việc nào tồn đọng.';
+            const taskStr = pendingTasks.length > 0 ? pendingTasks.map(t => `- Tên việc: ${t.title} (Giao cho: ${db.users.find(u=>u.id===t.assignee_id)?.name||'AI'}, Hạn: ${formatDateStandard(t.date)})`).join('\n') : 'Không có công việc nào tồn đọng.';
 
-            // 2. Cảnh báo tồn kho (Dưới 15 đơn vị)
             const lowStock = (db.inventory || []).filter(i => Number(i.quantity) < 15);
-            const stockStr = lowStock.length > 0 
-                ? lowStock.map(i => `- ${i.name}: Còn ${i.quantity} ${i.unit||''}`).join('\n') 
-                : 'Kho vật tư đang đầy đủ, không có loại nào cạn kiệt.';
+            const stockStr = lowStock.length > 0 ? lowStock.map(i => `- ${i.name}: Còn ${i.quantity} ${i.unit||''}`).join('\n') : 'Kho vật tư đang đầy đủ.';
 
-            // 3. Sức khỏe Lô/Lứa (Chỉ lấy lô có vấn đề)
             const sickBatches = (db.batches || []).filter(b => b.status !== 'harvested' && b.health_status !== 'good');
-            const sickStr = sickBatches.length > 0 
-                ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n')
-                : 'Tất cả các lô trồng, vật nuôi và thủy sản đều khỏe mạnh 100%.';
+            const sickStr = sickBatches.length > 0 ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n') : 'Tất cả các lô trồng, vật nuôi đều khỏe mạnh 100%.';
 
-            // 4. Doanh thu tháng này (Tạm tính Sổ quỹ)
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
             let monthRev = 0, monthExp = 0;
@@ -3052,63 +3026,71 @@
                 }
             });
 
-            return `
-### DỮ LIỆU NÔNG TRẠI THỜI GIAN THỰC HÔM NAY (${getReportTimeString()}):
-1. **Công Việc Đang Chờ Xử Lý:**
-${taskStr}
-
-2. **Cảnh Báo Vật Tư Gần Hết:**
-${stockStr}
-
-3. **Cảnh Báo Dịch Bệnh / Sức Khỏe Lô:**
-${sickStr}
-
-4. **Tài Chính Tháng Này:** Doanh thu sổ quỹ: ${formatNumber(monthRev)} VNĐ. Chi phí sổ quỹ: ${formatNumber(monthExp)} VNĐ.
-`;
+            return `DỮ LIỆU NÔNG TRẠI THỰC TẾ HÔM NAY (${getReportTimeString()}):
+1. Công Việc Đang Chờ: \n${taskStr}
+2. Cảnh Báo Vật Tư (Sắp hết): \n${stockStr}
+3. Cảnh Báo Dịch Bệnh: \n${sickStr}
+4. Sổ Quỹ Tháng Này: Thu: ${formatNumber(monthRev)} VNĐ, Chi: ${formatNumber(monthExp)} VNĐ.`;
         }
 
-        // Định dạng Markdown đơn giản trả về từ AI sang HTML
         function parseAIMarkdown(text) {
             let html = text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // In đậm
                 .replace(/\*(.*?)\*/g, '<em>$1</em>') // In nghiêng
                 .replace(/### (.*?)\n/g, '<h3><i class="fa-solid fa-angles-right text-purple-400 mr-2 text-sm"></i>$1</h3>') // Tiêu đề H3
-                .replace(/## (.*?)\n/g, '<h3>$1</h3>') // Tiêu đề H2
-                .replace(/\n- (.*?)(?=\n|$)/g, '<li>$1</li>') // Danh sách
-                .replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>') // Bọc danh sách bằng thẻ ul
-                .replace(/\n\n/g, '</p><p>'); // Xuống dòng
-            return `<div class="ai-markdown"><p>${html}</p></div>`;
+                .replace(/## (.*?)\n/g, '<h3 class="text-base text-purple-700">$1</h3>') // Tiêu đề H2
+                .replace(/\n- (.*?)(?=\n|$)/g, '<li class="ml-4 mb-1"><i class="fa-solid fa-caret-right text-[10px] text-purple-400 mr-1.5"></i>$1</li>') // Danh sách
+                .replace(/(<li.*?>.*?<\/li>)/s, '<ul class="my-2">$1</ul>') // Bọc ul
+                .replace(/\n/g, '<br>'); // Xuống dòng
+            return `<div class="ai-markdown">${html}</div>`;
         }
 
-        async function generateAIDailyReport() {
-            if (!geminiApiKey || geminiApiKey === '********') {
-                document.getElementById('aiConfigSection').classList.remove('hidden');
-                return showToast('Vui lòng nhập API Key trước khi sử dụng!', 'error');
+        // Bấm nút gợi ý nhanh
+        function sendQuickPrompt(prompt) {
+            document.getElementById('aiChatInput').value = prompt;
+            handleSendChatMessage(new Event('submit'));
+        }
+
+        // Xử lý gửi tin nhắn Chat
+        async function handleSendChatMessage(e) {
+            if (e) e.preventDefault();
+            
+            if (!geminiApiKey) {
+                return showToast('Vui lòng gắn API Key vào Code trước khi sử dụng!', 'error');
             }
 
-            const btn = document.getElementById('btnGenerateAI');
-            const loading = document.getElementById('aiLoadingState');
-            const resultBox = document.getElementById('aiResultContent');
-            const emptyBox = document.getElementById('aiEmptyState');
+            const inputEl = document.getElementById('aiChatInput');
+            const btnSend = document.getElementById('btnSendAiChat');
+            const messageText = inputEl.value.trim();
 
-            // Hiển thị trạng thái Loading
-            btn.disabled = true;
-            emptyBox.classList.add('hidden');
-            resultBox.classList.add('hidden');
-            loading.classList.remove('hidden');
-            loading.classList.add('flex');
+            if (!messageText) return;
 
-            const farmContext = gatherFarmContext();
+            // 1. Hiển thị tin nhắn của User lên màn hình
+            appendMessageToChat('user', messageText);
             
-            const systemPrompt = "Bạn là Trợ lý Vận hành cấp cao tại Ông Đức Farm. Giọng điệu của bạn chuyên nghiệp, súc tích, mang tính chất báo cáo quản trị. Nhiệm vụ của bạn là đọc dữ liệu thô được cung cấp, sau đó Viết Báo Cáo Tóm Tắt Buổi Sáng và Lên Kế Hoạch Các Việc Cần Xử Lý Ngay. Hãy nhấn mạnh vào các rủi ro (vật tư hết, cây bệnh) để chủ trang trại chú ý. Định dạng câu trả lời sử dụng cấu trúc: ### 1. Tóm Tắt Chung, ### 2. Cảnh Báo Rủi Ro, ### 3. Đề Xuất Công Việc Hôm Nay.";
+            // Lưu vào lịch sử (Định dạng của Google Gemini API)
+            aiChatHistory.push({ role: 'user', parts: [{ text: messageText }] });
+            
+            inputEl.value = '';
+            inputEl.style.height = 'auto'; // Reset chiều cao ô nhập liệu
+            
+            // 2. Hiện trạng thái AI đang gõ chữ
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            const loadingMsgId = appendMessageToChat('model', '<span class="flex items-center space-x-2 text-purple-500 font-bold"><i class="fa-solid fa-ellipsis fa-bounce"></i> <span>Trợ lý đang phân tích dữ liệu...</span></span>');
+
+            // 3. Chuẩn bị "Ngữ cảnh + Lệnh hệ thống" (Bắt buộc chèn vào mỗi lần gửi để AI luôn lấy số liệu MỚI NHẤT)
+            const farmContext = gatherFarmContext(); 
+            const systemPrompt = `Bạn là Trợ lý AI Vận hành cấp cao tại Ông Đức Farm. Giọng điệu chuyên nghiệp, thân thiện, ngắn gọn, xưng hô là "Tôi" và gọi người dùng là "Sếp" hoặc "Bạn". Hãy đọc DỮ LIỆU NÔNG TRẠI THỰC TẾ dưới đây làm bối cảnh để trả lời câu hỏi của người dùng. Nếu họ hỏi báo cáo chung, hãy tổng hợp số liệu đó. Nếu họ hỏi ngoài lề (không liên quan nông nghiệp), khéo léo nhắc họ quay lại công việc. \n\n${farmContext}`;
 
             const payload = {
-                contents: [{ parts: [{ text: farmContext }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                contents: aiChatHistory
             };
 
+            // 4. Gửi lên Google Gemini API
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${geminiApiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -3116,31 +3098,71 @@ ${sickStr}
 
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (!response.ok) throw new Error(data.error?.message || "Lỗi máy chủ Google");
 
                 const aiResponseText = data.candidates[0].content.parts[0].text;
                 
-                // Hiển thị kết quả
-                resultBox.innerHTML = parseAIMarkdown(aiResponseText);
-                resultBox.classList.remove('hidden');
+                // Cập nhật câu trả lời vào Lịch sử để AI "nhớ" ngữ cảnh cho câu hỏi sau
+                aiChatHistory.push({ role: 'model', parts: [{ text: aiResponseText }] });
 
-                showToast('AI đã lập báo cáo xong!', 'success');
+                // Cập nhật giao diện xóa dòng Loading, thay bằng nội dung trả lời
+                updateMessageInChat(loadingMsgId, parseAIMarkdown(aiResponseText));
+
             } catch (error) {
-                console.error("Lỗi Gemini API:", error);
-                let errorMsg = "Lỗi kết nối AI. Vui lòng kiểm tra lại API Key hoặc thử lại sau.";
-                if (error.message.includes('API_KEY_INVALID')) errorMsg = "API Key không hợp lệ!";
-                
-                resultBox.innerHTML = `<div class="bg-rose-50 text-rose-700 p-4 rounded-xl border border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-2"></i><strong>Lỗi:</strong> ${errorMsg}</div>`;
-                resultBox.classList.remove('hidden');
-                showToast('Đã xảy ra lỗi khi gọi AI!', 'error');
+                console.error("Lỗi Chat AI:", error);
+                const errorHtml = `<div class="bg-rose-50 text-rose-700 p-3 rounded-xl text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi kết nối Google AI: ${error.message}</div>`;
+                updateMessageInChat(loadingMsgId, errorHtml);
+                aiChatHistory.pop(); // Xóa câu hỏi thất bại khỏi bộ nhớ để không bị lỗi dây chuyền
             } finally {
-                loading.classList.remove('flex');
-                loading.classList.add('hidden');
-                btn.disabled = false;
+                btnSend.disabled = false;
+                btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+                inputEl.focus();
             }
         }
+
+        // Vẽ bong bóng chat lên giao diện
+        function appendMessageToChat(role, htmlContent) {
+            const chatWindow = document.getElementById('aiChatWindow');
+            const msgId = 'msg-' + Date.now();
+            const isUser = role === 'user';
+            
+            const userAvatar = '<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0 border border-slate-300 shadow-sm"><i class="fa-solid fa-user text-xs"></i></div>';
+            const aiAvatar = '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-md border border-purple-400/50"><i class="fa-solid fa-robot text-xs"></i></div>';
+            
+            const userBubble = `bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3.5 shadow-md text-sm whitespace-pre-wrap`;
+            const aiBubble = `bg-white border border-purple-100 text-slate-700 rounded-2xl rounded-tl-sm p-4 shadow-sm text-sm ai-markdown`;
+
+            const messageHtml = `
+                <div id="${msgId}" class="flex gap-3 max-w-[95%] sm:max-w-[85%] ${isUser ? 'ml-auto flex-row-reverse' : ''}">
+                    ${isUser ? userAvatar : aiAvatar}
+                    <div class="${isUser ? userBubble : aiBubble}">
+                        ${htmlContent}
+                    </div>
+                </div>
+            `;
+            
+            chatWindow.insertAdjacentHTML('beforeend', messageHtml);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Tự động cuộn xuống tin nhắn mới
+            return msgId;
+        }
+
+        function updateMessageInChat(msgId, htmlContent) {
+            const msgEl = document.getElementById(msgId);
+            if (msgEl) {
+                const bubble = msgEl.querySelector('div:nth-child(2)');
+                bubble.innerHTML = htmlContent;
+                const chatWindow = document.getElementById('aiChatWindow');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        }
+
+        // Tự động kéo dãn ô nhập liệu khi gõ văn bản dài
+        document.addEventListener('input', function (e) {
+            if(e.target.id === 'aiChatInput') {
+                e.target.style.height = 'auto';
+                e.target.style.height = (e.target.scrollHeight) + 'px';
+            }
+        }, false);
 
     </script>
 </body>
