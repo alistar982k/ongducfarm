@@ -3004,16 +3004,21 @@
         }
 
         // Lấy dữ liệu Nông trại để cung cấp cho AI (Đã tối ưu cho hội thoại)
+        // Lấy dữ liệu Nông trại để cung cấp cho AI (BẢN NÂNG CẤP - ĐỌC TOÀN BỘ LÔ)
         function gatherFarmContext() {
+            // 1. Công việc chưa hoàn thành
             const pendingTasks = (db.tasks || []).filter(t => t.status === 'pending');
             const taskStr = pendingTasks.length > 0 ? pendingTasks.map(t => `- Tên việc: ${t.title} (Giao cho: ${db.users.find(u=>u.id===t.assignee_id)?.name||'AI'}, Hạn: ${formatDateStandard(t.date)})`).join('\n') : 'Không có công việc nào tồn đọng.';
 
+            // 2. Cảnh báo tồn kho (Dưới 15 đơn vị)
             const lowStock = (db.inventory || []).filter(i => Number(i.quantity) < 15);
             const stockStr = lowStock.length > 0 ? lowStock.map(i => `- ${i.name}: Còn ${i.quantity} ${i.unit||''}`).join('\n') : 'Kho vật tư đang đầy đủ.';
 
+            // 3. Cảnh báo Dịch bệnh (Chỉ lấy lô có vấn đề)
             const sickBatches = (db.batches || []).filter(b => b.status !== 'harvested' && b.health_status !== 'good');
-            const sickStr = sickBatches.length > 0 ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n') : 'Tất cả các lô trồng, vật nuôi đều khỏe mạnh 100%.';
+            const sickStr = sickBatches.length > 0 ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n') : '100% khỏe mạnh.';
 
+            // 4. Tài chính tháng này
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
             let monthRev = 0, monthExp = 0;
@@ -3027,11 +3032,27 @@
                 }
             });
 
+            // 5. MỚI: DANH SÁCH CHI TIẾT TOÀN BỘ LÔ ĐANG NUÔI TRỒNG
+            const activeBatches = (db.batches || []).filter(b => b.status !== 'harvested');
+            
+            // Nhóm theo loại hình (Trồng trọt, Chăn nuôi, Thủy sản) để AI dễ hiểu
+            const crops = activeBatches.filter(b => b.type === 'crop').map(b => `- Lô [${b.code}]: Trồng ${b.crop_name} (${b.quantity} cây/chậu). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
+            const livestocks = activeBatches.filter(b => b.type === 'livestock').map(b => `- Chuồng [${b.code}]: Nuôi ${b.crop_name} (${b.quantity} con). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
+            const aquas = activeBatches.filter(b => b.type === 'aquaculture').map(b => `- Ao/Bể [${b.code}]: Nuôi ${b.crop_name} (${b.quantity} con). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
+            
+            let batchListStr = "";
+            if (crops) batchListStr += `\n* TRỒNG TRỌT:\n${crops}`;
+            if (livestocks) batchListStr += `\n* CHĂN NUÔI:\n${livestocks}`;
+            if (aquas) batchListStr += `\n* THỦY SẢN:\n${aquas}`;
+            if (!batchListStr) batchListStr = "Hiện tại trang trại chưa có Lô/Chuồng nào đang hoạt động.";
+
+            // Trả về bức tranh toàn cảnh cho AI
             return `DỮ LIỆU NÔNG TRẠI THỰC TẾ HÔM NAY (${getReportTimeString()}):
 1. Công Việc Đang Chờ: \n${taskStr}
 2. Cảnh Báo Vật Tư (Sắp hết): \n${stockStr}
 3. Cảnh Báo Dịch Bệnh: \n${sickStr}
-4. Sổ Quỹ Tháng Này: Thu: ${formatNumber(monthRev)} VNĐ, Chi: ${formatNumber(monthExp)} VNĐ.`;
+4. Sổ Quỹ Tháng Này: Thu: ${formatNumber(monthRev)} VNĐ, Chi: ${formatNumber(monthExp)} VNĐ.
+5. DANH SÁCH CÁC LÔ/CHUỒNG ĐANG CANH TÁC THỰC TẾ:${batchListStr}`;
         }
 
         function parseAIMarkdown(text) {
