@@ -723,9 +723,9 @@
     </div>
 
     <!-- MODALS -->
-    <!-- MODAL TRỢ LÝ AI GEMINI (GIAO DIỆN CHAT) -->
+    <!-- MODAL TRỢ LÝ AI GEMINI (GIAO DIỆN CHAT CÓ SIDEBAR CLOUD) -->
     <div id="aiAssistantModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] hidden flex items-center justify-center p-2 sm:p-4">
-        <div class="bg-white w-full max-w-4xl h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+        <div class="bg-white w-full max-w-5xl h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 relative">
             <!-- Header -->
             <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-4 flex justify-between items-center relative overflow-hidden flex-shrink-0">
                 <div class="absolute -right-4 -bottom-4 opacity-10 text-white text-7xl"><i class="fa-solid fa-robot"></i></div>
@@ -738,42 +738,64 @@
                         <p class="text-[10px] text-indigo-200 font-medium mt-0.5 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 live-pulse"></span> Sẵn sàng phân tích dữ liệu & trò chuyện</p>
                     </div>
                 </div>
-                <button onclick="closeModal('aiAssistantModal')" class="relative z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <!-- Chat History Window -->
-            <div id="aiChatWindow" class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 bg-slate-50 space-y-5">
-                <!-- Lời chào ban đầu từ AI -->
-                <div class="flex gap-3 max-w-[95%] sm:max-w-[85%]">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-md border border-purple-400/50"><i class="fa-solid fa-robot text-xs"></i></div>
-                    <div class="bg-white border border-purple-100 p-4 rounded-2xl rounded-tl-sm text-sm text-slate-700 shadow-sm leading-relaxed">
-                        <p class="font-bold text-purple-800 mb-1">Chào bạn nhỏ! 👋</p>
-                        Mình là Trợ lý AI Vận hành của Ông Đức Farm. Tôi đã kết nối trực tiếp với dữ liệu kho, nhật ký, tài chính và danh sách lô trồng hiện tại. Bạn cần mình giúp gì?
-                        
-                        <div class="mt-4 space-y-2 border-t border-purple-50 pt-3">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">GỢI Ý TÁC VỤ NHANH:</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="sendQuickPrompt('Viết Báo Cáo & Lên Kế Hoạch Hôm Nay')" class="text-xs font-semibold bg-white text-purple-700 border border-purple-200 px-3 py-2 rounded-xl hover:bg-purple-50 transition flex items-center shadow-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Lập Báo Cáo Sáng</button>
-                                <button onclick="sendQuickPrompt('Quét số liệu Nông trại, phát hiện và cảnh báo rủi ro về vật tư, dịch bệnh')" class="text-xs font-semibold bg-white text-rose-600 border border-rose-200 px-3 py-2 rounded-xl hover:bg-rose-50 transition flex items-center shadow-sm"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Quét Rủi Ro</button>
-                                <button onclick="sendQuickPrompt('Phân tích thu chi và lợi nhuận sổ quỹ, đánh giá tổng quan dòng tiền')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-50 transition flex items-center shadow-sm"><i class="fa-solid fa-coins mr-1.5"></i> Phân Tích Dòng Tiền</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="relative z-10 flex items-center space-x-2">
+                    <button onclick="toggleAiHistorySidebar()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition tooltip" title="Lịch sử trò chuyện"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                    <button onclick="closeModal('aiAssistantModal')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
 
-            <!-- Chat Input Area -->
-            <div class="p-3 sm:p-4 bg-white border-t border-slate-200 flex-shrink-0">
-                <form id="aiChatForm" onsubmit="handleSendChatMessage(event)" class="flex gap-2 items-end relative max-w-4xl mx-auto">
-                    <textarea id="aiChatInput" rows="1" placeholder="Hỏi AI về nông trại (Gõ yêu cầu và nhấn Enter)..." class="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition resize-none max-h-32 overflow-y-auto custom-scrollbar" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendChatMessage(event); }"></textarea>
-                    <button type="submit" id="btnSendAiChat" class="w-12 h-12 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center flex-shrink-0 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"><i class="fa-solid fa-paper-plane"></i></button>
-                </form>
-                <div class="text-center mt-2"><p class="text-[9px] text-slate-400">Trí tuệ nhân tạo có thể cung cấp thông tin không chính xác. Hãy kiểm tra lại các số liệu quan trọng.</p></div>
+            <!-- CONTAINER CHÍNH CHỨA SIDEBAR & CHAT WINDOW -->
+            <div class="flex flex-1 overflow-hidden relative">
+                
+                <!-- SIDEBAR LỊCH SỬ TỪ CLOUD -->
+                <div id="aiHistorySidebar" class="w-72 bg-slate-50 border-r border-slate-200 flex flex-col absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 z-30 shadow-2xl md:relative md:translate-x-0">
+                    <div class="p-3 border-b border-slate-200 bg-white flex justify-between items-center">
+                        <h4 class="font-bold text-slate-700 text-xs flex items-center"><i class="fa-solid fa-cloud text-blue-500 mr-1.5"></i>Lịch sử Cloud</h4>
+                        <button onclick="toggleAiHistorySidebar()" class="md:hidden text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="aiHistoryList" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+                        <!-- Danh sách lịch sử sẽ render ở đây -->
+                    </div>
+                    <div class="p-3 border-t border-slate-200 bg-white">
+                        <button onclick="clearAiHistoryCloud()" class="w-full py-2 text-xs font-bold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 transition shadow-sm"><i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử</button>
+                    </div>
+                </div>
+
+                <!-- CHAT MAIN WINDOW -->
+                <div class="flex-1 flex flex-col relative min-w-0 bg-slate-50">
+                    <!-- Chat History Window -->
+                    <div id="aiChatWindow" class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-5">
+                        <!-- Lời chào ban đầu từ AI -->
+                        <div class="flex gap-3 max-w-[95%] sm:max-w-[85%]">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-md border border-purple-400/50"><i class="fa-solid fa-robot text-xs"></i></div>
+                            <div class="bg-white border border-purple-100 p-4 rounded-2xl rounded-tl-sm text-sm text-slate-700 shadow-sm leading-relaxed">
+                                <p class="font-bold text-purple-800 mb-1">Chào bạn nhỏ! 👋</p>
+                                Mình là Trợ lý AI Vận hành của Ông Đức Farm. Tôi đã kết nối trực tiếp với dữ liệu kho, nhật ký, tài chính và danh sách lô trồng hiện tại. Bạn cần mình giúp gì?
+                                
+                                <div class="mt-4 space-y-2 border-t border-purple-50 pt-3">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">GỢI Ý TÁC VỤ NHANH:</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="sendQuickPrompt('Viết Báo Cáo & Lên Kế Hoạch Hôm Nay')" class="text-xs font-semibold bg-white text-purple-700 border border-purple-200 px-3 py-2 rounded-xl hover:bg-purple-50 transition flex items-center shadow-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Lập Báo Cáo Sáng</button>
+                                        <button onclick="sendQuickPrompt('Quét số liệu Nông trại, phát hiện và cảnh báo rủi ro về vật tư, dịch bệnh')" class="text-xs font-semibold bg-white text-rose-600 border border-rose-200 px-3 py-2 rounded-xl hover:bg-rose-50 transition flex items-center shadow-sm"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Quét Rủi Ro</button>
+                                        <button onclick="sendQuickPrompt('Lập kế hoạch chăm sóc chi tiết cho các lô hiện tại')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-50 transition flex items-center shadow-sm"><i class="fa-solid fa-list-check mr-1.5"></i> Chăm Sóc</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Area -->
+                    <div class="p-3 sm:p-4 bg-white border-t border-slate-200 flex-shrink-0">
+                        <form id="aiChatForm" onsubmit="handleSendChatMessage(event)" class="flex gap-2 items-end relative max-w-4xl mx-auto">
+                            <textarea id="aiChatInput" rows="1" placeholder="Hỏi AI về nông trại (Gõ yêu cầu và nhấn Enter)..." class="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition resize-none max-h-32 overflow-y-auto custom-scrollbar" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendChatMessage(event); }"></textarea>
+                            <button type="submit" id="btnSendAiChat" class="w-12 h-12 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center flex-shrink-0 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"><i class="fa-solid fa-paper-plane"></i></button>
+                        </form>
+                        <div class="text-center mt-2"><p class="text-[9px] text-slate-400">Trí tuệ nhân tạo có thể cung cấp thông tin không chính xác. Hãy kiểm tra lại các số liệu quan trọng.</p></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-
     <!-- MODAL MÃ QR TRUY XUẤT -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 space-y-4 text-center relative overflow-hidden">
@@ -1986,8 +2008,12 @@
         function renderLogs() {
             const grid = document.getElementById('logsGrid');
             if(!grid) return;
-            if(db.logs.length===0) { grid.innerHTML='<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có nhật ký thực địa nào.</p>'; return; }
-            grid.innerHTML = db.logs.slice().reverse().map(l => {
+            
+            // ẨN LỊCH SỬ CHAT AI KHỎI GIAO DIỆN NHẬT KÝ CON NGƯỜI
+            const displayLogs = db.logs.filter(l => l.action_type !== 'AI_CHAT_HISTORY');
+            
+            if(displayLogs.length===0) { grid.innerHTML='<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có nhật ký thực địa nào.</p>'; return; }
+            grid.innerHTML = displayLogs.slice().reverse().map(l => {
                 const b = db.batches.find(x=>x.id===l.batch_id) || {code:'N/A'};
                 const loc = db.locations.find(x=>x.id===b.location_id) || {name:'Chưa rõ vị trí'};
                 let imgHTML = '';
@@ -2986,39 +3012,138 @@
                 </tr>`;
         }
         // ==========================================
-        // TÍNH NĂNG TRỢ LÝ AI GEMINI THÔNG MINH (CHATBOT)
+        // TÍNH NĂNG TRỢ LÝ AI GEMINI THÔNG MINH (CHATBOT CÓ CLOUD SIDEBAR)
         // ==========================================
         const _kMask = '=cWSvVEMwYDTVBnSqBFNt1iSQBne0k2XYJDW1YVe4EUL2NnelJVezp0STJnS24kU4IWQuEVQ';
         let geminiApiKey = atob(_kMask.split('').reverse().join(''));
-        let aiChatHistory = []; // Lưu trữ lịch sử trò chuyện
+        let aiChatHistory = []; // Lưu trữ lịch sử trò chuyện cục bộ cho phiên hiện tại
+        let isAiSidebarOpen = false;
 
+        function toggleAiHistorySidebar() {
+            const sidebar = document.getElementById('aiHistorySidebar');
+            isAiSidebarOpen = !isAiSidebarOpen;
+            if (isAiSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // Tự động kéo lịch sử từ DB Cloud (Bảng Logs) và đẩy vào giao diện
         function openAIModal() {
             if (db.currentRole === 'viewer') return showToast('Bạn không có quyền sử dụng Trợ lý AI!', 'error');
             openModal('aiAssistantModal');
             
-            // Tự động căn chỉnh kích thước khung nhập liệu
+            // Phục hồi lịch sử từ Cloud vào mảng aiChatHistory để AI hiểu ngữ cảnh
+            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
+            
+            if (aiChatHistory.length === 0 && cloudHistory.length > 0) {
+                const sorted = [...cloudHistory].sort((a, b) => a.id.localeCompare(b.id)); // Cũ nhất -> Mới nhất
+                
+                const chatWindow = document.getElementById('aiChatWindow');
+                // Xóa hết các tin nhắn cũ trong HTML (chỉ chừa lại lời chào đầu tiên của Bot)
+                while (chatWindow.children.length > 1) {
+                    chatWindow.removeChild(chatWindow.lastChild);
+                }
+                
+                sorted.forEach(msg => {
+                    const role = msg.created_by; // 'user' hoặc 'model'
+                    aiChatHistory.push({ role: role, parts: [{ text: msg.description }] });
+                    appendMessageToChat(role, role === 'user' ? msg.description : parseAIMarkdown(msg.description));
+                });
+            }
+
+            renderAiHistoryList();
+
             setTimeout(() => {
                 const tx = document.getElementById('aiChatInput');
                 if(tx) { tx.style.height = 'auto'; tx.style.height = (tx.scrollHeight) + 'px'; tx.focus(); }
+                const chatWindow = document.getElementById('aiChatWindow');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 100);
         }
 
-        // Lấy dữ liệu Nông trại để cung cấp cho AI (Đã tối ưu cho hội thoại)
-        // Lấy dữ liệu Nông trại để cung cấp cho AI (BẢN NÂNG CẤP - ĐỌC TOÀN BỘ LÔ)
+        // Vẽ danh sách lịch sử ra Sidebar
+        function renderAiHistoryList() {
+            const listContainer = document.getElementById('aiHistoryList');
+            if (!listContainer) return;
+            
+            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
+            
+            if (cloudHistory.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Chưa có lịch sử trò chuyện.</p>';
+                return;
+            }
+
+            // Đảo ngược để hiển thị mới nhất lên đầu danh sách
+            const sorted = [...cloudHistory].sort((a, b) => b.id.localeCompare(a.id));
+            
+            listContainer.innerHTML = sorted.map(msg => {
+                const isUser = msg.created_by === 'user';
+                const icon = isUser ? '<i class="fa-solid fa-user text-indigo-500"></i>' : '<i class="fa-solid fa-robot text-purple-500"></i>';
+                const title = isUser ? 'Bạn' : 'AI';
+                const snippet = msg.description.substring(0, 40) + (msg.description.length > 40 ? '...' : '');
+                
+                return `
+                    <div class="p-2 bg-white rounded-lg border border-slate-100 shadow-sm text-[11px] mb-1">
+                        <div class="font-bold text-slate-700 flex items-center space-x-1.5 mb-1">${icon} <span>${title}</span></div>
+                        <div class="text-slate-500 truncate">${snippet}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Lưu tin nhắn lên Supabase (Mượn bảng Logs)
+        async function saveAiMessageToCloud(role, content) {
+            const newLog = { 
+                id: 'ai-msg-' + Date.now(), 
+                batch_id: 'AI_CHAT', 
+                action_type: 'AI_CHAT_HISTORY', 
+                log_date: getVNDateTimeString(), 
+                description: content, 
+                created_by: role, 
+                image_urls: [] 
+            };
+            db.logs.push(newLog);
+            saveLocalState();
+            renderAiHistoryList();
+
+            if (supabaseClient) {
+                await supabaseClient.from('logs').insert([newLog]);
+            }
+        }
+
+        // Xóa sạch lịch sử trò chuyện
+        function clearAiHistoryCloud() {
+            showConfirmModal('Xóa Lịch Sử', 'Xóa toàn bộ lịch sử trò chuyện AI trên Cloud?', async () => {
+                db.logs = db.logs.filter(l => l.action_type !== 'AI_CHAT_HISTORY');
+                aiChatHistory = [];
+                saveLocalState();
+                renderAiHistoryList();
+                
+                const chatWindow = document.getElementById('aiChatWindow');
+                while (chatWindow.children.length > 1) {
+                    chatWindow.removeChild(chatWindow.lastChild);
+                }
+
+                showToast('Đã xóa sạch lịch sử!');
+                if (supabaseClient) {
+                    await supabaseClient.from('logs').delete().eq('action_type', 'AI_CHAT_HISTORY');
+                }
+            });
+        }
+
+        // Lấy dữ liệu Nông trại để cung cấp cho AI (ĐÃ VÁ LỖI BIẾN DỮ LIỆU LÔ)
         function gatherFarmContext() {
-            // 1. Công việc chưa hoàn thành
             const pendingTasks = (db.tasks || []).filter(t => t.status === 'pending');
             const taskStr = pendingTasks.length > 0 ? pendingTasks.map(t => `- Tên việc: ${t.title} (Giao cho: ${db.users.find(u=>u.id===t.assignee_id)?.name||'AI'}, Hạn: ${formatDateStandard(t.date)})`).join('\n') : 'Không có công việc nào tồn đọng.';
 
-            // 2. Cảnh báo tồn kho (Dưới 15 đơn vị)
             const lowStock = (db.inventory || []).filter(i => Number(i.quantity) < 15);
             const stockStr = lowStock.length > 0 ? lowStock.map(i => `- ${i.name}: Còn ${i.quantity} ${i.unit||''}`).join('\n') : 'Kho vật tư đang đầy đủ.';
 
-            // 3. Cảnh báo Dịch bệnh (Chỉ lấy lô có vấn đề)
             const sickBatches = (db.batches || []).filter(b => b.status !== 'harvested' && b.health_status !== 'good');
             const sickStr = sickBatches.length > 0 ? sickBatches.map(b => `- Mã lô [${b.code}]: Tình trạng ${b.health_status === 'warning' ? 'Cảnh báo/Theo dõi' : 'Bệnh nguy hiểm'}`).join('\n') : '100% khỏe mạnh.';
 
-            // 4. Tài chính tháng này
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
             let monthRev = 0, monthExp = 0;
@@ -3032,13 +3157,23 @@
                 }
             });
 
-            // 5. MỚI: DANH SÁCH CHI TIẾT TOÀN BỘ LÔ ĐANG NUÔI TRỒNG
+            // SỬA LỖI ĐỌC LÔ Ở ĐÂY: Dùng đúng thuộc tính domain thay vì type, initial_quantity thay vì quantity
             const activeBatches = (db.batches || []).filter(b => b.status !== 'harvested');
             
-            // Nhóm theo loại hình (Trồng trọt, Chăn nuôi, Thủy sản) để AI dễ hiểu
-            const crops = activeBatches.filter(b => b.type === 'crop').map(b => `- Lô [${b.code}]: Trồng ${b.crop_name} (${b.quantity} cây/chậu). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
-            const livestocks = activeBatches.filter(b => b.type === 'livestock').map(b => `- Chuồng [${b.code}]: Nuôi ${b.crop_name} (${b.quantity} con). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
-            const aquas = activeBatches.filter(b => b.type === 'aquaculture').map(b => `- Ao/Bể [${b.code}]: Nuôi ${b.crop_name} (${b.quantity} con). Bắt đầu: ${formatDateStandard(b.start_date)}`).join('\n');
+            const crops = activeBatches.filter(b => b.domain === 'crop').map(b => {
+                const cat = db.categories.find(c => c.id === (b.category_id || b.categoryId)) || { name: 'Chưa rõ giống' };
+                return `- Lô [${b.code}]: Trồng ${cat.name} (${b.initial_quantity} cây). Sức khỏe: ${b.health_status}. Bắt đầu: ${formatDateStandard(b.start_date)}`;
+            }).join('\n');
+
+            const livestocks = activeBatches.filter(b => b.domain === 'livestock').map(b => {
+                const cat = db.categories.find(c => c.id === (b.category_id || b.categoryId)) || { name: 'Chưa rõ giống' };
+                return `- Chuồng [${b.code}]: Nuôi ${cat.name} (${b.initial_quantity} con). Sức khỏe: ${b.health_status}. Bắt đầu: ${formatDateStandard(b.start_date)}`;
+            }).join('\n');
+
+            const aquas = activeBatches.filter(b => b.domain === 'aquaculture').map(b => {
+                const cat = db.categories.find(c => c.id === (b.category_id || b.categoryId)) || { name: 'Chưa rõ giống' };
+                return `- Ao/Bể [${b.code}]: Nuôi ${cat.name} (${b.initial_quantity} con). Sức khỏe: ${b.health_status}. Bắt đầu: ${formatDateStandard(b.start_date)}`;
+            }).join('\n');
             
             let batchListStr = "";
             if (crops) batchListStr += `\n* TRỒNG TRỌT:\n${crops}`;
@@ -3046,7 +3181,6 @@
             if (aquas) batchListStr += `\n* THỦY SẢN:\n${aquas}`;
             if (!batchListStr) batchListStr = "Hiện tại trang trại chưa có Lô/Chuồng nào đang hoạt động.";
 
-            // Trả về bức tranh toàn cảnh cho AI
             return `DỮ LIỆU NÔNG TRẠI THỰC TẾ HÔM NAY (${getReportTimeString()}):
 1. Công Việc Đang Chờ: \n${taskStr}
 2. Cảnh Báo Vật Tư (Sắp hết): \n${stockStr}
@@ -3057,17 +3191,16 @@
 
         function parseAIMarkdown(text) {
             let html = text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // In đậm
-                .replace(/\*(.*?)\*/g, '<em>$1</em>') // In nghiêng
-                .replace(/### (.*?)\n/g, '<h3><i class="fa-solid fa-angles-right text-purple-400 mr-2 text-sm"></i>$1</h3>') // Tiêu đề H3
-                .replace(/## (.*?)\n/g, '<h3 class="text-base text-purple-700">$1</h3>') // Tiêu đề H2
-                .replace(/\n- (.*?)(?=\n|$)/g, '<li class="ml-4 mb-1"><i class="fa-solid fa-caret-right text-[10px] text-purple-400 mr-1.5"></i>$1</li>') // Danh sách
-                .replace(/(<li.*?>.*?<\/li>)/s, '<ul class="my-2">$1</ul>') // Bọc ul
-                .replace(/\n/g, '<br>'); // Xuống dòng
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/### (.*?)\n/g, '<h3><i class="fa-solid fa-angles-right text-purple-400 mr-2 text-sm"></i>$1</h3>')
+                .replace(/## (.*?)\n/g, '<h3 class="text-base text-purple-700">$1</h3>')
+                .replace(/\n- (.*?)(?=\n|$)/g, '<li class="ml-4 mb-1"><i class="fa-solid fa-caret-right text-[10px] text-purple-400 mr-1.5"></i>$1</li>')
+                .replace(/(<li.*?>.*?<\/li>)/s, '<ul class="my-2">$1</ul>')
+                .replace(/\n/g, '<br>');
             return `<div class="ai-markdown">${html}</div>`;
         }
 
-        // Bấm nút gợi ý nhanh
         function sendQuickPrompt(prompt) {
             document.getElementById('aiChatInput').value = prompt;
             handleSendChatMessage(new Event('submit'));
@@ -3087,21 +3220,18 @@
 
             if (!messageText) return;
 
-            // 1. Hiển thị tin nhắn của User lên màn hình
+            // Hiển thị và lưu tin nhắn của User
             appendMessageToChat('user', messageText);
-            
-            // Lưu vào lịch sử (Định dạng của Google Gemini API)
             aiChatHistory.push({ role: 'user', parts: [{ text: messageText }] });
+            saveAiMessageToCloud('user', messageText); // <-- ĐỒNG BỘ LÊN CLOUD
             
             inputEl.value = '';
-            inputEl.style.height = 'auto'; // Reset chiều cao ô nhập liệu
+            inputEl.style.height = 'auto'; 
             
-            // 2. Hiện trạng thái AI đang gõ chữ
             btnSend.disabled = true;
             btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             const loadingMsgId = appendMessageToChat('model', '<span class="flex items-center space-x-2 text-purple-500 font-bold"><i class="fa-solid fa-ellipsis fa-bounce"></i> <span>Trợ lý đang phân tích dữ liệu...</span></span>');
 
-            // 3. Chuẩn bị "Ngữ cảnh + Lệnh hệ thống" (Bắt buộc chèn vào mỗi lần gửi để AI luôn lấy số liệu MỚI NHẤT)
             const farmContext = gatherFarmContext(); 
             const systemPrompt = `Bạn là Trợ lý AI Vận hành cấp cao tại Ông Đức Farm. Giọng điệu chuyên nghiệp, thân thiện, ngắn gọn, xưng hô là "Tôi" và gọi người dùng là "Sếp" hoặc "Bạn". Hãy đọc DỮ LIỆU NÔNG TRẠI THỰC TẾ dưới đây làm bối cảnh để trả lời câu hỏi của người dùng. Nếu họ hỏi báo cáo chung, hãy tổng hợp số liệu đó. Nếu họ hỏi ngoài lề (không liên quan nông nghiệp), khéo léo nhắc họ quay lại công việc. \n\n${farmContext}`;
 
@@ -3110,9 +3240,8 @@
                 contents: aiChatHistory
             };
 
-            // Gửi lên Google Gemini API (Nâng cấp lên Gemini 3.6 Flash chuẩn 2026)
             try {
-                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent', {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3126,17 +3255,17 @@
 
                 const aiResponseText = data.candidates[0].content.parts[0].text;
                 
-                // Cập nhật câu trả lời vào Lịch sử để AI "nhớ" ngữ cảnh cho câu hỏi sau
+                // Hiển thị và lưu câu trả lời của AI
                 aiChatHistory.push({ role: 'model', parts: [{ text: aiResponseText }] });
+                saveAiMessageToCloud('model', aiResponseText); // <-- ĐỒNG BỘ LÊN CLOUD
 
-                // Cập nhật giao diện xóa dòng Loading, thay bằng nội dung trả lời
                 updateMessageInChat(loadingMsgId, parseAIMarkdown(aiResponseText));
 
             } catch (error) {
                 console.error("Lỗi Chat AI:", error);
                 const errorHtml = `<div class="bg-rose-50 text-rose-700 p-3 rounded-xl text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi kết nối Google AI: ${error.message}</div>`;
                 updateMessageInChat(loadingMsgId, errorHtml);
-                aiChatHistory.pop(); // Xóa câu hỏi thất bại khỏi bộ nhớ để không bị lỗi dây chuyền
+                aiChatHistory.pop();
             } finally {
                 btnSend.disabled = false;
                 btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
@@ -3166,7 +3295,7 @@
             `;
             
             chatWindow.insertAdjacentHTML('beforeend', messageHtml);
-            chatWindow.scrollTop = chatWindow.scrollHeight; // Tự động cuộn xuống tin nhắn mới
+            chatWindow.scrollTop = chatWindow.scrollHeight;
             return msgId;
         }
 
@@ -3180,7 +3309,6 @@
             }
         }
 
-        // Tự động kéo dãn ô nhập liệu khi gõ văn bản dài
         document.addEventListener('input', function (e) {
             if(e.target.id === 'aiChatInput') {
                 e.target.style.height = 'auto';
