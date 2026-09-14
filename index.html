@@ -749,7 +749,7 @@
             <div class="flex flex-1 overflow-hidden relative">
                 
                 <!-- SIDEBAR LỊCH SỬ TỪ CLOUD -->
-                <div id="aiHistorySidebar" class="w-72 bg-slate-50 border-r border-slate-200 flex flex-col absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 z-30 shadow-2xl md:relative md:translate-x-0">
+                <div id="aiHistorySidebar" class="w-72 bg-slate-50 border-r border-slate-200 flex flex-col absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 z-40 shadow-2xl md:relative md:translate-x-0">
                     <div class="p-3 border-b border-slate-200 bg-white flex justify-between items-center">
                         <h4 class="font-bold text-slate-700 text-xs flex items-center"><i class="fa-solid fa-cloud text-blue-500 mr-1.5"></i>Lịch sử Cloud</h4>
                         <button onclick="toggleAiHistorySidebar()" class="md:hidden text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
@@ -757,9 +757,11 @@
                     <div id="aiHistoryList" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
                         <!-- Danh sách lịch sử sẽ render ở đây -->
                     </div>
-                    <div class="p-3 border-t border-slate-200 bg-white">
-                        <button onclick="clearAiHistoryCloud()" class="w-full py-2 text-xs font-bold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 transition shadow-sm"><i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử</button>
-                    </div>
+                   <div class="p-3 border-t border-slate-200 bg-white flex-shrink-0 relative z-20">
+                        <button onclick="clearAiHistoryCloud()" class="w-full py-2.5 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 hover:text-rose-700 transition shadow-sm flex items-center justify-center">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử
+                        </button>
+                   </div>
                 </div>
 
                 <!-- CHAT MAIN WINDOW -->
@@ -771,14 +773,14 @@
                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-md border border-purple-400/50"><i class="fa-solid fa-robot text-xs"></i></div>
                             <div class="bg-white border border-purple-100 p-4 rounded-2xl rounded-tl-sm text-sm text-slate-700 shadow-sm leading-relaxed">
                                 <p class="font-bold text-purple-800 mb-1">Chào bạn nhỏ! 👋</p>
-                                Mình là Trợ lý AI Vận hành của Ông Đức Farm. Tôi đã kết nối trực tiếp với dữ liệu kho, nhật ký, tài chính và danh sách lô trồng hiện tại. Bạn cần mình giúp gì?
+                                Mình là Trợ lý AI Vận hành của Ông Đức Farm. Mình đã kết nối trực tiếp với dữ liệu kho, nhật ký, tài chính và danh sách lô trồng hiện tại. Bạn cần mình giúp gì?
                                 
                                 <div class="mt-4 space-y-2 border-t border-purple-50 pt-3">
                                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">GỢI Ý TÁC VỤ NHANH:</p>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="sendQuickPrompt('Viết Báo Cáo & Lên Kế Hoạch Hôm Nay')" class="text-xs font-semibold bg-white text-purple-700 border border-purple-200 px-3 py-2 rounded-xl hover:bg-purple-50 transition flex items-center shadow-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Lập Báo Cáo Sáng</button>
                                         <button onclick="sendQuickPrompt('Quét số liệu Nông trại, phát hiện và cảnh báo rủi ro về vật tư, dịch bệnh')" class="text-xs font-semibold bg-white text-rose-600 border border-rose-200 px-3 py-2 rounded-xl hover:bg-rose-50 transition flex items-center shadow-sm"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Quét Rủi Ro</button>
-                                        <button onclick="sendQuickPrompt('Lập kế hoạch chăm sóc chi tiết cho các lô hiện tại')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-50 transition flex items-center shadow-sm"><i class="fa-solid fa-list-check mr-1.5"></i> Chăm Sóc</button>
+                                        <button onclick="sendQuickPrompt('Lập kế hoạch chăm sóc chi tiết theo thời gian trong ngày cho các lô hiện tại')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-50 transition flex items-center shadow-sm"><i class="fa-solid fa-list-check mr-1.5"></i> Kế Hoạch Chăm Sóc</button>
                                     </div>
                                 </div>
                             </div>
