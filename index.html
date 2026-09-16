@@ -1268,7 +1268,7 @@
             currentUser: null, currentRole: 'owner', cropFilter: 'all', livestockFilter: 'all', aquacultureFilter: 'all', inventoryFilter: 'all', cameraFilter: 'all', cameraGridCols: 2,
             harvestFilter: 'all',
             categories: [], locations: [], batches: [], harvests: [], inventory: [], cameras: [], logs: [], tasks: [], ledger: [],
-            users: []
+            users: [], chat_sessions: []
         };
 
         window.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
@@ -1338,13 +1338,12 @@
 
         // ĐỒNG BỘ TOÀN BỘ DỮ LIỆU TỪ SUPABASE CLOUD (KẾT HỢP LIMIT ĐỂ TRÁNH QUÁ TẢI)
         async function syncAllFromCloud() {
-            try {
-                const tables = ['batches', 'categories', 'locations', 'inventory', 'users', 'cameras', 'logs', 'harvests', 'tasks', 'ledger'];
+           try {
+                const tables = ['batches', 'categories', 'locations', 'inventory', 'users', 'cameras', 'logs', 'harvests', 'tasks', 'ledger', 'chat_sessions'];
                 for (const table of tables) {
                     let query = supabaseClient.from(table).select('*');
                     
-                    // SỬA LỖI 3: SCALABILITY - Chỉ fetch 200 bản ghi mới nhất cho các bảng History
-                    if (['logs', 'harvests', 'tasks', 'ledger'].includes(table)) {
+                    if (['logs', 'harvests', 'tasks', 'ledger', 'chat_sessions'].includes(table)) {
                         // Thường các bảng này sẽ sắp xếp theo ngày/giờ giảm dần. 
                         // Dùng limit(200) để không treo RAM
                         query = query.limit(200); 
@@ -3056,20 +3055,18 @@
             aiChatHistory = [];
             const chatWindow = document.getElementById('aiChatWindow');
 
-            // Xóa UI chat
             while (chatWindow.children.length > 1) {
                 chatWindow.removeChild(chatWindow.lastChild);
             }
 
-            // Lấy các tin nhắn thuộc session này
-            const sessionMsgs = (db.logs || [])
-                .filter(l => l.action_type === 'AI_CHAT_HISTORY' && (l.batch_id === sessionId || (!l.batch_id && sessionId === 'AI_CHAT')))
-                .sort((a, b) => a.id.localeCompare(b.id));
+            const sessionMsgs = (db.chat_sessions || [])
+                .filter(msg => msg.session_id === sessionId)
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
             sessionMsgs.forEach(msg => {
-                const role = msg.created_by;
-                aiChatHistory.push({ role: role, parts: [{ text: msg.description }] });
-                appendMessageToChat(role, role === 'user' ? msg.description : parseAIMarkdown(msg.description));
+                const role = msg.role;
+                aiChatHistory.push({ role: role, parts: [{ text: msg.content }] });
+                appendMessageToChat(role, role === 'user' ? msg.content : parseAIMarkdown(msg.content));
             });
 
             if (window.innerWidth < 1024) toggleAiHistorySidebar();
@@ -3095,42 +3092,38 @@
             }, 100);
         }
 
-            function renderAiHistoryList() {
+        function renderAiHistoryList() {
             const listContainer = document.getElementById('aiHistoryList');
             if (!listContainer) return;
             
-            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
+            const cloudHistory = db.chat_sessions || [];
             
             if (cloudHistory.length === 0) {
                 listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Chưa có lịch sử trò chuyện.</p>';
                 return;
             }
 
-            // 1. Nhóm tin nhắn theo Session (batch_id)
+            // Nhóm tin nhắn theo Session ID
             const sessions = {};
             cloudHistory.forEach(msg => {
-                const sid = msg.batch_id || 'AI_CHAT';
+                const sid = msg.session_id;
                 if (!sessions[sid]) sessions[sid] = [];
                 sessions[sid].push(msg);
             });
 
-            // 2. Sắp xếp Session sao cho cuộc trò chuyện mới nhất lên đầu
+            // Sắp xếp Session sao cho cuộc trò chuyện mới nhất (có tin nhắn gần nhất) lên đầu
             const sortedSessions = Object.keys(sessions).sort((a, b) => {
-                const lastA = sessions[a].sort((x,y) => x.id.localeCompare(y.id))[sessions[a].length - 1].id;
-                const lastB = sessions[b].sort((x,y) => x.id.localeCompare(y.id))[sessions[b].length - 1].id;
-                return lastB.localeCompare(lastA);
+                const lastA = new Date(sessions[a].sort((x,y) => new Date(x.created_at) - new Date(y.created_at))[sessions[a].length - 1].created_at);
+                const lastB = new Date(sessions[b].sort((x,y) => new Date(x.created_at) - new Date(y.created_at))[sessions[b].length - 1].created_at);
+                return lastB - lastA;
             });
             
-            // 3. Render danh sách
             listContainer.innerHTML = sortedSessions.map(sid => {
-                const msgs = sessions[sid].sort((a, b) => a.id.localeCompare(b.id));
-                const firstUserMsg = msgs.find(m => m.created_by === 'user');
+                const msgs = sessions[sid].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                const firstUserMsg = msgs.find(m => m.role === 'user');
                 
-                // Lấy câu hỏi đầu tiên làm tiêu đề, nếu dài quá thì cắt bớt
-                let title = firstUserMsg ? firstUserMsg.description : 'Trò chuyện hệ thống...';
+                let title = firstUserMsg ? firstUserMsg.content : 'Trò chuyện hệ thống...';
                 title = title.replace(/(<([^>]+)>)/gi, "").substring(0, 35) + (title.length > 35 ? '...' : '');
-                
-                // Escape nháy đơn để không bị lỗi JS
                 const safeTitle = title.replace(/'/g, "\\'");
 
                 return `
@@ -3147,40 +3140,42 @@
 
         // Lưu tin nhắn lên Supabase (Mượn bảng Logs)
         async function saveAiMessageToCloud(role, content) {
-            const newLog = { 
-                id: 'ai-msg-' + Date.now(), 
-                batch_id: currentAiSessionId,
-                action_type: 'AI_CHAT_HISTORY', 
-                log_date: getVNDateTimeString(), 
-                description: content, 
-                created_by: role, 
-                image_urls: [] 
+            const newMsg = { 
+                session_id: currentAiSessionId,
+                role: role, 
+                content: content, 
+                created_at: new Date().toISOString()
             };
-            db.logs.push(newLog);
+            
+            // Lưu nội bộ để hiển thị ngay lập tức
+            const tempId = crypto.randomUUID ? crypto.randomUUID() : 'uuid-' + Date.now();
+            db.chat_sessions = db.chat_sessions || [];
+            db.chat_sessions.push({ id: tempId, ...newMsg });
             saveLocalState();
             renderAiHistoryList();
 
+            // Đẩy lên Supabase (không truyền ID để PostgreSQL tự động tạo UUID)
             if (supabaseClient) {
-                await supabaseClient.from('chat_sessions').insert([newLog]);
+                await supabaseClient.from('chat_sessions').insert([newMsg]);
             }
         }
 
-        // Xóa sạch lịch sử trò chuyện
-        function clearAiHistoryCloud() {
-            showConfirmModal('Xóa Lịch Sử', 'Xóa toàn bộ lịch sử trò chuyện AI trên Cloud?', async () => {
-                db.logs = db.logs.filter(l => l.action_type !== 'AI_CHAT_HISTORY');
-                aiChatHistory = [];
+        function deleteAiSession(sessionId, firstQuestion) {
+            showConfirmModal('Xóa Cuộc Trò Chuyện', `Bạn có chắc muốn xóa cuộc trò chuyện:\n"${firstQuestion}"?`, async () => {
+                db.chat_sessions = db.chat_sessions.filter(msg => msg.session_id !== sessionId);
                 saveLocalState();
-                renderAiHistoryList();
                 
-                const chatWindow = document.getElementById('aiChatWindow');
-                while (chatWindow.children.length > 1) {
-                    chatWindow.removeChild(chatWindow.lastChild);
+                if (currentAiSessionId === sessionId) {
+                    startNewAiChat();
+                } else {
+                    renderAiHistoryList();
                 }
 
-                showToast('Đã xóa sạch lịch sử!');
+                showToast('Đã xóa cuộc trò chuyện!');
+                
+                // Gửi lệnh xóa lên bảng mới của Supabase
                 if (supabaseClient) {
-                    await supabaseClient.from('logs').delete().eq('action_type', 'AI_CHAT_HISTORY');
+                    await supabaseClient.from('chat_sessions').delete().eq('session_id', sessionId);
                 }
             });
         }
