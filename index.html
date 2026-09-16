@@ -749,19 +749,20 @@
             <div class="flex flex-1 overflow-hidden relative">
                 
                 <!-- SIDEBAR LỊCH SỬ TỪ CLOUD -->
-                <div id="aiHistorySidebar" class="w-72 bg-slate-50 border-r border-slate-200 flex flex-col absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 z-40 shadow-2xl md:relative md:translate-x-0">
+                <div id="aiHistorySidebar" class="w-72 bg-slate-50 border-r border-slate-200 flex flex-col absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 z-30 shadow-2xl">
                     <div class="p-3 border-b border-slate-200 bg-white flex justify-between items-center">
-                        <h4 class="font-bold text-slate-700 text-xs flex items-center"><i class="fa-solid fa-cloud text-blue-500 mr-1.5"></i>Lịch sử Cloud</h4>
-                        <button onclick="toggleAiHistorySidebar()" class="md:hidden text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+                        <h4 class="font-bold text-slate-700 text-xs flex items-center"><i class="fa-solid fa-cloud text-blue-500 mr-1.5"></i>Lịch sử Chat</h4>
+                        <div class="flex space-x-2">
+                            <button onclick="startNewAiChat()" class="text-xs bg-purple-100 text-purple-700 hover:bg-purple-200 px-2 py-1 rounded font-bold transition flex items-center shadow-sm" title="Cuộc trò chuyện mới"><i class="fa-solid fa-plus mr-1"></i> Mới</button>
+                            <button onclick="toggleAiHistorySidebar()" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded transition"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
                     </div>
                     <div id="aiHistoryList" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
                         <!-- Danh sách lịch sử sẽ render ở đây -->
                     </div>
-                   <div class="p-3 border-t border-slate-200 bg-white flex-shrink-0 relative z-20">
-                        <button onclick="clearAiHistoryCloud()" class="w-full py-2.5 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 hover:text-rose-700 transition shadow-sm flex items-center justify-center">
-                            <i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử
-                        </button>
-                   </div>
+                    <div class="p-3 border-t border-slate-200 bg-white">
+                        <button onclick="clearAiHistoryCloud()" class="w-full py-2 text-xs font-bold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 transition shadow-sm"><i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử</button>
+                    </div>
                 </div>
 
                 <!-- CHAT MAIN WINDOW -->
@@ -3021,6 +3022,7 @@
         let geminiApiKey = atob(_kMask.split('').reverse().join(''));
         let aiChatHistory = []; // Lưu trữ lịch sử trò chuyện cục bộ cho phiên hiện tại
         let isAiSidebarOpen = false;
+        let currentAiSessionId = 'session-' + Date.now(); // Biến mới để quản lý Phiên
 
         function toggleAiHistorySidebar() {
             const sidebar = document.getElementById('aiHistorySidebar');
@@ -3031,39 +3033,119 @@
                 sidebar.classList.add('-translate-x-full');
             }
         }
+        
+        function startNewAiChat() {
+            currentAiSessionId = 'session-' + Date.now();
+            aiChatHistory = [];
+            const chatWindow = document.getElementById('aiChatWindow');
+            
+            // Xóa UI chat, chỉ giữ lại lời chào ban đầu
+            while (chatWindow.children.length > 1) {
+                chatWindow.removeChild(chatWindow.lastChild);
+            }
+            
+            // Tự động đóng sidebar trên mobile khi tạo mới
+            if (window.innerWidth < 1024) toggleAiHistorySidebar();
+            
+            document.getElementById('aiChatInput').focus();
+            showToast('Đã bắt đầu cuộc trò chuyện mới!', 'info');
+        }
+
+        function loadAiChatSession(sessionId) {
+            currentAiSessionId = sessionId;
+            aiChatHistory = [];
+            const chatWindow = document.getElementById('aiChatWindow');
+
+            // Xóa UI chat
+            while (chatWindow.children.length > 1) {
+                chatWindow.removeChild(chatWindow.lastChild);
+            }
+
+            // Lấy các tin nhắn thuộc session này
+            const sessionMsgs = (db.logs || [])
+                .filter(l => l.action_type === 'AI_CHAT_HISTORY' && (l.batch_id === sessionId || (!l.batch_id && sessionId === 'AI_CHAT')))
+                .sort((a, b) => a.id.localeCompare(b.id));
+
+            sessionMsgs.forEach(msg => {
+                const role = msg.created_by;
+                aiChatHistory.push({ role: role, parts: [{ text: msg.description }] });
+                appendMessageToChat(role, role === 'user' ? msg.description : parseAIMarkdown(msg.description));
+            });
+
+            if (window.innerWidth < 1024) toggleAiHistorySidebar();
+        }
 
         // Tự động kéo lịch sử từ DB Cloud (Bảng Logs) và đẩy vào giao diện
         function openAIModal() {
             if (db.currentRole === 'viewer') return showToast('Bạn không có quyền sử dụng Trợ lý AI!', 'error');
             openModal('aiAssistantModal');
             
-            // Phục hồi lịch sử từ Cloud vào mảng aiChatHistory để AI hiểu ngữ cảnh
-            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
-            
-            if (aiChatHistory.length === 0 && cloudHistory.length > 0) {
-                const sorted = [...cloudHistory].sort((a, b) => a.id.localeCompare(b.id)); // Cũ nhất -> Mới nhất
-                
-                const chatWindow = document.getElementById('aiChatWindow');
-                // Xóa hết các tin nhắn cũ trong HTML (chỉ chừa lại lời chào đầu tiên của Bot)
-                while (chatWindow.children.length > 1) {
-                    chatWindow.removeChild(chatWindow.lastChild);
-                }
-                
-                sorted.forEach(msg => {
-                    const role = msg.created_by; // 'user' hoặc 'model'
-                    aiChatHistory.push({ role: role, parts: [{ text: msg.description }] });
-                    appendMessageToChat(role, role === 'user' ? msg.description : parseAIMarkdown(msg.description));
-                });
-            }
+            // Xóa logic tải chat cũ. Thay vào đó, gọi luôn hàm tạo trò chuyện mới
+            startNewAiChat();
 
+            // Render lại danh sách lịch sử bên Sidebar
             renderAiHistoryList();
 
             setTimeout(() => {
+                // Tự động mở sidebar nếu ở màn hình PC cho trực quan
+                if (window.innerWidth >= 1024 && !isAiSidebarOpen) {
+                    toggleAiHistorySidebar();
+                }
                 const tx = document.getElementById('aiChatInput');
                 if(tx) { tx.style.height = 'auto'; tx.style.height = (tx.scrollHeight) + 'px'; tx.focus(); }
                 const chatWindow = document.getElementById('aiChatWindow');
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 100);
+        }
+
+            function renderAiHistoryList() {
+            const listContainer = document.getElementById('aiHistoryList');
+            if (!listContainer) return;
+            
+            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
+            
+            if (cloudHistory.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Chưa có lịch sử trò chuyện.</p>';
+                return;
+            }
+
+            // 1. Nhóm tin nhắn theo Session (batch_id)
+            const sessions = {};
+            cloudHistory.forEach(msg => {
+                const sid = msg.batch_id || 'AI_CHAT';
+                if (!sessions[sid]) sessions[sid] = [];
+                sessions[sid].push(msg);
+            });
+
+            // 2. Sắp xếp Session sao cho cuộc trò chuyện mới nhất lên đầu
+            const sortedSessions = Object.keys(sessions).sort((a, b) => {
+                const lastA = sessions[a].sort((x,y) => x.id.localeCompare(y.id))[sessions[a].length - 1].id;
+                const lastB = sessions[b].sort((x,y) => x.id.localeCompare(y.id))[sessions[b].length - 1].id;
+                return lastB.localeCompare(lastA);
+            });
+            
+            // 3. Render danh sách
+            listContainer.innerHTML = sortedSessions.map(sid => {
+                const msgs = sessions[sid].sort((a, b) => a.id.localeCompare(b.id));
+                const firstUserMsg = msgs.find(m => m.created_by === 'user');
+                
+                // Lấy câu hỏi đầu tiên làm tiêu đề, nếu dài quá thì cắt bớt
+                let title = firstUserMsg ? firstUserMsg.description : 'Trò chuyện hệ thống...';
+                title = title.replace(/(<([^>]+)>)/gi, "").substring(0, 35) + (title.length > 35 ? '...' : '');
+                
+                // Escape nháy đơn để không bị lỗi JS
+                const safeTitle = title.replace(/'/g, "\\'");
+
+                return `
+                    <div class="p-2 bg-white rounded-lg border border-slate-100 shadow-sm text-[11px] mb-1 flex justify-between items-center hover:bg-purple-50 transition cursor-pointer group ${currentAiSessionId === sid ? 'border-purple-300 bg-purple-50' : ''}">
+                        <div class="flex-1 overflow-hidden" onclick="loadAiChatSession('${sid}')">
+                            <div class="font-bold text-slate-700 flex items-center space-x-1.5 mb-0.5"><i class="fa-regular fa-comments text-indigo-500"></i> <span class="truncate">${title}</span></div>
+                            <div class="text-[9px] text-slate-400 pl-4">${msgs.length} tin nhắn</div>
+                        </div>
+                        <button onclick="deleteAiSession('${sid}', '${safeTitle}')" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-100 rounded-lg transition opacity-0 group-hover:opacity-100 ml-1" title="Xóa cuộc trò chuyện này"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Vẽ danh sách lịch sử ra Sidebar
@@ -3100,7 +3182,7 @@
         async function saveAiMessageToCloud(role, content) {
             const newLog = { 
                 id: 'ai-msg-' + Date.now(), 
-                batch_id: 'AI_CHAT', 
+                batch_id: currentAiSessionId,
                 action_type: 'AI_CHAT_HISTORY', 
                 log_date: getVNDateTimeString(), 
                 description: content, 
@@ -3112,7 +3194,7 @@
             renderAiHistoryList();
 
             if (supabaseClient) {
-                await supabaseClient.from('logs').insert([newLog]);
+                await supabaseClient.from('chat_sessions').insert([newLog]);
             }
         }
 
@@ -3132,6 +3214,33 @@
                 showToast('Đã xóa sạch lịch sử!');
                 if (supabaseClient) {
                     await supabaseClient.from('logs').delete().eq('action_type', 'AI_CHAT_HISTORY');
+                }
+            });
+        }
+        
+        function deleteAiSession(sessionId, firstQuestion) {
+            showConfirmModal('Xóa Cuộc Trò Chuyện', `Bạn có chắc muốn xóa cuộc trò chuyện:\n"${firstQuestion}"?`, async () => {
+                // Xóa toàn bộ tin nhắn thuộc sessionId này
+                db.logs = db.logs.filter(l => !(l.action_type === 'AI_CHAT_HISTORY' && (l.batch_id === sessionId || (!l.batch_id && sessionId === 'AI_CHAT'))));
+                
+                saveLocalState();
+                
+                // Nếu đang mở đúng đoạn chat bị xóa, thì reset lại cửa sổ chat
+                if (currentAiSessionId === sessionId) {
+                    startNewAiChat();
+                } else {
+                    renderAiHistoryList();
+                }
+
+                showToast('Đã xóa cuộc trò chuyện!');
+                
+                if (supabaseClient) {
+                    let query = supabaseClient.from('logs').delete().eq('action_type', 'AI_CHAT_HISTORY');
+                    if (sessionId === 'AI_CHAT') {
+                        await query.is('batch_id', null);
+                    } else {
+                        await query.eq('batch_id', sessionId);
+                    }
                 }
             });
         }
