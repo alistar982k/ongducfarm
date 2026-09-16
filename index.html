@@ -725,23 +725,26 @@
 
     <!-- MODALS -->
     <!-- MODAL TRỢ LÝ AI GEMINI (GIAO DIỆN CHAT CÓ SIDEBAR CLOUD) -->
-    <div id="aiAssistantModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] hidden flex items-center justify-center p-2 sm:p-4">
-        <div class="bg-white w-full max-w-5xl h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 relative">
+    <div id="aiAssistantModal" class="fixed inset-0 bg-slate-950/80 z-[60] hidden flex items-center justify-center">
+    <div class="bg-white w-full h-full max-w-none flex flex-col overflow-hidden relative">
             <!-- Header -->
             <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-4 flex justify-between items-center relative overflow-hidden flex-shrink-0">
                 <div class="absolute -right-4 -bottom-4 opacity-10 text-white text-7xl"><i class="fa-solid fa-robot"></i></div>
                 <div class="relative z-10 flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
+                    <!-- Nút lịch sử dời sang trái và thu nhỏ -->
+                    <button onclick="toggleAiHistorySidebar()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition tooltip border border-white/20" title="Mở lịch sử"><i class="fa-solid fa-clock-rotate-left text-sm"></i></button>
+                    
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg hidden sm:flex">
                         <i class="fa-solid fa-robot text-xl text-purple-300 live-pulse"></i>
                     </div>
                     <div>
                         <h3 class="font-black text-white text-base tracking-wide">Trợ Lý Ảo Nông Trại <span class="text-purple-300">AI</span></h3>
-                        <p class="text-[10px] text-indigo-200 font-medium mt-0.5 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 live-pulse"></span> Sẵn sàng phân tích dữ liệu & trò chuyện</p>
+                        <p class="text-[10px] text-indigo-200 font-medium mt-0.5 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 live-pulse"></span> Sẵn sàng phân tích</p>
                     </div>
                 </div>
                 <div class="relative z-10 flex items-center space-x-2">
-                    <button onclick="toggleAiHistorySidebar()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition tooltip" title="Lịch sử trò chuyện"><i class="fa-solid fa-clock-rotate-left"></i></button>
-                    <button onclick="closeModal('aiAssistantModal')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition"><i class="fa-solid fa-xmark"></i></button>
+                    <!-- Chỉ giữ lại nút Đóng (X) ở bên phải, làm nổi bật -->
+                    <button onclick="closeModal('aiAssistantModal')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500/80 hover:bg-rose-600 text-white transition shadow-lg"><i class="fa-solid fa-xmark text-xl"></i></button>
                 </div>
             </div>
 
@@ -759,9 +762,6 @@
                     </div>
                     <div id="aiHistoryList" class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
                         <!-- Danh sách lịch sử sẽ render ở đây -->
-                    </div>
-                    <div class="p-3 border-t border-slate-200 bg-white">
-                        <button onclick="clearAiHistoryCloud()" class="w-full py-2 text-xs font-bold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 transition shadow-sm"><i class="fa-solid fa-trash-can mr-1.5"></i>Xóa sạch lịch sử</button>
                     </div>
                 </div>
 
@@ -3088,9 +3088,6 @@
 
             setTimeout(() => {
                 // Tự động mở sidebar nếu ở màn hình PC cho trực quan
-                if (window.innerWidth >= 1024 && !isAiSidebarOpen) {
-                    toggleAiHistorySidebar();
-                }
                 const tx = document.getElementById('aiChatInput');
                 if(tx) { tx.style.height = 'auto'; tx.style.height = (tx.scrollHeight) + 'px'; tx.focus(); }
                 const chatWindow = document.getElementById('aiChatWindow');
@@ -3143,36 +3140,6 @@
                             <div class="text-[9px] text-slate-400 pl-4">${msgs.length} tin nhắn</div>
                         </div>
                         <button onclick="deleteAiSession('${sid}', '${safeTitle}')" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-100 rounded-lg transition opacity-0 group-hover:opacity-100 ml-1" title="Xóa cuộc trò chuyện này"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Vẽ danh sách lịch sử ra Sidebar
-        function renderAiHistoryList() {
-            const listContainer = document.getElementById('aiHistoryList');
-            if (!listContainer) return;
-            
-            const cloudHistory = (db.logs || []).filter(l => l.action_type === 'AI_CHAT_HISTORY');
-            
-            if (cloudHistory.length === 0) {
-                listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Chưa có lịch sử trò chuyện.</p>';
-                return;
-            }
-
-            // Đảo ngược để hiển thị mới nhất lên đầu danh sách
-            const sorted = [...cloudHistory].sort((a, b) => b.id.localeCompare(a.id));
-            
-            listContainer.innerHTML = sorted.map(msg => {
-                const isUser = msg.created_by === 'user';
-                const icon = isUser ? '<i class="fa-solid fa-user text-indigo-500"></i>' : '<i class="fa-solid fa-robot text-purple-500"></i>';
-                const title = isUser ? 'Bạn' : 'AI';
-                const snippet = msg.description.substring(0, 40) + (msg.description.length > 40 ? '...' : '');
-                
-                return `
-                    <div class="p-2 bg-white rounded-lg border border-slate-100 shadow-sm text-[11px] mb-1">
-                        <div class="font-bold text-slate-700 flex items-center space-x-1.5 mb-1">${icon} <span>${title}</span></div>
-                        <div class="text-slate-500 truncate">${snippet}</div>
                     </div>
                 `;
             }).join('');
