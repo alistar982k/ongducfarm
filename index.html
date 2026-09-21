@@ -1567,8 +1567,17 @@
             openModal('financialDetailModal');
         }
 
-        // SẮP XẾP THÔNG MINH (ALPHANUMERIC SORTING)
-        function sortBatches(arr) { return arr.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' })); }
+        // SẮP XẾP THÔNG MINH (THỜI GIAN MỚI NHẤT -> CŨ NHẤT)
+        function sortBatches(arr) { 
+            return arr.sort((a, b) => {
+                const dateA = new Date(a.start_date || 0);
+                const dateB = new Date(b.start_date || 0);
+                if (dateB > dateA) return 1;
+                if (dateB < dateA) return -1;
+                // Nếu cùng ngày bắt đầu, lô nào tạo sau (ID mới hơn) sẽ lên trước
+                return b.id.localeCompare(a.id);
+            }); 
+        }
 
         function filterCropTab(type) { db.cropFilter = type; ['all','caylaunam','caynganngay'].forEach(t => { document.getElementById(`btn-crop-${t}`)&&(document.getElementById(`btn-crop-${t}`).className=t===type?"pb-2 border-b-2 border-emerald-600 text-emerald-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderCrops(); }
         function filterLivestockTab(type) { db.livestockFilter = type; ['all','giasuc','giacam'].forEach(t => { document.getElementById(`btn-ls-${t}`)&&(document.getElementById(`btn-ls-${t}`).className=t===type?"pb-2 border-b-2 border-amber-600 text-amber-600 font-bold":"pb-2 border-b-2 border-transparent text-slate-500 font-medium") }); renderLivestock(); }
@@ -1638,7 +1647,17 @@
                 grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có dữ liệu thu hoạch nào.</p>';
                 return;
             }
-            grid.innerHTML = harvests.map(h => {
+
+            // Sắp xếp lịch sử thu hoạch theo ngày thu (từ mới đến cũ)
+            const sortedHarvests = [...harvests].sort((a, b) => {
+                const dateA = new Date(a.harvest_date || 0);
+                const dateB = new Date(b.harvest_date || 0);
+                if (dateB > dateA) return 1;
+                if (dateB < dateA) return -1;
+                return b.id.localeCompare(a.id);
+            });
+
+            grid.innerHTML = sortedHarvests.map(h => {
                 const batch = db.batches.find(b => b.id === h.batch_id) || { code: 'N/A', domain: 'crop' };
                 const cat = db.categories.find(c => c.id === (batch.category_id || batch.categoryId)) || { name: 'N/A' };
                 const icon = batch.domain === 'crop' ? '<i class="fa-solid fa-wheat-awn text-emerald-600"></i>' : batch.domain === 'livestock' ? '<i class="fa-solid fa-cow text-amber-600"></i>' : '<i class="fa-solid fa-fish text-cyan-600"></i>';
