@@ -113,6 +113,7 @@
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
 
+        /* Hàm chuyển đổi định dạng ngày tháng */
         function formatDateStandard(dStr) {
             if(!dStr) return ''; let d = new Date(dStr); if(isNaN(d)) return dStr;
             return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
@@ -196,6 +197,19 @@
 
             if (isDemo) {
                 document.getElementById('demoNotice').classList.remove('hidden');
+            }
+
+            /* 
+             * LOGIC MỚI: LỌC NHẬT KÝ THEO NGÀY THU HOẠCH
+             * Giới hạn lịch sử chăm sóc chỉ hiển thị tới ngày thu hoạch (nếu đã có ngày thu hoạch)
+             */
+            if (harvestData && harvestData.harvest_date) {
+                const harvestTime = new Date(harvestData.harvest_date).getTime();
+                logsData = logsData.filter(log => {
+                    if (!log.log_date) return true; // Bỏ qua nếu dữ liệu lỗi không có ngày
+                    const logTime = new Date(log.log_date).getTime();
+                    return logTime <= harvestTime;
+                });
             }
 
             const tlContainer = document.getElementById('timelineContainer');
