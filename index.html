@@ -2012,11 +2012,15 @@
             const grid = document.getElementById('logsGrid');
             if(!grid) return;
             
-            // ẨN LỊCH SỬ CHAT AI KHỎI GIAO DIỆN NHẬT KÝ CON NGƯỜI
-            const displayLogs = db.logs.filter(l => l.action_type !== 'AI_CHAT_HISTORY');
+            // LỌC CHAT AI VÀ SẮP XẾP CHUẨN XÁC THEO THỜI GIAN TỪ MỚI ĐẾN CŨ
+            const displayLogs = db.logs
+                .filter(l => l.action_type !== 'AI_CHAT_HISTORY')
+                .sort((a, b) => new Date(b.log_date) - new Date(a.log_date));
             
             if(displayLogs.length===0) { grid.innerHTML='<p class="col-span-full text-center text-xs text-slate-400 py-8">Chưa có nhật ký thực địa nào.</p>'; return; }
-            grid.innerHTML = displayLogs.slice().reverse().map(l => {
+            
+            // Xóa hàm .slice().reverse() cũ vì đã sort chính xác ở trên
+            grid.innerHTML = displayLogs.map(l => {
                 const b = db.batches.find(x=>x.id===l.batch_id) || {code:'N/A'};
                 const loc = db.locations.find(x=>x.id===b.location_id) || {name:'Chưa rõ vị trí'};
                 let imgHTML = '';
