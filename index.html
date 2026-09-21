@@ -3066,8 +3066,7 @@
                 chatWindow.removeChild(chatWindow.lastChild);
             }
             
-            // Tự động đóng sidebar trên mobile khi tạo mới
-            if (window.innerWidth < 1024) toggleAiHistorySidebar();
+            if (window.innerWidth < 1024 && isAiSidebarOpen) toggleAiHistorySidebar();
             
             document.getElementById('aiChatInput').focus();
             showToast('Đã bắt đầu cuộc trò chuyện mới!', 'info');
