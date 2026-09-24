@@ -59,6 +59,8 @@
         .clickable-card { transition: all 0.2s ease-in-out; }
         .clickable-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); }
     </style>
+        <!-- Kích hoạt tính năng Install App (Manifest nhúng trực tiếp) -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%C3%94ng%20%C4%90%E1%BB%A9c%20Farm%22%2C%22short_name%22%3A%22O.%C4%90%20Farm%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%23022c22%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fujqkqopzztpmmahhncfv.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2FPublic%2Flogo.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fujqkqopzztpmmahhncfv.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2FPublic%2Flogo.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-50">
 
@@ -3412,6 +3414,16 @@
             }
         }, false);
 
+    </script>
+        <!-- Đăng ký Service Worker siêu nhẹ để vượt qua kiểm tra PWA của trình duyệt -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `self.addEventListener('fetch', function(event) {});`;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.error);
+            });
+        }
     </script>
 </body>
 </html>
